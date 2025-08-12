@@ -22,6 +22,8 @@ calculate_icc <- function(data,
   # data: takes the data frame with all participants
           # and their occasions as input (long format)
   # id.var: character indicating name of participant ID variable
+          # NOTE: ID needs to be numeric (matrices can only contain one
+          # data type and ICC needs to be numeric)
   # items: character vector of specifying which emotion items
           # shall be used for the calculation (variable names
           # as used in data frame)
@@ -34,8 +36,11 @@ calculate_icc <- function(data,
   # extract (unique) participant IDs as vector
   ids <- unique(data[ , id.var])
   # create empty matrix as storage for ICC data
-  ICCdata <- matrix(NA, nrow = length(ids), ncol=2)
-  colnames(ICCdata) <- c(id.var, "ICC") # rename cols according to id.var and ICC
+  ICCdata <- matrix(NA, nrow = length(ids), ncol=3)
+  colnames(ICCdata) <- c(id.var, "ICC", "ICC.z") # rename cols according to id.var, and to ICC and ICC.z
+  # ICC: raw ICC
+  # ICC.z: Fisher's Z-transformed ICC using the formula in Schneider & Junghaenel (2023)
+  
   ICCdata[ , id.var] <- ids # store ids in id.var
 
   for (id in ids) { # now loop over the ID vector -> for each participant, ...
@@ -50,6 +55,22 @@ calculate_icc <- function(data,
     
     ICCdata[ICCdata[ , id.var] == id, "ICC"] <- ICC
     # save ICC in row in matrix that corresponds to current ID
+    
+    # Fisher's Z-transform the ICCs (according to formula in Schneider & Junghaenel, 2023)
+    # -> transformed values needed for reliability estimation using I²
+    # Table 1 (p. 3877) in Schneider & Junghaenel (2022):
+    # sample estimator of emotion differentiation = 0.5 * log( (1 + (K_i - 1)*ICC_i) / (1 - ICC_i) )
+    # log = natural logarithm (see Table 1, emotion variability -> "natural logarithm" and then log is used in formula)
+    # log() in R = natural logarithm
+    # ICC_i = ICC for person i, here: ICC just calculated above
+    # K_i = (average) number of items per occasion
+      # -> calculate from length of item vector 
+    K_i <- length(items)
+    
+    ICC.z <- 0.5 * log( (1 + (K_i - 1)*ICC) / (1 - ICC) )
+    ICCdata[ICCdata[ , id.var] == id, "ICC.z"] <- ICC.z
+    # save transformed ICC (ICC.z) in row in matrix that corresponds to current ID
+    
   }
   
   return(ICCdata) # return ICCdata matrix
@@ -59,8 +80,8 @@ calculate_icc <- function(data,
 
 
 
-# # Test Function 
-# load("C:/Users/ecker/Seafile/Meine Bibliothek/Studien/2) ED Reliability/Data Analysis/data_analysis_git/prepared data/benchmark_data_Study1.rda")# 
+# # Test Function
+# load("C:/Users/ecker/Seafile/Meine Bibliothek/Studien/2) ED Reliability/Data Analysis/data_analysis_git/prepared data/benchmark_data_Study1.rda")
 # 
 # test <- calculate_icc(data=bench, id.var="SERIAL",
 #                       items = c("aerger1", "aerger2", "aerger3",
@@ -92,5 +113,8 @@ calculate_icc <- function(data,
 #                       id.var= "PART_ID",
 #                       items = c("item1", "item2", "item3", "item4", "item5"))
 # test
+# test <- as.numeric(test)
+# 
+# # matrices can only contain one data type -> make sure that ID variable is numeric
 # 
 # rm(list=ls())
