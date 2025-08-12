@@ -198,20 +198,19 @@ random_occasion_draw <- function(data, id.var, occ.running.var, nr.of.occasions,
 # drawn_data <- do.call(rbind, drawn_list)
 # rownames(drawn_data) <- NULL
 # 
-
-
-# Test whole function with real data
-load("C:/Users/ecker/Seafile/Meine Bibliothek/Studien/2) ED Reliability/Data Analysis/data_analysis_git/prepared data/benchmark_data_Study1.rda")
-
-36*25 # 26 participants * 25 occasions -> should be 900
-set.seed(123)
-test <- random_occasion_draw(data=bench, id.var="SERIAL", occ.running.var = "occ_running",
-                             nr.of.occasions = 25, items=c("aerger1", "aerger2", "aerger3",
-                                                           "schuld1", "schuld2", "schuld3"))
-nrow(test) # correct
-# calculate occasions per participant
-library(tidyverse)
-test %>% 
-  group_by(SERIAL) %>% 
-  summarise(n()) %>% 
-  print(n=36)
+# 
+# # Test whole function with real data
+# load("C:/Users/ecker/Seafile/Meine Bibliothek/Studien/2) ED Reliability/Data Analysis/data_analysis_git/prepared data/benchmark_data_Study1.rda")
+# 
+# 36*25 # 26 participants * 25 occasions -> should be 900
+# set.seed(123)
+# test <- random_occasion_draw(data=bench, id.var="SERIAL", occ.running.var = "occ_running",
+#                              nr.of.occasions = 25, items=c("aerger1", "aerger2", "aerger3",
+#                                                            "schuld1", "schuld2", "schuld3"))
+# nrow(test) # correct
+# # calculate occasions per participant
+# library(tidyverse)
+# test %>% 
+#   group_by(SERIAL) %>% 
+#   summarise(n()) %>% 
+#   print(n=36)
