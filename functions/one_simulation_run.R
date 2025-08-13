@@ -317,8 +317,11 @@ one_simulation <- function(data, nr.of.occasions, occasions.drawn,
 }
 
 
-# 
+
 # # Test:
+# source("functions/function_calculate_iccs.R")
+# source("functions/function_ordered_occasion_draw.R")
+# source("functions/function_random_occasion_draw.R")
 # 
 # # create benchmark ICC data (needs to be defined once in overall simulation)
 # benchmark_data <- calculate_icc(bench, id.var="SERIAL", items = c("aerger1", "aerger2", "aerger3",
@@ -333,11 +336,28 @@ one_simulation <- function(data, nr.of.occasions, occasions.drawn,
 # colnames(benchmark_data) <- c("SERIAL", "bench_ICC", "bench_ICC.z")
 # 
 # out <- one_simulation(data = bench,
-#                       nr.of.occasions = 10, nr.of.items = 15, 
+#                       nr.of.occasions = 10, nr.of.items = 15,
 #                       occasions.drawn = "by order",
 #                       id.var = "SERIAL",
 #                       occ.running.var = "occ_running",
 #                       type = "consistency", unit = "single",
 #                       benchmark_ICCdata = benchmark_data)
 # out
-
+# 
+# # Test one simulation with 100 replications
+# 
+# res <- matrix(NA, ncol=17, nrow=100)
+# colnames(res) <- c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC', 'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z', 'cor_ICC', 'cor_ICC.z', 'RMSE_ICC', 'RMSE_ICC.z', 'rel', 'N_rel', 'sd_ICC', 'sd_ICC.z', 'negICC', 'estimationProbNeg', 'estimationProbPos')
+# for (i in 1:100) {
+#   res[i, ] <- one_simulation(data = bench,
+#                              nr.of.occasions = 10, nr.of.items = 15,
+#                              occasions.drawn = "random",
+#                              id.var = "SERIAL",
+#                              occ.running.var = "occ_running",
+#                              type = "consistency", unit = "single",
+#                              benchmark_ICCdata = benchmark_data)
+# 
+# }
+# 
+# res[1:10, ]
+# rm(list=ls())
