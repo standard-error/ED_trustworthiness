@@ -9,6 +9,16 @@
 ###################################################################
 
 
+# Note: For the ordered draw, the items argument is not necessary
+# because the items will be selected in the function to calculate
+# the ICCs (i.e., the data frame will be subsetted later). 
+# In contrast, the items argument is needed in the random draw
+# function because it checks whether there is variance in the 
+# emotion ratings so that an ICC can be calculated. However,
+# the subsetting (i.e., selection of relevant variables)
+# is done in the ICC calculation function.
+
+
 
 # Create Function for Ordered Draws of Occasions --------------------------
 
