@@ -65,7 +65,7 @@ design <- design[ , c(5, 1:4)]
 # design
 
 
-
+design_matrix <- as.matrix(design)
 
 # Prepare Benchmark Data that Conditions Are Compared To ------------------
 benchmark_ICCdata <- calculate_icc(bench, id.var="SERIAL",
@@ -113,23 +113,65 @@ colnames(res) <- c(
 
 
 # Run Simulation ----------------------------------------------------------
-tictoc::tic()
-set.seed(230694)
-for (design_row in 1:nrow(design)) {
-  res[design_row, ] <- one_simulation(data = bench,
-                                      nr.of.occasions = design[design_row, "n_occasions"],
-                                      occasions.drawn = design[design_row, "occasions_drawn"],
-                                      nr.of.items = design[design_row, "n_items"],
-                                      id.var = "SERIAL",
-                                      occ.running.var = "occ_running",
-                                      type = "consistency",
-                                      unit = "single",
-                                      benchmark_ICCdata = benchmark_ICCdata)
+# replace for loop with apply
+# write function to run the simulation row-wise
+# i.e., instead of looping across rows with design_row, we make the code a
+# function of design_row and then apply the function to all rows of design
+
+
+run_one_row <- function(design_row) {
+  one_result <- one_simulation(data = bench,
+                               nr.of.occasions = design[design_row, "n_occasions"], 
+                               occasions.drawn = design[design_row, "occasions_drawn"],
+                               nr.of.items = design[design_row, "n_items"],
+                               id.var = "SERIAL",
+                               occ.running.var = "occ_running",
+                               type = "consistency",
+                               unit = "single",
+                               benchmark_ICCdata = benchmark_ICCdata)
+  
+  
+  # include a check whether the variable names are the same in the same order for the one_result output
+  # and the res object -> so that everything is correctly stored
+  # also works if the order of the names is swapped
+  if (!identical(colnames(one_result), colnames(res))) {
+    stop(
+      sprintf(
+        "Column names of simulation output don't match results object.\nExpected: %s\nGot: %s",
+        paste(colnames(res), collapse = ", "),
+        paste(colnames(one_result), collapse = ", ")
+      )
+    )
+  }
+  as.vector(one_result)
 }
+
+
+# sequential run:
+
+# tictoc::tic()
+# res[] <- t(sapply(seq_len(nrow(design)), run_one_row))
+# # apply run_one_row to row dimension of design matrix (i.e.,
+# # "loop" over rows) and then transpose to the results matrix
+# # matrix(seq_len(nrow(design))) -> sequence along row numbers of the design matrix (column vector of row numbers)
+# # the run_one_row still calls the actual design data frame (still inside the function)
+# # -> needs to be a data frame because there are different types (chr and num)
+# tictoc::toc()
+
+
+# parallelized run:
+parallel::detectCores() # 12 cores
+
+library(future)
+library(future.apply)
+plan(multisession, workers = 4)
+
+tictoc::tic()
+res[] <- t(future_sapply(seq_len(nrow(design)), run_one_row, future.seed=TRUE))
 tictoc::toc()
+
 # combine design and results
 res <- cbind(design, res)
-
 
 
 # Save Results ------------------------------------------------------------
