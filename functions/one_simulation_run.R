@@ -304,7 +304,7 @@ one_simulation <- function(data, nr.of.occasions, occasions.drawn,
                              type = type, # pass type, default here: consistency; could be varied in principle in simulation
                              unit = unit) # pass unit, default here: single; could be varied in principle in simulation
   
-  colnames(sim_ICCdata) <- c("SERIAL", "comp_ICC", "comp_ICC.z") # rename for comparison with benchmark 
+  colnames(sim_ICCdata) <- c(id.var, "comp_ICC", "comp_ICC.z") # rename for comparison with benchmark 
   
   # this is the ICC data that we want to calculate outcomes measures for
   # e.g., mean, SD, ...
