@@ -117,6 +117,20 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
   # merge benchmark ICC data and simulated ICC data by id.var
   merged <- merge(benchmark_ICCdata, sim_ICCdata, by = id.var)
   
+  
+  # some participants may have ICC.z +/- infinite after transformation
+  # -> problems for reliability estimation and other outcomes involving ICC.z
+  # -> only use participants with valid values and store number of 
+  # participants used for reliability analysis and other outcomes
+  # involving ICC.z
+  merged.c <- merged[!is.infinite(merged[ , "comp_ICC.z"]), ]
+  # if all participants have valid ICC.z, then merged.c = merged
+  # 
+  N_valid_ICC.z <- nrow(merged.c)
+  #### FOR ICC.Z OUTCOMES, MERGED.C IS USED 
+
+  
+  
   ## ABSOLUTE OUTCOMES ##
   # absolute outcomes are independent of benchmark ICC data
   # -> use the ICCs of the sim_ICCdata only (either ith sim_ICCdata object or with corresponding
@@ -133,7 +147,7 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
   
   # STANDARD DEVIATION OF ICCs
   sd_ICC <- sd(merged[ , "comp_ICC"]) # raw ICCs
-  sd_ICC.z <- sd(merged[ , "comp_ICC.z"]) # transformed ICCs
+  sd_ICC.z <- sd(merged.c[ , "comp_ICC.z"]) # transformed ICCs
   
   
   # RELIABILITY
@@ -143,11 +157,9 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
   
   # some participants may have ICC +/- infinite after transformation
   # -> problems for reliability estimation
-  # -> only use participants with valid values and store number of 
+  # -> only use participants with valid values (merged.c) and store number of 
   # participants used for reliability analysis
-  merged.c <- merged[!is.infinite(merged[ , "comp_ICC.z"]), ]
-  
-  
+
   
   # calculate sampling variance (the same for all participants -> all have the same
   # number of items and occasions)
@@ -173,7 +185,7 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
   # for both raw ICCs and transformed ICCs
   
   merged[ , "difference_ICC"] <- merged[ , "comp_ICC"] - merged[ , "bench_ICC"] # difference between raw ICCs
-  merged[ , "difference_ICC.z"] <- merged[ , "comp_ICC.z"] - merged[ , "bench_ICC.z"] # difference between transformed ICCs
+  merged.c[ , "difference_ICC.z"] <- merged.c[ , "comp_ICC.z"] - merged.c[ , "bench_ICC.z"] # difference between transformed ICCs
   
   # raw ICCs
   mean_diff_ICC <- mean(merged[ , "difference_ICC"])
@@ -181,9 +193,9 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
   max_diff_ICC <- max(merged[ , "difference_ICC"]) # maximum of difference (i.e., most positive deviation)
 
   # transformed ICCs
-  mean_diff_ICC.z <- mean(merged[ , "difference_ICC.z"])
-  min_diff_ICC.z <- min(merged[ , "difference_ICC.z"]) # minimum of difference (i.e., most negative deviation)
-  max_diff_ICC.z <- max(merged[ , "difference_ICC.z"]) # maximum of difference (i.e., most positive deviation)
+  mean_diff_ICC.z <- mean(merged.c[ , "difference_ICC.z"])
+  min_diff_ICC.z <- min(merged.c[ , "difference_ICC.z"]) # minimum of difference (i.e., most negative deviation)
+  max_diff_ICC.z <- max(merged.c[ , "difference_ICC.z"]) # maximum of difference (i.e., most positive deviation)
   
   
   # RMSE
@@ -196,20 +208,21 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
   # differences were already calculated
   
   RMSE_ICC <- sqrt( sum( merged[ , "difference_ICC"]^2 ) / nrow(merged) )
-  RMSE_ICC.z <- sqrt( sum( merged[ , "difference_ICC.z"]^2 ) / nrow(merged) )
+  RMSE_ICC.z <- sqrt( sum( merged.c[ , "difference_ICC.z"]^2 ) / nrow(merged.c) )
   
   
   # CORRELATION WITH BENCHMARK
   # for both raw ICCs and transformed ICCs
   
   cor_ICC <- psych::corr.test(merged[ , c("comp_ICC", "bench_ICC")])$r[2, 1]
-  cor_ICC.z <- psych::corr.test(merged[ , c("comp_ICC.z", "bench_ICC.z")])$r[2, 1]
+  cor_ICC.z <- psych::corr.test(merged.c[ , c("comp_ICC.z", "bench_ICC.z")])$r[2, 1]
   
   
   # RETURN ALL OUTCOMES
   return(cbind(
     # relative outcome measures
     min_diff_ICC, mean_diff_ICC, max_diff_ICC,
+    N_valid_ICC.z,
     min_diff_ICC.z, mean_diff_ICC.z, max_diff_ICC.z,
     cor_ICC, cor_ICC.z,
     RMSE_ICC, RMSE_ICC.z, 
