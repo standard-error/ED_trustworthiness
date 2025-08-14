@@ -359,7 +359,7 @@ one_simulation <- function(data, nr.of.occasions, occasions.drawn,
 # 
 # # Test one simulation with 100 replications
 # 
-# res <- matrix(NA, ncol=17, nrow=100)
+# res <- matrix(NA, ncol=18, nrow=100)
 # colnames(res) <- c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC', 'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z', 'cor_ICC', 'cor_ICC.z', 'RMSE_ICC', 'RMSE_ICC.z', 'rel', 'N_rel', 'sd_ICC', 'sd_ICC.z', 'negICC', 'estimationProbNeg', 'estimationProbPos')
 # for (i in 1:100) {
 #   res[i, ] <- one_simulation(data = bench,
