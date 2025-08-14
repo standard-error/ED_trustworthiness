@@ -40,8 +40,6 @@ draw_for_participant <- function(data, id.var, id.part, nr.of.occasions, items) 
   j <- 1
   # Repeat drawing as long as variance in emotion ratings is 0
   while (all(var(random_sub[, items])== 0)) {
-    # print message
-    message(paste0("Random draw of occasions yielded ratings' variances of 0, ICC not estimable - repeating draw. Repetitition nr.: ", j))
     # draw again
     random_sub <- participant_data[sample(1:nrow(participant_data),
                                           nr.of.occasions, replace = FALSE), ]
