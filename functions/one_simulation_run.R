@@ -273,7 +273,7 @@ one_simulation <- function(data, nr.of.occasions, occasions.drawn,
           # here: default is consistency (but could be varied in principle in simulation)
   # unit: unit for ICC calculation
           # here: default is single measurements (but could be varied in principle in simulation)
-  # benchmark_ICCdata: 
+  # benchmark_ICCdata: data on ICCs (raw ICC and ICC.z) using benchmark data
   
   # Step 1: Manipulate data according to simulation design (and calculate ICCs)
   drawn_data <- one_sim_data_manipulation(data = data, nr.of.occasions = nr.of.occasions,
