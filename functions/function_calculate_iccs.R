@@ -40,39 +40,37 @@ calculate_icc <- function(data,
   colnames(ICCdata) <- c(id.var, "ICC", "ICC.z") # rename cols according to id.var, and to ICC and ICC.z
   # ICC: raw ICC
   # ICC.z: Fisher's Z-transformed ICC using the formula in Schneider & Junghaenel (2023)
-  
-  ICCdata[ , id.var] <- ids # store ids in id.var
 
-  for (id in ids) { # now loop over the ID vector -> for each participant, ...
-    
-    # select all rows belonging to this participant and only the
-    # relevant emotion items (indicated by items)
-    iccsubdat <- data[which(data[ ,id.var] == id), items]
-    
-    # calculate ICC using the participant's data and ICC(3, 1) measuring consistency
-    ICC <- irr::icc(iccsubdat, model="twoway", type=type,
-                    unit = unit)$value 
-    
-    ICCdata[ICCdata[ , id.var] == id, "ICC"] <- ICC
-    # save ICC in row in matrix that corresponds to current ID
-    
-    # Fisher's Z-transform the ICCs (according to formula in Schneider & Junghaenel, 2023)
-    # -> transformed values needed for reliability estimation using I²
-    # Table 1 (p. 3877) in Schneider & Junghaenel (2022):
-    # sample estimator of emotion differentiation = 0.5 * log( (1 + (K_i - 1)*ICC_i) / (1 - ICC_i) )
-    # log = natural logarithm (see Table 1, emotion variability -> "natural logarithm" and then log is used in formula)
-    # log() in R = natural logarithm
-    # ICC_i = ICC for person i, here: ICC just calculated above
-    # K_i = (average) number of items per occasion
-      # -> calculate from length of item vector 
-    K_i <- length(items)
-    
-    ICC.z <- 0.5 * log( (1 + (K_i - 1)*ICC) / (1 - ICC) )
-    ICCdata[ICCdata[ , id.var] == id, "ICC.z"] <- ICC.z
-    # save transformed ICC (ICC.z) in row in matrix that corresponds to current ID
-    
-  }
-  
+
+  # use apply to calculate ICC for each participant
+  ICCdata[] <- t(apply(matrix(ids), MARGIN = 1, 
+        FUN = function(id) {
+          # select all rows belonging to this participant and only the
+          # relevant emotion items (indicated by items)
+          iccsubdat <- data[which(data[ ,id.var] == id), items]
+          
+          # calculate ICC using the participant's data and ICC(3, 1) measuring consistency
+          ICC <- irr::icc(iccsubdat, model="twoway", type=type,
+                          unit = unit)$value 
+          
+          # Fisher's Z-transform the ICCs (according to formula in Schneider & Junghaenel, 2023)
+          # -> transformed values needed for reliability estimation using I²
+          # Table 1 (p. 3877) in Schneider & Junghaenel (2022):
+          # sample estimator of emotion differentiation = 0.5 * log( (1 + (K_i - 1)*ICC_i) / (1 - ICC_i) )
+          # log = natural logarithm (see Table 1, emotion variability
+          # -> "natural logarithm" and then log is used in formula)
+          # log() in R = natural logarithm
+          # ICC_i = ICC for person i, here: ICC just calculated above
+          # K_i = (average) number of items per occasion
+          # -> calculate from length of item vector 
+          K_i <- length(items)
+          
+          ICC.z <- 0.5 * log( (1 + (K_i - 1)*ICC) / (1 - ICC) )
+          
+          cbind(id, ICC, ICC.z) # return ID, ICC and ICC.z for each participant
+          # t() transposes output from apply() to a two-dimensional matrix (3 cols, N rows)
+          
+        }))
   return(ICCdata) # return ICCdata matrix
 }
 
@@ -81,12 +79,32 @@ calculate_icc <- function(data,
 
 
 # # Test Function
-# load("C:/Users/ecker/Seafile/Meine Bibliothek/Studien/2) ED Reliability/Data Analysis/data_analysis_git/prepared data/benchmark_data_Study1.rda")
-# 
+# load("prepared data/benchmark_data_Study1.rda")
+#
 # test <- calculate_icc(data=bench, id.var="SERIAL",
 #                       items = c("aerger1", "aerger2", "aerger3",
 #                                 "traurigkeit1", "traurigkeit2", "traurigkeit3"))
 # test
+# 
+# # by hand:
+# sub <- bench[bench$SERIAL == 36, c("aerger1", "aerger2", "aerger3",
+#                                    "traurigkeit1", "traurigkeit2", "traurigkeit3")]
+# 
+# irr::icc(sub, model="twoway", type="consistency", unit = "single")$value
+# # correct
+# 
+# res <- matrix(NA, nrow = length(unique(bench$SERIAL)), ncol=2)
+# colnames(res) <- c("SERIAL", "ICC")
+# res[ , "SERIAL"] <- unique(bench$SERIAL)
+# for (id in unique(bench$SERIAL)) {
+#   sub <-  bench[bench$SERIAL == id, c("aerger1", "aerger2", "aerger3",
+#                                       "traurigkeit1", "traurigkeit2", "traurigkeit3")]
+#   ICC <- irr::icc(sub, model="twoway", type="consistency", unit = "single")$value
+#   res[res[ , "SERIAL"] == id, "ICC"] <- ICC
+# }
+# 
+# identical(res, test[ , 1:2]) # ICCs are identical
+# # apply works correctly
 # 
 # 
 # test2 <- calculate_icc(data=bench, id.var="SERIAL",
@@ -96,8 +114,7 @@ calculate_icc <- function(data,
 # 
 # identical(test, test2)
 # test3 <- merge(test, test2, by="SERIAL")
-# rm(test, test2, test3)
-# 
+# rm(res, test, test2, test3)
 # 
 # # Generate data with different N, different items, and different id.var
 # # 20 participants with 10 occasions each, 5 items
