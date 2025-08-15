@@ -38,34 +38,21 @@
 
 ### PART 1: DATA PREPARATION ACCORDING TO DESIGN CHOICES
 one_sim_data_manipulation <- function(data, nr.of.occasions, occasions.drawn,
-                                      nr.of.items, id.var, occ.running.var) {
+                                      nr.of.items, items, id.var, occ.running.var) {
   
   # data: takes the data frame with all participants
   # and their occasions as input (long format) = benchmark data
   # nr.of.occasions: number of occasions to draw per participant (for ICC calculation)
   # occasions.drawn: whether occasions per participant are drawn by order or randomly
   # nr.of.items: number of items that shall be used for ICC calculation
-  # also determines the type of items
+        # also determines the type of items
+  # items: items that shall be used for ICC calculation
+        # used in random draws
   # id.var: character that indicates name of participant ID variable
   # occ.running.var: character that indicates the name of the occasion running variable
 
   
-  
-  # DETERMINE ITEM SET
-  # will be used as argument in the drawing occasions functions (random_occasion_draw() and ordered_occasion_draw())
-  # FOR NOW: insert items manually (only one data set for now, no random choice of items)
-  # -> will be updated to generalize to different data sets
-  
-  if (nr.of.items == 15) {
-    items <- c("aerger1", "aerger2", "aerger3", "traurigkeit1",
-               "traurigkeit2", "traurigkeit3", "angst1",
-               "angst2", "angst3", "scham1", "scham2", "scham3",
-               "schuld1", "schuld2", "schuld3")
-  } else if (nr.of.items == 5) {
-    items <- c("aerger1", "traurigkeit1", "angst2", "scham1", "schuld1") # prototype emotion for emotion category
-  }
-  #
-  
+
   
   # DRAW OCCASIONS FOR EACH PARTICIPANT
   if (occasions.drawn == "random") {
@@ -73,7 +60,7 @@ one_sim_data_manipulation <- function(data, nr.of.occasions, occasions.drawn,
                                        id.var = id.var, # pass id.var 
                                        occ.running.var = occ.running.var, # pass occ.running.var
                                        nr.of.occasions = nr.of.occasions,  # pass nr.of.occasions
-                                       items = items) # pass items determined above
+                                       items = items) # pass items 
   } else if (occasions.drawn == "by order") {
     drawn_data <- ordered_occasion_draw(data = data, # insert start data (full data set provided in argument)
                                         id.var = id.var, # pass id.var 
@@ -271,7 +258,7 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
 
 # COMBINE TO ONE FUNCTION
 one_simulation <- function(data, nr.of.occasions, occasions.drawn,
-                           nr.of.items, id.var, occ.running.var,
+                           nr.of.items, items, id.var, occ.running.var,
                            type, unit,
                            benchmark_ICCdata) {
   # data: takes the data frame with all participants
@@ -280,6 +267,7 @@ one_simulation <- function(data, nr.of.occasions, occasions.drawn,
   # occasions.drawn: whether occasions per participant are drawn by order or randomly
   # nr.of.items: number of items that shall be used for ICC calculation
                 # also determines the type of items
+  # items: items that shall be used for ICC calculation
   # id.var: character that indicates name of participant ID variable
   # occ.running.var: character that indicates the name of the occasion running variable
   # type: type for ICC calculation
@@ -288,33 +276,30 @@ one_simulation <- function(data, nr.of.occasions, occasions.drawn,
           # here: default is single measurements (but could be varied in principle in simulation)
   # benchmark_ICCdata: data on ICCs (raw ICC and ICC.z) using benchmark data
   
+  # CHECK: is length(items) == nr.of.items?
+  # i.e., is the number of items / the items vector provided to the function correct?
+  if (length(items) != nr.of.items)  {
+    stop(
+      sprintf(
+        "Number of items (nr.of.items) and length of item vector provided for ICC calculation is not equal.
+        Called from one_simulation()."
+      )
+    )
+  }
+  
+  
   # Step 1: Manipulate data according to simulation design (and calculate ICCs)
   drawn_data <- one_sim_data_manipulation(data = data, nr.of.occasions = nr.of.occasions,
                                           occasions.drawn = occasions.drawn, nr.of.items = nr.of.items,
                                           id.var = id.var, occ.running.var = occ.running.var) # pass arguments from outer function
 
-  # create items variable
-  # FOR NOW: use fixed item sets
-  # will be updated (generalized later)
-  # after creating a drawing items function, the calculation of ICCs could be integrated into the one_sim_data_manipulation
-  # function, so that the correct items are chosen
-  # or they could be integrated into the sim design data frame
-  
-  if (nr.of.items == 15) {
-    items <- c("aerger1", "aerger2", "aerger3", "traurigkeit1",
-               "traurigkeit2", "traurigkeit3", "angst1",
-               "angst2", "angst3", "scham1", "scham2", "scham3",
-               "schuld1", "schuld2", "schuld3")
-  } else if (nr.of.items == 5) {
-    items <- c("aerger1", "traurigkeit1", "angst2", "scham1", "schuld1") # prototype emotion for emotion category
-  }
-  
+
   
   # Step 2: Calculate ICCs with drawn data
   sim_ICCdata <- calculate_icc(data  = drawn_data, # insert drawn data: calculate ICCs on data subset (corresponding to design choice)
-                             id.var = id.var, # pass id.var
-                             items = items, # use items that were used for drawing data
-                             type = type, # pass type, default here: consistency; could be varied in principle in simulation
+                               id.var = id.var, # pass id.var
+                               items = items, # use items that were used for drawing data
+                               type = type, # pass type, default here: consistency; could be varied in principle in simulation
                              unit = unit) # pass unit, default here: single; could be varied in principle in simulation
   
   colnames(sim_ICCdata) <- c(id.var, "comp_ICC", "comp_ICC.z") # rename for comparison with benchmark 
@@ -335,6 +320,7 @@ one_simulation <- function(data, nr.of.occasions, occasions.drawn,
 # source("functions/function_calculate_iccs.R")
 # source("functions/function_ordered_occasion_draw.R")
 # source("functions/function_random_occasion_draw.R")
+# load("prepared data/benchmark_data_Study1.rda")
 # 
 # # create benchmark ICC data (needs to be defined once in overall simulation)
 # benchmark_data <- calculate_icc(bench, id.var="SERIAL", items = c("aerger1", "aerger2", "aerger3",
@@ -349,7 +335,9 @@ one_simulation <- function(data, nr.of.occasions, occasions.drawn,
 # colnames(benchmark_data) <- c("SERIAL", "bench_ICC", "bench_ICC.z")
 # 
 # out <- one_simulation(data = bench,
-#                       nr.of.occasions = 10, nr.of.items = 15,
+#                       nr.of.occasions = 10, nr.of.items = 6,
+#                       items = c("schuld1", "schuld2", "schuld3",
+#                                 "scham1", "scham2", "scham3"),
 #                       occasions.drawn = "by order",
 #                       id.var = "SERIAL",
 #                       occ.running.var = "occ_running",
