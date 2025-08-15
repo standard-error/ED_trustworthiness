@@ -47,6 +47,47 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
   # occ.running.var: character that indicates the name of the occasion running variable
   # seed: seed set for reproducibility
   # cores: number of cores to use for parallelized simulation
+
+  
+  ## INCLUDE CHECKS BEFORE RUNNING SIMULATION  
+  
+  # CHECK: is id.var numeric in data frame?
+  if (!is.numeric(data[ , id.var])) {
+    stop(
+      sprintf(
+        "Data type of ID variable (id.var) in data frame needs to be numeric."
+      )
+    )
+  }
+  
+  
+  # CHECK: maximum number of items == length of all_items vector?
+  # -> else the benchmark will not be calculated correctly (using the maximum of 
+  # n_items)
+  if (max(n_items) != length(all_items)) {
+    stop(
+      sprintf(
+        "Maximum number of items (length(n_items)) does not match the length of all_items vector.\nExpected (all_items): %i\nGot (max(n_items)): %i",
+        length(all_items),
+        max(n_items)
+      )
+    )
+  }
+  
+  
+  # CHECK: maximum number of occasions in simulation == actual maximum number of occasions in data frame?
+  # -> else the benchmark will not be calculated correctly (using the maximum of n_occasions)
+  if (max(n_occasions) != max(data[ , occ.running.var])) {
+    stop(
+      sprintf(
+        "Maximum number of occasions in simulation (max(n_occasions)) does not match actual maximum number
+        of occasions in data frame (max(data[ , occ.running.var])). \nExpected (max(data[ , occ.running.var])): %i\nGot (max(n_occasions)): %i",
+        max(data[ , occ.running.var]),
+        max(n_occasions)
+      )
+    )
+  }
+  
   
 
   # SET UP SIMULATION DESIGN
@@ -189,7 +230,7 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
 # # Make sure that ID variable is numeric
 # # (relevant for ICC calculation: matrix can only store one data type)
 # is.numeric(bench$SERIAL)
-
+# 
 # test <- simulation_study(data = bench, n_occasions = c(3,5,10,100), occasions_drawn = c("random", "by order"),
 #                          n_items = c(5,15), n_iteration = 5,
 #                          id.var = "SERIAL", all_items = c('aerger1', 'aerger2', 'aerger3',
@@ -213,4 +254,44 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
 #                           type = "consistency", unit = "single",
 #                           occ.running.var = "occ_running",
 #                           seed = NULL, cores = 1)
-# rm(test, test2)
+# 
+# # test with wrong maximum number of items
+# names(bench)[1] <- "SERIAL"
+# test3 <- simulation_study(data = bench, n_occasions = c(3,5,100), occasions_drawn = c("random", "by order"),
+#                           n_items = c(5,10), n_iteration = 5,
+#                           id.var = "SERIAL", all_items = c('aerger1', 'aerger2', 'aerger3',
+#                                                           'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
+#                                                           'angst1', 'angst2', 'angst3',
+#                                                           'scham1', 'scham2', 'scham3',
+#                                                           'schuld1', 'schuld2', 'schuld3'),
+#                           type = "consistency", unit = "single",
+#                           occ.running.var = "occ_running",
+#                           seed = NULL, cores = 1)
+# 
+# 
+# # test with non-numeric ID variable
+# bench$ID.chr <- rep(c(LETTERS[1:26], letters[1:10]), each = 100)
+# test4 <- simulation_study(data = bench, n_occasions = c(3,5,100), occasions_drawn = c("random", "by order"),
+#                           n_items = c(5,15), n_iteration = 5,
+#                           id.var = "ID.chr", all_items = c('aerger1', 'aerger2', 'aerger3',
+#                                                           'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
+#                                                           'angst1', 'angst2', 'angst3',
+#                                                           'scham1', 'scham2', 'scham3',
+#                                                           'schuld1', 'schuld2', 'schuld3'),
+#                           type = "consistency", unit = "single",
+#                           occ.running.var = "occ_running",
+#                           seed = NULL, cores = 1)
+# 
+# # test with wrong maximum number of occasions
+# test5 <- simulation_study(data = bench, n_occasions = c(3,5,10), occasions_drawn = c("random", "by order"),
+#                           n_items = c(5,15), n_iteration = 5,
+#                           id.var = "SERIAL", all_items = c('aerger1', 'aerger2', 'aerger3',
+#                                                            'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
+#                                                            'angst1', 'angst2', 'angst3',
+#                                                            'scham1', 'scham2', 'scham3',
+#                                                            'schuld1', 'schuld2', 'schuld3'),
+#                           type = "consistency", unit = "single",
+#                           occ.running.var = "occ_running",
+#                           seed = NULL, cores = 1)
+# 
+# rm(test, test2, test3, test4, test5)
