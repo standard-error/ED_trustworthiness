@@ -29,7 +29,7 @@
 # function also takes as input the benchmark data (ICCs calculated for benchmark)
 # that the relative outcome measures are calculated in comparison to: benchmark_ICCdata
 
-# items (for ICC) -> determined within function according to nr.of.items
+# items (for ICC) -> determined in overall simulation study (constant across replications)
 # type (for ICC): default here is consistency, but could be varied in principle in simulation
 # unit (for ICC): default here is single measurements, but could be varied in principle in simulation
 
@@ -276,6 +276,8 @@ one_simulation <- function(data, nr.of.occasions, occasions.drawn,
           # here: default is single measurements (but could be varied in principle in simulation)
   # benchmark_ICCdata: data on ICCs (raw ICC and ICC.z) using benchmark data
   
+  
+  
   # CHECK: is length(items) == nr.of.items?
   # i.e., is the number of items / the items vector provided to the function correct?
   if (length(items) != nr.of.items)  {
@@ -298,7 +300,7 @@ one_simulation <- function(data, nr.of.occasions, occasions.drawn,
   # Step 2: Calculate ICCs with drawn data
   sim_ICCdata <- calculate_icc(data  = drawn_data, # insert drawn data: calculate ICCs on data subset (corresponding to design choice)
                                id.var = id.var, # pass id.var
-                               items = items, # use items that were used for drawing data
+                               items = items, # pass items
                                type = type, # pass type, default here: consistency; could be varied in principle in simulation
                              unit = unit) # pass unit, default here: single; could be varied in principle in simulation
   
