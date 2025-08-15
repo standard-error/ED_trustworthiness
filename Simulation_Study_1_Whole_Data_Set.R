@@ -40,9 +40,16 @@ res <- simulation_study(data = bench, n_occasions = c(3, 5, seq(10, 100, 10)),
                                                          'angst1', 'angst2', 'angst3',
                                                          'scham1', 'scham2', 'scham3',
                                                          'schuld1', 'schuld2', 'schuld3'),
+                        categories = c("aerger", "aerger", "aerger",
+                                       "traurigkeit", "traurigkeit", "traurigkeit",
+                                       "angst", "angst", "angst",
+                                       "scham", "scham", "scham",
+                                       "schuld", "schuld", "schuld"),
                         type = "consistency", unit = "single", occ.running.var = "occ_running",
                         seed = 230694, cores = 10)
 tictoc::toc()
+
+
 
 
 # Save Results ------------------------------------------------------------

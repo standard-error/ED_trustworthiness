@@ -14,6 +14,7 @@
 source("functions/function_ordered_occasion_draw.R")
 source("functions/function_random_occasion_draw.R")
 source("functions/function_calculate_iccs.R")
+source("functions/function_draw_items.R")
 source("functions/function_one_simulation_run.R")
 
 
@@ -24,9 +25,11 @@ library(future.apply)
 
 
 
+
 # Write Function for Simulation -------------------------------------------
 simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iteration,
-                             id.var, all_items, type = "consistency", unit = "single", occ.running.var,
+                             id.var, all_items, categories = NULL,
+                             type = "consistency", unit = "single", occ.running.var,
                              seed = NULL, cores = 1) {
   # data: takes the data frame with all participants
           # and their occasions as input (long format) = benchmark data
@@ -40,6 +43,9 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
   # n_iteration: number of iterations (for only relevant for random draws)
   # id.var: character that indicates name of participant ID variable
   # all_items: character vector indicating emotion item names (of all items assessed)
+  # categories: optional vector (same length as all_items) indicating category
+              # --> needed if multiple items per emotion category were assessed 
+              # -> draw items per category
   # type: type for ICC calculation
           # here: default is consistency (but could be varied in principle in simulation)
   # unit: unit for ICC calculation
@@ -118,8 +124,24 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
                      design$occasions_drawn == "by order" &
                      design$n_items == max(n_items)] <- "benchmark"
   
+  
   # adjust variable order
   design <- design[ , c("condition", "n_occasions", "occasions_drawn", "n_items", "n_iteration")]
+  
+  
+  # DRAW ITEMS ONCE FOR EACH n_items CONDITION
+  # -> draw once randomly, but keep constant across simulation
+  # seed:
+  if (!is.null(seed)) {
+    set.seed(seed)
+  }
+  drawn_items <- draw_items(all_items = all_items,
+                            n_items = n_items,
+                            categories = categories)
+  
+  # append design df by the items drawn according to number of items
+  design <- merge(design, drawn_items, by = "n_items")
+  # -> in each row in the simulation, the items can be read
   
   
   
@@ -193,6 +215,8 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
                                nr.of.occasions = design[design_row, "n_occasions"],
                                occasions.drawn = design[design_row, "occasions_drawn"],
                                nr.of.items = design[design_row, "n_items"],
+                               items = strsplit(design[design_row,"items"], ", ")[[1]], # pass items (but as chr vector!)
+                               # strsplit splits the single string of items into one string per item -> chr vector
                                id.var = id.var,
                                occ.running.var = occ.running.var,
                                type = type,
@@ -238,10 +262,42 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
 #                                                           'angst1', 'angst2', 'angst3',
 #                                                           'scham1', 'scham2', 'scham3',
 #                                                           'schuld1', 'schuld2', 'schuld3'),
+#                          categories = c(rep("aerger",3), rep("traurig", 3), rep("angst",3),
+#                                         rep("scham", 3), rep("schuld", 3)), 
+#                          type = "consistency", unit = "single",
+#                          occ.running.var = "occ_running",
+#                          seed = NULL, cores = 1)
+# #
+# 
+# # without categories -> could draw multiple items from the same category
+# # should also work with number of items that would not lead to equal number per category (e.g., 7)
+# test <- simulation_study(data = bench, n_occasions = c(3,5,10,100), occasions_drawn = c("random", "by order"),
+#                          n_items = c(5,7,15), n_iteration = 5,
+#                          id.var = "SERIAL", all_items = c('aerger1', 'aerger2', 'aerger3',
+#                                                           'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
+#                                                           'angst1', 'angst2', 'angst3',
+#                                                           'scham1', 'scham2', 'scham3',
+#                                                           'schuld1', 'schuld2', 'schuld3'),
+#                          categories = NULL, 
 #                          type = "consistency", unit = "single",
 #                          occ.running.var = "occ_running",
 #                          seed = NULL, cores = 1)
 # 
+# # however, 7 items should not work when specifying categories:
+# test <- simulation_study(data = bench, n_occasions = c(3,5,10,100), occasions_drawn = c("random", "by order"),
+#                          n_items = c(5,7,15), n_iteration = 5,
+#                          id.var = "SERIAL", all_items = c('aerger1', 'aerger2', 'aerger3',
+#                                                           'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
+#                                                           'angst1', 'angst2', 'angst3',
+#                                                           'scham1', 'scham2', 'scham3',
+#                                                           'schuld1', 'schuld2', 'schuld3'),
+#                          categories = c(rep("aerger",3), rep("traurig", 3), rep("angst",3),
+#                                         rep("scham", 3), rep("schuld", 3)), 
+#                          type = "consistency", unit = "single",
+#                          occ.running.var = "occ_running",
+#                          seed = NULL, cores = 1)
+# # correct
+
 # # test with different ID variable
 # names(bench)[1] <- "IDVAR"
 # test2 <- simulation_study(data = bench, n_occasions = c(3,5,10,100), occasions_drawn = c("random", "by order"),
