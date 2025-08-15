@@ -31,17 +31,18 @@ source("functions/function_simulation_study.R")
 
 
 # Run Simulation ----------------------------------------------------------
+tictoc::tic()
 res <- simulation_study(data = bench, n_occasions = c(3, 5, seq(10, 100, 10)),
                         occasions_drawn = c("random", "by order"), n_items = c(5, 15),
-                        n_iteration = 100,
+                        n_iteration = 1000,
                         id.var = "SERIAL", all_items = c('aerger1', 'aerger2', 'aerger3',
                                                          'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
                                                          'angst1', 'angst2', 'angst3',
                                                          'scham1', 'scham2', 'scham3',
                                                          'schuld1', 'schuld2', 'schuld3'),
                         type = "consistency", unit = "single", occ.running.var = "occ_running",
-                        seed = 230694, cores = 4)
-
+                        seed = 230694, cores = 10)
+tictoc::toc()
 
 
 # Save Results ------------------------------------------------------------
