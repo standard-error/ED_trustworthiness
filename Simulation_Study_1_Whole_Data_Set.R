@@ -26,6 +26,7 @@ is.numeric(bench$SERIAL)
 
 source("functions/function_simulation_study.R")
 # simulation study function already sources the other functions needed
+# also already loads packages that are needed (future, future.apply)
 
 
 
