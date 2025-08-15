@@ -293,6 +293,7 @@ one_simulation <- function(data, nr.of.occasions, occasions.drawn,
   # Step 1: Manipulate data according to simulation design (and calculate ICCs)
   drawn_data <- one_sim_data_manipulation(data = data, nr.of.occasions = nr.of.occasions,
                                           occasions.drawn = occasions.drawn, nr.of.items = nr.of.items,
+                                          items = items,
                                           id.var = id.var, occ.running.var = occ.running.var) # pass arguments from outer function
 
 
