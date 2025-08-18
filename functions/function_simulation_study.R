@@ -144,6 +144,7 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
   design <- design[ , c("condition", "n_occasions", "occasions_drawn", "n_items", "items", "n_iteration")]
   
   
+  
   # PREPARE BENCHMARK DATA
   benchmark_ICCdata <- calculate_icc(data, id.var=id.var,
                                      items = all_items,
