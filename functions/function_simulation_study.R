@@ -10,6 +10,8 @@
 
 
 
+
+
 # Source Functions --------------------------------------------------------
 source("functions/function_ordered_occasion_draw.R")
 source("functions/function_random_occasion_draw.R")
@@ -25,12 +27,11 @@ library(future.apply)
 
 
 
-
 # Write Function for Simulation -------------------------------------------
 simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iteration,
                              id.var, all_items, categories = NULL,
                              type = "consistency", unit = "single", occ.running.var,
-                             seed = NULL, cores = 1) {
+                             seed_item = global.seed.item.set, seed_sim = NULL, cores = 1) {
   # data: takes the data frame with all participants
           # and their occasions as input (long format) = benchmark data
   # n_occasions: number of occasions to draw per participant for ICC calculation
@@ -51,7 +52,10 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
   # unit: unit for ICC calculation
           # here: default is single measurements (but could be varied in principle in simulation)
   # occ.running.var: character that indicates the name of the occasion running variable
-  # seed: seed set for reproducibility
+  # seed_item: seed for drawing item sets -> global seed so that item sets are equal across simulations
+              # i.e., for overall data set and subgroup analyses
+  # seed_sim: seed set for reproducibility of simulation
+    # -> separate seeds to that item sets are constant across simulations, but occasions may differ
   # cores: number of cores to use for parallelized simulation
 
   
@@ -129,8 +133,8 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
   # DRAW ITEMS ONCE FOR EACH n_items CONDITION
   # -> draw once randomly, but keep constant across simulation
   # seed:
-  if (!is.null(seed)) {
-    set.seed(seed)
+  if (!is.null(seed_item)) {
+    set.seed(seed_item)
   }
   drawn_items <- draw_items(all_items = all_items,
                             n_items = n_items,
@@ -195,9 +199,9 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
   }
   
   # set seed
-  future_seed <- !is.null(seed) # if is.null -> FALSE, if not null -> TRUE
+  future_seed <- !is.null(seed_sim) # if is.null -> FALSE, if not null -> TRUE
   if (future_seed==TRUE) { # if true -> set seed
-    set.seed(seed)
+    set.seed(seed_sim)
   } else {
     future_seed = NULL # set future_seed = NULL -> needed for future_sapply function
   }

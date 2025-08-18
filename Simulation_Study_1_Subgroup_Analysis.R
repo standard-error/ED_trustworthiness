@@ -72,7 +72,7 @@ res_highNED <- simulation_study(data = bench_highNED, n_occasions = c(3, 5, seq(
                                                "scham", "scham", "scham",
                                                "schuld", "schuld", "schuld"),
                                 type = "consistency", unit = "single", occ.running.var = "occ_running",
-                                seed = global.seed, cores = 10)
+                                seed_item = global.seed.item.set, seed_sim = 456, cores = 10)
 tictoc::toc()
 
 res_highNED$group <- "high NED"
@@ -95,7 +95,7 @@ res_mediumNED <- simulation_study(data = bench_mediumNED, n_occasions = c(3, 5, 
                                                "scham", "scham", "scham",
                                                "schuld", "schuld", "schuld"),
                                 type = "consistency", unit = "single", occ.running.var = "occ_running",
-                                seed = global.seed, cores = 10)
+                                seed_item = global.seed.item.set, seed_sim = 789, cores = 10)
 tictoc::toc()
 
 res_mediumNED$group <- "medium NED"
@@ -118,7 +118,7 @@ res_lowNED <- simulation_study(data = bench_lowNED, n_occasions = c(3, 5, seq(10
                                                "scham", "scham", "scham",
                                                "schuld", "schuld", "schuld"),
                                 type = "consistency", unit = "single", occ.running.var = "occ_running",
-                                seed = global.seed, cores = 10)
+                                seed_item = global.seed.item.set, seed_sim = 345, cores = 10)
 tictoc::toc()
 
 res_lowNED$group <- "low NED"
