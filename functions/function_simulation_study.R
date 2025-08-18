@@ -125,9 +125,6 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
                      design$n_items == max(n_items)] <- "benchmark"
   
   
-  # adjust variable order
-  design <- design[ , c("condition", "n_occasions", "occasions_drawn", "n_items", "n_iteration")]
-  
   
   # DRAW ITEMS ONCE FOR EACH n_items CONDITION
   # -> draw once randomly, but keep constant across simulation
@@ -142,7 +139,9 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
   # append design df by the items drawn according to number of items
   design <- merge(design, drawn_items, by = "n_items")
   # -> in each row in the simulation, the items can be read
-  
+
+  # adjust variable order
+  design <- design[ , c("condition", "n_occasions", "occasions_drawn", "n_items", "n_iteration")]
   
   
   # PREPARE BENCHMARK DATA
