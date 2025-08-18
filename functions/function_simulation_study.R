@@ -141,12 +141,9 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
   # -> in each row in the simulation, the items can be read
 
   # adjust variable order
-<<<<<<< HEAD
   design <- design[ , c("condition", "n_occasions", "occasions_drawn", "n_items", "items", "n_iteration")]
   
-=======
-  design <- design[ , c("condition", "n_occasions", "occasions_drawn", "n_items", "n_iteration")]
->>>>>>> 75e041a73b1787c71adc3eb44e454f6e3004ab83
+
   
   
   # PREPARE BENCHMARK DATA
