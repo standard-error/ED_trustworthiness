@@ -30,6 +30,17 @@ source("functions/function_simulation_study.R")
 
 
 
+
+# Global Seed -------------------------------------------------------------
+##### IMPORTANT: USE THE SAME SEED SO THAT THE SAME ITEM SETS
+##### ARE DRAWN FOR THE THREE GROUPS AND OVERALL SIMULATION
+
+## -> same seed as for the overall analysis (same item subset)
+source("Global_Seed.R")
+
+
+
+
 # Run Simulation ----------------------------------------------------------
 tictoc::tic()
 res <- simulation_study(data = bench, n_occasions = c(3, 5, seq(10, 100, 10)),
@@ -46,7 +57,7 @@ res <- simulation_study(data = bench, n_occasions = c(3, 5, seq(10, 100, 10)),
                                        "scham", "scham", "scham",
                                        "schuld", "schuld", "schuld"),
                         type = "consistency", unit = "single", occ.running.var = "occ_running",
-                        seed = 230694, cores = 10)
+                        seed = global.seed, cores = 10)
 tictoc::toc()
 
 
