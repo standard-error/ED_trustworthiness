@@ -169,13 +169,8 @@ save(res_group, file="results/sim_results_subgroups_Study1.rda")
 # [1] stats     graphics  grDevices utils     datasets  methods   base     
 # 
 # other attached packages:
-#  [1] future.apply_1.20.0 future_1.67.0       lubridate_1.9.4     forcats_1.0.0       stringr_1.5.1       dplyr_1.1.4        
-#  [7] purrr_1.1.0         readr_2.1.5         tidyr_1.3.1         tibble_3.3.0        ggplot2_3.5.2       tidyverse_2.0.0    
+# [1] future.apply_1.20.0 future_1.67.0      
 # 
 # loaded via a namespace (and not attached):
-#  [1] gtable_0.3.6       compiler_4.5.1     tidyselect_1.2.1   parallel_4.5.1     irr_0.84.1         globals_0.18.0    
-#  [7] scales_1.4.0       R6_2.6.1           generics_0.1.4     pillar_1.11.0      RColorBrewer_1.1-3 tzdb_0.5.0        
-# [13] rlang_1.1.6        stringi_1.8.7      timechange_0.3.0   cli_3.6.5          withr_3.0.2        magrittr_2.0.3    
-# [19] tictoc_1.2.1       digest_0.6.37      grid_4.5.1         rstudioapi_0.17.1  hms_1.1.3          lifecycle_1.0.4   
-# [25] vctrs_0.6.5        lpSolve_5.6.23     glue_1.8.0         listenv_0.9.1      farver_2.1.2       codetools_0.2-20  
-# [31] parallelly_1.45.1  tools_4.5.1        pkgconfig_2.0.3   
+#  [1] compiler_4.5.1    tictoc_1.2.1      parallelly_1.45.1 parallel_4.5.1    tools_4.5.1       rstudioapi_0.17.1
+#  [7] listenv_0.9.1     codetools_0.2-20  irr_0.84.1        digest_0.6.37     globals_0.18.0    lpSolve_5.6.23   
