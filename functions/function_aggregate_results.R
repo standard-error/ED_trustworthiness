@@ -30,7 +30,16 @@
 # per group -> aggregate(outcome ~ n_items + n_occasions + occasions_drawn + group).
 
 
-aggregate_results <- function(data, outcomes, rel_outcomes, abs_outcomes) {
+aggregate_results <- function(data, outcomes, rel_outcomes, abs_outcomes,
+                              groupwise = FALSE, group_var = NULL) {
+  # data: simulation data frame with results across all conditions and iterations
+  # outcomes: chr vector with names of the outcome variables in the simulation data frame (data)
+  # rel_outcomes: chr vector indicating names of relative outcomes (-> do not use benchmark, as it
+          # already is relative)
+  # abs_outcomes: chr vector indicating names of absolute outcomes (-> also use benchmark)
+  # groupwise: logical indicating whether or not to apply the function to the overall simulation
+        # or the groupwise simulation (high, medium, low NED); default = FALSE
+  # group_var = chr indicating name of the grouping variable in the data frame, default = NULL
   
   # results with benchmark
   all <- data
@@ -40,27 +49,50 @@ aggregate_results <- function(data, outcomes, rel_outcomes, abs_outcomes) {
   # apply the function to aggregate outcomes on all outcomes
   results <- lapply(outcomes, function(outcome) {
     
+    
+    # First, choose correct data to apply function to
     # if outcome is relative, use the results without benchmark
-    if (outcome %in% rel_outcomes) {
-      tmp <- do.call(data.frame,
-                     aggregate(without_bench[ , outcome] ~ without_bench[ , "occasions_drawn"] +
-                                 without_bench[ , "n_occasions"] +
-                                 without_bench[ , "n_items"],
-                               FUN = function(x) {
-                                 c(min(x), mean(x), max(x))
-                               }))
+    if (outcome %in%  rel_outcomes) {
+      use_data <- without_bench
     } else if (outcome %in% abs_outcomes) {
-      tmp <- do.call(data.frame,
-                     aggregate(all[ , outcome] ~ all[ , "occasions_drawn"]+
-                                 all[ , "n_occasions"] + all[ , "n_items"],
-                               FUN = function(x) {
-                                 c(min(x), mean(x), max(x))
-                               })) 
+      use_data <- all
     } else {
       stop(sprintf("Outcome %s is not in relative or absolute outcomes list.", outcome))
     }
+      
     
-    names(tmp) <- c("occasions_drawn", "n_occasions", "n_items",
+    # Choose factors to aggregate across
+    # always use occasions_drawn, n_occasions, and n_items
+    # if the simulation was groupwise, also use group as factor
+    factors <- c("occasions_drawn", "n_occasions", "n_items")
+    
+    if (groupwise == TRUE) { 
+      # CHECK: is group_var provided and a variable in the data frame?
+      if (is.null(group_var) || !(group_var %in% names(use_data))) {
+        stop(sprintf("When groupwise == TRUE, a valid group_var must be provided."))
+      } else {
+        factors <- c(factors, group_var) # add group_var to the factors
+      }
+    }
+    
+    
+    # create formula to use in aggregate function
+    formula <- as.formula(
+      paste0(outcome, " ~ ", paste0(factors, collapse = " + "))
+    )
+    
+    
+    # aggregate results across iterations
+    tmp <- do.call(
+      data.frame,
+      aggregate(formula, data = use_data, FUN = function(x) {
+        c(min(x), mean(x), max(x))
+      })
+    )
+    
+    
+    # rename columns
+    names(tmp) <- c(factors,
                     paste0(outcome, "_min"),
                     paste0(outcome, "_mean"),
                     paste0(outcome, "_max"))
@@ -69,3 +101,61 @@ aggregate_results <- function(data, outcomes, rel_outcomes, abs_outcomes) {
   names(results) <- outcomes
   return(results)
 }
+
+
+
+
+# 
+# # Load Simulation Results -------------------------------------------------
+# load("results/sim_results_whole_data_set_Study1.rda")
+# load("results/sim_results_subgroups_Study1.rda")
+# 
+# 
+# 
+# # Check Missings ----------------------------------------------------------
+# any(is.na(res))
+# any(is.na(res_group))
+# 
+# 
+# out <-aggregate_results(res, outcomes = c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC',
+#                                                 'N_valid_ICC.z',
+#                                                 'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z',
+#                                                 'cor_ICC', 'cor_ICC.z',
+#                                                 'RMSE_ICC', 'RMSE_ICC.z',
+#                                                 'rel', 'N_rel',
+#                                                 'sd_ICC', 'sd_ICC.z',
+#                                                 'negICC', 'estimationProbNeg', 'estimationProbPos'),
+#                   rel_outcomes = c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC',
+#                                                'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z',
+#                                                'cor_ICC', 'cor_ICC.z',
+#                                                'RMSE_ICC', 'RMSE_ICC.z'),
+#                   abs_outcomes = c('N_valid_ICC.z',
+#                                    'rel', 'N_rel',
+#                                    'sd_ICC', 'sd_ICC.z',
+#                                    'negICC', 'estimationProbNeg', 'estimationProbPos'),
+#                   groupwise = FALSE, group_var = NULL)
+# 
+# 
+# 
+# 
+# 
+# out2 <-aggregate_results(res_group, outcomes = c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC',
+#                                                       'N_valid_ICC.z',
+#                                                       'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z',
+#                                                       'cor_ICC', 'cor_ICC.z',
+#                                                       'RMSE_ICC', 'RMSE_ICC.z',
+#                                                       'rel', 'N_rel',
+#                                                       'sd_ICC', 'sd_ICC.z',
+#                                                       'negICC', 'estimationProbNeg', 'estimationProbPos'),
+#                         rel_outcomes = c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC',
+#                                                      'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z',
+#                                                      'cor_ICC', 'cor_ICC.z',
+#                                                      'RMSE_ICC', 'RMSE_ICC.z'),
+#                         abs_outcomes = c('N_valid_ICC.z',
+#                                          'rel', 'N_rel',
+#                                          'sd_ICC', 'sd_ICC.z',
+#                                          'negICC', 'estimationProbNeg', 'estimationProbPos'),
+#                         groupwise = TRUE, group_var = "group")
+# 
+# 
+
