@@ -25,7 +25,7 @@ my_theme <- theme_bw() +
 
 
 # Write Function for Data Visualization -----------------------------------
-plot_outcome <- function(data, ylims=NULL, ylabel=NULL, theme_custom = my_theme) {
+plot_outcome <- function(data, ylims=NULL, ylabel=NULL, x_breaks, theme_custom = my_theme) {
   # data : data frame with the results
   # ylims: optional y-limit per outcome 
   # ylabel: optional y-axis label 
@@ -57,7 +57,7 @@ plot_outcome <- function(data, ylims=NULL, ylabel=NULL, theme_custom = my_theme)
     geom_errorbar(aes(ymin = .data[[col_min]], ymax = .data[[col_max]],
                       color = factor(n_items)),
                   position = position_dodge(width = 2)) +
-    scale_x_continuous(breaks = seq(0, 100, 10)) +
+    scale_x_continuous(breaks = x_breaks) +
     labs(shape = "Number of Items", color = "Number of Items") +
     xlab("Number of Occasions") +
     #  if y label is provided, use it; else, use the outcome name extracted from column names of data 
