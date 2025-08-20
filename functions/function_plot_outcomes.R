@@ -12,8 +12,9 @@
 
 # Load Packages -----------------------------------------------------------
 library(ggplot2)
-library(viridis)
-library(ggh4x)
+library(viridis) # for colors
+library(ggh4x) # for facet_nested (instead of facet_wrap)
+library(scales) # for "pretty" breaks in y axis
 
 
 
@@ -66,7 +67,7 @@ plot_outcome <- function(data, ylims=NULL, ylabel=NULL, theme_custom = my_theme)
     theme_custom
   
   if (!is.null(ylims)) {
-    p <- p + ylim(ylims)
+    p <- p + scale_y_continuous(limits = ylims, breaks = scales::breaks_pretty(n = 5))
   }
   
   return(p)
