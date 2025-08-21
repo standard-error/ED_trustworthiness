@@ -24,11 +24,13 @@ my_theme <- theme_bw() +
         text = element_text(size=12))
 
 
-# Write Function for Data Visualization -----------------------------------
+
+# Function for Data Visualization (Overall) -------------------------------
 plot_outcome <- function(data, ylims=NULL, ylabel=NULL, x_breaks, theme_custom = my_theme) {
   # data : data frame with the results
   # ylims: optional y-limit per outcome 
-  # ylabel: optional y-axis label 
+  # ylabel: optional y-axis label
+  # x_breaks: breaks to use on x-axis, e.g., seq(0, 100, 10)
   # theme_custom : ggplot theme
   
 
