@@ -13,7 +13,6 @@
 # Load Packages -----------------------------------------------------------
 library(ggplot2)
 library(viridis) # for colors
-library(ggh4x) # for facet_nested (instead of facet_wrap)
 library(scales) # for "pretty" breaks in y axis
 
 
@@ -21,7 +20,8 @@ library(scales) # for "pretty" breaks in y axis
 # Define Theme ------------------------------------------------------------
 my_theme <- theme_bw() +
   theme(panel.grid.minor = element_blank(),
-        text = element_text(size=12))
+        text = element_text(size=12),
+        legend.text = element_text(size = 12))
 
 
 
@@ -47,15 +47,7 @@ plot_outcome <- function(data, ylims=NULL, ylabel=NULL, x_breaks = seq(0, 100, 1
   outcome_name <- sub("_max$", "", names(data)[length(data)])
   
   
-  # Workaround so that we have a title above "random" and "by order" for occasions
-  # drawn as split by facet_wrap
-  # -> however, do not use facet_wrap but ggh4x::facet_nested, so that the 
-  # title spans across both plots
-  data[ , "facet_occ"] <- "Occasions Drawn"
-  # also do it for group (will not be used if groupwise  == FALSE)
-  data[ , "facet_group"] <- "NED Level"
-  
-  
+
   # Check if groupwise = TRUE
   # adjust facets accordingly
   # for groupwise = FALSE: facet only by occasions drawn
@@ -63,9 +55,9 @@ plot_outcome <- function(data, ylims=NULL, ylabel=NULL, x_breaks = seq(0, 100, 1
   if (groupwise == TRUE & !("group" %in% names(data))) {
     stop(sprintf("There is no grouping variable for NED group in data."))
   } else if (groupwise == TRUE & "group" %in% names(data)) {
-    facet_formula <- ggh4x::facet_nested(~facet_group + factor(group) + facet_occ + factor(occasions_drawn))
+    facet_formula <- facet_wrap(~facet_group + factor(group) + factor(occasions_drawn))
   } else if (groupwise == FALSE ) {
-    facet_formula <- ggh4x::facet_nested(~facet_occ + factor(occasions_drawn))
+    facet_formula <- facet_wrap(~factor(occasions_drawn))
   }
   
   # Build plot
