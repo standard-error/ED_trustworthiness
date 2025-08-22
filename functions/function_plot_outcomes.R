@@ -51,10 +51,11 @@ plot_outcome <- function(data, ylims=NULL, ylabel=NULL, x_breaks = seq(0, 100, 1
   # Check if groupwise = TRUE
   # adjust facets accordingly
   # for groupwise = FALSE: facet only by occasions drawn
-  # for groupwise = TRUE: also facet by NED group
+  # for groupwise = TRUE: also facet by NED group (after ordering by high, medium, low NED)
   if (groupwise == TRUE & !("group" %in% names(data))) {
     stop(sprintf("There is no grouping variable for NED group in data."))
   } else if (groupwise == TRUE & "group" %in% names(data)) {
+    data[ , "group"] <- factor(data[ , "group"], levels = c("high NED", "medium NED", "low NED"))
     facet_formula <- facet_grid(rows = vars(group), cols = vars(occasions_drawn))
   } else if (groupwise == FALSE ) {
     facet_formula <- facet_wrap(~factor(occasions_drawn))
