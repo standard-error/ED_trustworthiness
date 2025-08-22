@@ -55,7 +55,7 @@ plot_outcome <- function(data, ylims=NULL, ylabel=NULL, x_breaks = seq(0, 100, 1
   if (groupwise == TRUE & !("group" %in% names(data))) {
     stop(sprintf("There is no grouping variable for NED group in data."))
   } else if (groupwise == TRUE & "group" %in% names(data)) {
-    facet_formula <- facet_wrap(~factor(group) + factor(occasions_drawn))
+    facet_formula <- facet_grid(rows = vars(group), cols = vars(occasions_drawn))
   } else if (groupwise == FALSE ) {
     facet_formula <- facet_wrap(~factor(occasions_drawn))
   }
