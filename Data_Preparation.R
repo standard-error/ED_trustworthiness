@@ -11,161 +11,51 @@
 
 
 
-
 # Packages ----------------------------------------------------------------
 library(tidyverse)
 
 
-# STEP 1: FAMILIARIZE WITH DATA -------------------------------------------
-# there are two data sets with different numbers of occasions and different
-# variables:
-# AA_final: 16115 occasion, no variable for carelessness (or duration)
-# AA_with_careless: 15967, includes carelessness (and duration)
+# Load Data ---------------------------------------------------------------
+load("../Rohdaten emolive/newly managed/running number ID/managed-and-cleaned_AA-started-only_pretest_and_AA.rda")
+# data newly managed for this project
 
 
-# '' Load Data ------------------------------------------------------------
+# Sanity Check
 
-
-# Compare the two data sets that we have
-load("internal use/raw data/data provided to us/AA_emolive_including_careless.rda")
-AA_careless <- AA
-load("internal use/raw data/data provided to us/AA_final.rda")
-AA_final <- AA
-rm(AA)
-# somehow, the final data set includes more occasions than the data set
-# with careless responding?
-
-
-which(! names(AA_final) %in% names(AA_careless))
-names(AA_final)[7] # day_problematic not in AA_careless
-which(! names(AA_careless) %in% names(AA_final))
-names(AA_careless)[54:57] # duration, careless.occasion, incomplete, invalid
-
-AA_careless_sub <- AA_careless[ , c("SERIAL", "occasion_total",
-                                    "duration", "careless.occasion",
-                                    "incomplete", "invalid")]
-
-# match the two data sets
-AA_ges <- merge(AA_final, AA_careless_sub, by=c("SERIAL", "occasion_total"),
-                all.x=TRUE)
-table(AA_ges$duration, useNA="always") # 148 missing
-# day problematic probably already excluded
-
-sub <- AA_ges[which(is.na(AA_ges$duration)), ]
-table(sub$day_problematic, useNA="always") # correct
-# AA_careless does not include problematic days#
-# therefore, AA_ges includes all occasions
-rm(sub)
-
-AA <- AA_ges
-rm(AA_careless, AA_careless_sub, AA_final, AA_ges)
-# now we have all the information we need
-
-
-
-
-# '' Save Data ------------------------------------------------------------
-# save whole data frame
-save(AA, file="internal use/raw data/AA_with_careless_and_day_problematic.rda")
-
-rm(list=ls())
-
-
-
-# STEP 2: PREPARE THE FULL DATA SET ---------------------------------------
-load("internal use/raw data/AA_with_careless_and_day_problematic.rda")
-
-# '' Prepare Data ---------------------------------------------------------
-length(unique(AA$SERIAL)) # 163 participants with 16115 occasions
-
-names(AA)
-
-# OVERVIEW BEFORE EXCLUSION
-table(AA$day_problematic, useNA="always")
-# 148 occasions at which day was problematic
-# -> exclude
-
-table(AA$Missing, useNA="always")
-# # 12499 occasions were completed, rest is missing (dismissed,
-# # ignored, incomplete)
-# 12499 + 370 + 3106 + 140 # add up to total number
-# 16115 - 370 - 3106 - 140 # 12499 should remain when exluding missings
-# 370 + 3106 + 140 # 3616 should be excluded
-# # -> exclude
-
-table(AA$duration < 50) # 3663 occasions with fewer than 50 seconds
-# -> careless
-table(AA$careless.occasion, useNA="always")
-# but only 263 flagged as careless -> probably done after
-# already excluding some occasions
-# table(AA$duration <= 50)
-
-
-# NOTE: Some of these occasions may overlap (e.g., they may be missing
-# but also belong to a day that was problematic)
-
-
-# EXCLUDE INVALID OCCASIONS
-# exclude missing occasions
-AA.c <- AA[which(AA$Missing != "Dismissed" & AA$Missing != "Ignored" &
-                   AA$Missing != "Incomplete"), ]
-nrow(AA) - nrow(AA.c) # 3616, correct
-nrow(AA.c) # correct, 12499 occasions completed
-
-# exclude occasions from problematic days
-table(AA.c$day_problematic, useNA="always")
-# 125 of the completed occasions belonged to a problematic day
-# (a total of 148 occasions were on problematic days, but
-# apparently, 23 of them were not completed)
-nrow(AA.c) # before exclusion: 12499
-12499 - 125 # = 12374
-AA.c <- AA.c[which(AA.c$day_problematic == 0), ]
-nrow(AA.c) # after exclusion: 12347 -> correct
-
-
-
-# careless responding
-table(AA.c$careless.occasion, useNA="always") # 263 that were flagged
-table(AA.c$duration < 50) # 206 that were faster than 50 seconds
-# why is there a difference?
-table(AA.c$duration <= 50) # 263
-# View(AA.c[ , c("duration", "careless.occasion")])
-# -> occasions with exactly 50 seconds were also flagged as careless
-# -> in paper reported that the fastest response on ALL items in the
-# pilot study was 50 seconds and that responses faster than 50 seconds
-# were seen as careless
-# -> apparently, also exactly 50 seconds were flagged as careless
-
-# exclude occasions with <= 50 seconds to be consistent with paper
-# 263 should be excluded
-# before: 12374
-12374 - 263 # 12111 should remain
-AA.c <- AA.c[which(AA.c$duration > 50), ]
-nrow(AA.c) # correct
-
-
-
-# calculate compliance of valid occasions as sanity check
+# calculate number of occasions in this data set as sanity check
+# should be equal to n_occ_valid
 AA.c %>% 
   group_by(SERIAL) %>% 
   mutate(n_occ = n()) -> AA.c
 
-L2 <- dplyr::distinct(AA.c, SERIAL, n_occ)
+L2 <- dplyr::distinct(AA.c, SERIAL, n_occ, n_occ_valid)
+identical(L2$n_occ, L2$n_occ_valid) # TRUE
+
 table(L2$n_occ)
 table(L2$n_occ >= 34) # 141
 # -> not as reported in paper
 # reason for this is unclear
-# however, all invalid occasions were removed
-# use this data
+# however, data were newly managed and cleaned and should be correct
 
 rm(L2)
+
+
+
+# sort
+AA.c <- AA.c[order(AA.c$SERIAL, AA.c$day_since_planned_start, AA.c$occasion_for_day, AA.c$occasion_total), ]
+
+
 
 # '' Save Cleaned Data Set ------------------------------------------------
 save(AA.c, file="internal use/prepared data/emolive_clean_all_participants.rda")
 rm(list=ls())
 
 
-# STEP 3: PREPARE BENCHMARK DATA SET --------------------------------------
+
+
+
+# PREPARE BENCHMARK DATA SET ----------------------------------------------
+
 load("internal use/prepared data/emolive_clean_all_participants.rda")
 
 L2 <- dplyr::distinct(AA.c, SERIAL, n_occ) 
@@ -200,23 +90,6 @@ bench <- bench[ , c("SERIAL", "occ_running", "occasion_total", "aerger1",
                     "schuld1", "schuld2", "schuld3")]
 
 
-# for anonymization: replace SERIAL by a running number
-matched_serial <- data.frame(SERIAL_original = unique(bench$SERIAL),
-                             SERIAL_new = NA)
-matched_serial$SERIAL_new <- 1:nrow(matched_serial)
-# save matching
-save(matched_serial, file="internal use/prepared data/matching_original_serials_and_new_serials.rda")
-# 
-
-# now replace original SERIAL with new SERIAL
-names(matched_serial) <- c("SERIAL", "SERIAL_new")
-bench <- merge(bench, matched_serial, by = "SERIAL")
-
-# remove original serial and order variables
-bench <- bench[ , c(19, 2:18)]
-names(bench)[1] <- "SERIAL" # replace name again
-names(bench)
-
 
 # save benchmark data set
 save(bench, file = "internal use/prepared data/benchmark_data_Study1.rda") # for internal use (just for consistency)
@@ -225,7 +98,7 @@ save(bench, file = "prepared data/benchmark_data_Study1.rda") # for sharing
 
 
 
-# STEP 4: PREPARE BENCHMARK DATA FOR GROUPS -------------------------------
+# PREPARE BENCHMARK DATA FOR GROUPS ---------------------------------------
 # subset the data frame based on quantiles -> high, medium, low NED
 source("functions/function_calculate_iccs.R")
 
@@ -266,7 +139,6 @@ bench_lowNED <- bench[which(bench$SERIAL %in% lowNED.ID), ]
 
 
 # save data
-# SERIALs are already replaced by new running number
 save(bench_highNED, file="internal use/prepared data/benchmark_data_highNED_Study1.rda") # for internal use (just for consistency)
 save(bench_mediumNED, file="internal use/prepared data/benchmark_data_mediumNED_Study1.rda") # for internal use (just for consistency)
 save(bench_lowNED, file="internal use/prepared data/benchmark_data_lowNED_Study1.rda") # for internal use (just for consistency)
