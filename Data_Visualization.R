@@ -381,7 +381,9 @@ rownames(all_agg_results) <- NULL
 # save
 write.csv(all_agg_results, "results/results_table_whole_data_set_Study1.csv", row.names = F)
 
-
+# round to 2 decimals and save again
+all_agg_results <- round(all_agg_results[4:33], 2)
+write.csv(all_agg_results, "results/results_table_whole_data_set_Study1_two_decimals.csv", row.names = F)
 
 # for ICC.z
 # bind all results
@@ -403,7 +405,9 @@ rownames(all_agg_results) <- NULL
 # save
 write.csv(all_agg_results, "results/results_table_Z-transformed_whole_data_set_Study1.csv", row.names = F)
 
-
+# round to 2 decimals and save again
+all_agg_results <- round(all_agg_results[4:33], 2)
+write.csv(all_agg_results, "results/results_table_Z-transformed_whole_data_set_Study1_two_decimals.csv", row.names = F)
 
 
 
@@ -665,6 +669,11 @@ rownames(all_agg_results_grp) <- NULL
 # save
 write.csv(all_agg_results_grp, "results/results_table_subgroups_Study1.csv", row.names = F)
 
+# round to 2 decimals and save again
+all_agg_results_grp[5:34] <- round(all_agg_results_grp[5:34], 2) 
+write.csv(all_agg_results_grp, "results/results_table_subgroups_Study1_two_decimals.csv", row.names = F)
+
+
 
 
 # for ICC.z
@@ -689,4 +698,7 @@ rownames(all_agg_results_grp) <- NULL
 write.csv(all_agg_results_grp, "results/results_table_Z-transformed_subgroups_Study1.csv", row.names = F)
 
 
+# round to 2 decimals and save again
+all_agg_results_grp[5:34] <- round(all_agg_results_grp[5:34], 2) 
+write.csv(all_agg_results_grp, "results/results_table_Z-transformed_subgroups_Study1_two_decimals.csv", row.names = F)
 
