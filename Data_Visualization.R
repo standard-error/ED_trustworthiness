@@ -372,18 +372,14 @@ all_agg_results <- merge(all_agg_results, estimProbNeg, by = c("occasions_drawn"
 all_agg_results <- merge(all_agg_results, estimProbPos, by = c("occasions_drawn", "n_occasions", "n_items"))
 all_agg_results <- merge(all_agg_results, N_rel, by = c("occasions_drawn", "n_occasions", "n_items"))
 all_agg_results <- merge(all_agg_results, N_valid_ICC.z, by = c("occasions_drawn", "n_occasions", "n_items"))
-# round to 3 decimals
-all_agg_results[4:33] <- round(all_agg_results[4:33], 3) 
+# round to 2 decimals
+all_agg_results[4:33] <- round(all_agg_results[4:33], 2) 
 # sort
 all_agg_results <- all_agg_results[order(all_agg_results$occasions_drawn, all_agg_results$n_occasions, all_agg_results$n_items), ]
 # reset row names
 rownames(all_agg_results) <- NULL
 # save
 write.csv(all_agg_results, "results/results_table_whole_data_set_Study1.csv", row.names = F)
-
-# round to 2 decimals and save again
-all_agg_results <- round(all_agg_results[4:33], 2)
-write.csv(all_agg_results, "results/results_table_whole_data_set_Study1_two_decimals.csv", row.names = F)
 
 # for ICC.z
 # bind all results
@@ -396,18 +392,14 @@ all_agg_results <- merge(all_agg_results, estimProbNeg, by = c("occasions_drawn"
 all_agg_results <- merge(all_agg_results, estimProbPos, by = c("occasions_drawn", "n_occasions", "n_items"))
 all_agg_results <- merge(all_agg_results, N_rel, by = c("occasions_drawn", "n_occasions", "n_items"))
 all_agg_results <- merge(all_agg_results, N_valid_ICC.z, by = c("occasions_drawn", "n_occasions", "n_items"))
-# round to 3 decimals
-all_agg_results[4:33] <- round(all_agg_results[4:33], 3) 
+# round to 2 decimals
+all_agg_results[4:33] <- round(all_agg_results[4:33], 2) 
 # sort
 all_agg_results <- all_agg_results[order(all_agg_results$occasions_drawn, all_agg_results$n_occasions, all_agg_results$n_items), ]
 # reset row names
 rownames(all_agg_results) <- NULL
 # save
 write.csv(all_agg_results, "results/results_table_Z-transformed_whole_data_set_Study1.csv", row.names = F)
-
-# round to 2 decimals and save again
-all_agg_results <- round(all_agg_results[4:33], 2)
-write.csv(all_agg_results, "results/results_table_Z-transformed_whole_data_set_Study1_two_decimals.csv", row.names = F)
 
 
 
@@ -660,19 +652,14 @@ all_agg_results_grp <- merge(all_agg_results_grp, estimProbNeg, by = c("group", 
 all_agg_results_grp <- merge(all_agg_results_grp, estimProbPos, by = c("group", "occasions_drawn", "n_occasions", "n_items"))
 all_agg_results_grp <- merge(all_agg_results_grp, N_rel, by = c("group", "occasions_drawn", "n_occasions", "n_items"))
 all_agg_results_grp <- merge(all_agg_results_grp, N_valid_ICC.z, by = c("group", "occasions_drawn", "n_occasions", "n_items"))
-# round to 3 decimals
-all_agg_results_grp[5:34] <- round(all_agg_results_grp[5:34], 3) 
+# round to 2 decimals
+all_agg_results_grp[5:34] <- round(all_agg_results_grp[5:34], 2) 
 # sort
 all_agg_results_grp <- all_agg_results_grp[order(all_agg_results_grp$group, all_agg_results_grp$occasions_drawn, all_agg_results_grp$n_occasions, all_agg_results_grp$n_items), ]
 # reset row names
 rownames(all_agg_results_grp) <- NULL
 # save
 write.csv(all_agg_results_grp, "results/results_table_subgroups_Study1.csv", row.names = F)
-
-# round to 2 decimals and save again
-all_agg_results_grp[5:34] <- round(all_agg_results_grp[5:34], 2) 
-write.csv(all_agg_results_grp, "results/results_table_subgroups_Study1_two_decimals.csv", row.names = F)
-
 
 
 
@@ -688,8 +675,8 @@ all_agg_results_grp <- merge(all_agg_results_grp, estimProbNeg, by = c("group", 
 all_agg_results_grp <- merge(all_agg_results_grp, estimProbPos, by = c("group", "occasions_drawn", "n_occasions", "n_items"))
 all_agg_results_grp <- merge(all_agg_results_grp, N_rel, by = c("group", "occasions_drawn", "n_occasions", "n_items"))
 all_agg_results_grp <- merge(all_agg_results_grp, N_valid_ICC.z, by = c("group", "occasions_drawn", "n_occasions", "n_items"))
-# round to 3 decimals
-all_agg_results_grp[5:34] <- round(all_agg_results_grp[5:34], 3) 
+# round to 2 decimals
+all_agg_results_grp[5:34] <- round(all_agg_results_grp[5:34], 2) 
 # sort
 all_agg_results_grp <- all_agg_results_grp[order(all_agg_results_grp$group, all_agg_results_grp$occasions_drawn, all_agg_results_grp$n_occasions, all_agg_results_grp$n_items), ]
 # reset row names
@@ -697,8 +684,4 @@ rownames(all_agg_results_grp) <- NULL
 # save
 write.csv(all_agg_results_grp, "results/results_table_Z-transformed_subgroups_Study1.csv", row.names = F)
 
-
-# round to 2 decimals and save again
-all_agg_results_grp[5:34] <- round(all_agg_results_grp[5:34], 2) 
-write.csv(all_agg_results_grp, "results/results_table_Z-transformed_subgroups_Study1_two_decimals.csv", row.names = F)
 
