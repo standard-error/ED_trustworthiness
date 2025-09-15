@@ -21,6 +21,10 @@ calculate_icc <- function(data,
                           unit = "single") { 
   # data: takes the data frame with all participants
           # and their occasions as input (long format)
+          # needs to be data frame (not tibble):
+          # data[ , id.var] extracts vector for data frames (length(ids) = number
+          # of ids),
+          # but column for tibbles (length(ids) would be 1)
   # id.var: character indicating name of participant ID variable
           # NOTE: ID needs to be numeric (matrices can only contain one
           # data type and ICC needs to be numeric)
