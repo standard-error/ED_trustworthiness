@@ -165,7 +165,7 @@ for (item in desc_stats$item) {
   
   icc <- performance::icc(null.mod)$ICC_unadjusted
   
-  range <- paste0(range(samp_100[ , item])[1], ", ", range(samp_100[ , item])[2])
+  range <- paste0(range(samp_100[ , item])[1], " - ", range(samp_100[ , item])[2])
   
   # round and save in storage
   desc_stats[which(desc_stats$item == item), "M"] <- round(mean, 2)
