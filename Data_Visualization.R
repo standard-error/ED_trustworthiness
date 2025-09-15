@@ -381,7 +381,9 @@ rownames(all_agg_results) <- NULL
 # save
 write.csv(all_agg_results, "results/results_table_whole_data_set_Study1.csv", row.names = F)
 
-
+# round to 2 decimals and save again
+all_agg_results <- round(all_agg_results[4:33], 2)
+write.csv(all_agg_results, "results/results_table_whole_data_set_Study1_two_decimals.csv", row.names = F)
 
 # for ICC.z
 # bind all results
