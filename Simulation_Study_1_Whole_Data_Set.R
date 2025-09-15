@@ -69,6 +69,37 @@ save(res, file="results/sim_results_whole_data_set_Study1.rda")
 
 
 
+# Check Sufficient Number of Iterations -----------------------------------
+# i.e., run simulation again with 1000 iterations and
+# different seed
+# -> check whether results are comparable
+# (but use the same seed for the item set)
+
+res2 <- simulation_study(data = bench, n_occasions = c(3, 5, seq(10, 100, 10)),
+                         occasions_drawn = c("random", "by order"), n_items = c(5, 15),
+                         n_iteration = 1000,
+                         id.var = "SERIAL", all_items = c('aerger1', 'aerger2', 'aerger3',
+                                                          'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
+                                                          'angst1', 'angst2', 'angst3',
+                                                          'scham1', 'scham2', 'scham3',
+                                                          'schuld1', 'schuld2', 'schuld3'),
+                         categories = c("aerger", "aerger", "aerger",
+                                        "traurigkeit", "traurigkeit", "traurigkeit",
+                                        "angst", "angst", "angst",
+                                        "scham", "scham", "scham",
+                                        "schuld", "schuld", "schuld"),
+                         type = "consistency", unit = "single", occ.running.var = "occ_running",
+                         seed_item = global.seed.item.set, seed_sim = 456, cores = 10)
+
+
+# save results
+save(res2, file="results/check nr of iterations/sim_results_whole_data_set_Study1.rda")
+
+
+
+
+
+
 # Session Info ------------------------------------------------------------
 
 # R version 4.5.1 (2025-06-13 ucrt)
