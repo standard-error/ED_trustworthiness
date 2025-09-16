@@ -84,6 +84,9 @@ save(agg_grp, file = "results/aggregated_subgroups_Study1.rda")
 # Calculate Monte Carlo Standard Error ------------------------------------
 # for formulas, see Siepe et al. (2024), doi: 10.1037/met0000695
 
+
+
+# '' For Whole Data Set ---------------------------------------------------
 # use subset with random draws (ordered draws are not independent and there is only one simulation
 # run for each condition -> no variance = no MCSE)
 rd <- res[which(res$occasions_drawn == "random"),]
@@ -265,6 +268,197 @@ MCSE[3:35] <- round(MCSE[3:35], 3)
 MCSE <- MCSE[order(MCSE$n_occasions, MCSE$n_items), ]
 write.csv(MCSE, "results/MCSE_table_whole_data_set_Study1.csv", row.names = F)
 
+
+
+# '' For Group-Wise Analysis ----------------------------------------------
+
+
+# use subset with random draws (ordered draws are not independent and there is only one simulation
+# run for each condition -> no variance = no MCSE)
+rd_grp <- res_group[which(res_group$occasions_drawn == "random"),]
+
+
+## for "bias" (i.e., difference in ICCs)
+# -> "mean of generic statistic G"
+
+# calculate the overall across-replicate mean of the single-replicate mean difference
+# i.e., each iteration reports a mean difference (across) participants, and these
+# mean differences are averaged across iterations
+# also calculate variance of the mean difference across iterations
+
+max(rd_grp$n_iteration) # 1000 iterations
+
+MCSE <- do.call(data.frame, aggregate(mean_diff_ICC ~ group + n_occasions + n_items, data = rd_grp, FUN = function(x) {
+  c(mean = mean(x),
+    var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
+    MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
+})
+)
+
+names(MCSE) <- c("group", "n_occasions", "n_items", "diff_ICC_sim_mean", "diff_ICC_sim_var", "diff_ICC_MCSE")
+
+
+
+## for bias.z (i.e., difference in ICC.z)
+
+MCSE2 <- do.call(data.frame, aggregate(mean_diff_ICC.z ~ group + n_occasions + n_items, data = rd_grp, FUN = function(x) {
+  c(mean = mean(x),
+    var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
+    MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
+})
+)
+
+names(MCSE2) <- c("group", "n_occasions", "n_items", "diff_ICC.z_sim_mean", "diff_ICC.z_sim_var", "diff_ICC.z_MCSE")
+
+
+## for correlations (ICC)
+# mean of correlations as performance measure
+
+MCSE3 <- do.call(data.frame, aggregate(cor_ICC ~ group + n_occasions + n_items, data = rd_grp, FUN = function(x) {
+  c(mean = mean(x),
+    var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
+    MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
+})
+)
+
+names(MCSE3) <- c("group", "n_occasions", "n_items", "cor_ICC_sim_mean", "cor_ICC_sim_var", "cor_ICC_MCSE")
+
+
+## for correlations (ICC.z)
+# mean of correlations as performance measure
+
+MCSE4 <- do.call(data.frame, aggregate(cor_ICC.z ~ group + n_occasions + n_items, data = rd_grp, FUN = function(x) {
+  c(mean = mean(x),
+    var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
+    MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
+})
+)
+
+names(MCSE4) <- c("group", "n_occasions", "n_items", "cor_ICC.z_sim_mean", "cor_ICC.z_sim_var", "cor_ICC.z_MCSE")
+
+
+## for RMSE (ICC)
+# we have RMSE for each simulation run (because we have multiple participants)
+# -> therefore, the performance measure across iterations is not RMSE, but mean of RMSE
+# -> use formula for mean of generic statistic G (see Siepe et al., 2024)
+
+MCSE5 <- do.call(data.frame, aggregate(RMSE_ICC ~ group + n_occasions + n_items, data = rd_grp, FUN = function(x) {
+  c(mean = mean(x),
+    var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
+    MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
+})
+)
+
+names(MCSE5) <- c("group", "n_occasions", "n_items", "RMSE_ICC_sim_mean", "RMSE_ICC_sim_var", "RMSE_ICC_MCSE")
+
+## for RMSE (ICC.z)
+# we have RMSE for each simulation run (because we have multiple participants)
+# -> therefore, the performance measure across iterations is not RMSE, but mean of RMSE
+# -> use formula for mean of generic statistic G (see Siepe et al., 2024)
+
+MCSE6 <- do.call(data.frame, aggregate(RMSE_ICC.z ~ group + n_occasions + n_items, data = rd_grp, FUN = function(x) {
+  c(mean = mean(x),
+    var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
+    MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
+})
+)
+
+names(MCSE6) <- c("group", "n_occasions", "n_items", "RMSE_ICC.z_sim_mean", "RMSE_ICC.z_sim_var", "RMSE_ICC.z_MCSE")
+
+
+## for reliability
+# -> mean of generic statistic G
+
+MCSE7 <- do.call(data.frame, aggregate(rel ~ group + n_occasions + n_items, data = rd_grp, FUN = function(x) {
+  c(mean = mean(x),
+    var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
+    MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
+})
+)
+
+names(MCSE7) <- c("group", "n_occasions", "n_items", "rel_sim_mean", "rel_sim_var", "rel_MCSE")
+
+
+## for SD (ICC)
+# we have one SD for each replicate -> performance measure = mean of SD across replicates
+# use formula for mean of generic statistic G
+MCSE8 <- do.call(data.frame, aggregate(sd_ICC ~ group + n_occasions + n_items, data = rd_grp, FUN = function(x) {
+  c(mean = mean(x),
+    var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
+    MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
+})
+)
+
+names(MCSE8) <- c("group", "n_occasions", "n_items", "sd_ICC_sim_mean", "sd_ICC_sim_var", "sd_ICC_MCSE")
+
+
+## for SD (ICC.z)
+# we have one SD for each replicate -> performance measure = mean of SD across replicates
+# use formula for mean of generic statistic G
+MCSE9 <- do.call(data.frame, aggregate(sd_ICC.z ~ group + n_occasions + n_items, data = rd_grp, FUN = function(x) {
+  c(mean = mean(x),
+    var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
+    MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
+})
+)
+
+names(MCSE9) <- c("group", "n_occasions", "n_items", "sd_ICC.z_sim_mean", "sd_ICC.z_sim_var", "sd_ICC.z_MCSE")
+
+
+## for negICC
+# performance measure: mean of generic statistic G
+MCSE10 <- do.call(data.frame, aggregate(negICC ~ group + n_occasions + n_items, data = rd_grp, FUN = function(x) {
+  c(mean = mean(x),
+    var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
+    MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
+})
+)
+
+names(MCSE10) <- c("group", "n_occasions", "n_items", "negICC_sim_mean", "negICC_sim_var", "negICC_MCSE")
+
+
+## for N_rel
+# performance measure: mean of generic statistic G
+
+MCSE11 <- do.call(data.frame, aggregate(N_rel ~ group + n_occasions + n_items, data = rd_grp, FUN = function(x) {
+  c(mean = mean(x),
+    var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
+    MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
+})
+)
+
+names(MCSE11) <- c("group", "n_occasions", "n_items", "N_rel_sim_mean", "N_rel_sim_var", "N_rel_MCSE")
+
+## for estimation problems, no MCSE can be calculated because there is zero variance
+
+
+# combine
+MCSE <- merge(MCSE, MCSE2, by = c("group", "n_occasions", "n_items"))
+MCSE <- merge(MCSE, MCSE3, by = c("group", "n_occasions", "n_items"))
+MCSE <- merge(MCSE, MCSE4, by = c("group", "n_occasions", "n_items"))
+MCSE <- merge(MCSE, MCSE5, by = c("group", "n_occasions", "n_items"))
+MCSE <- merge(MCSE, MCSE6, by = c("group", "n_occasions", "n_items"))
+MCSE <- merge(MCSE, MCSE7, by = c("group", "n_occasions", "n_items"))
+MCSE <- merge(MCSE, MCSE8, by = c("group", "n_occasions", "n_items"))
+MCSE <- merge(MCSE, MCSE9, by = c("group", "n_occasions", "n_items"))
+MCSE <- merge(MCSE, MCSE10, by = c("group", "n_occasions", "n_items"))
+MCSE <- merge(MCSE, MCSE11, by = c("group", "n_occasions", "n_items"))
+
+MCSE
+names(MCSE)
+
+
+# round and save MCSE as csv
+# round to 3 decimals in this case
+MCSE[4:36] <- round(MCSE[4:36], 3)
+MCSE <- MCSE[order(MCSE$group, MCSE$n_occasions, MCSE$n_items), ]
+write.csv(MCSE, "results/MCSE_table_subgroups_Study1.csv", row.names = F)
+
+
+
+
+
+rm(list=ls())
 
 
 
