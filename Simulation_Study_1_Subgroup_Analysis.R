@@ -149,6 +149,111 @@ save(res_group, file="results/sim_results_subgroups_Study1.rda")
 
 
 
+
+
+
+# Check Sufficient Number of Iterations -----------------------------------
+# i.e., run simulation again with 1000 iterations and
+# different seed
+# -> check whether results are comparable
+# (but use the same seed for the item set)
+
+# '' High NED Group -------------------------------------------------------
+
+tictoc::tic()
+res2_highNED <- simulation_study(data = bench_highNED, n_occasions = c(3, 5, seq(10, 100, 10)),
+                                 occasions_drawn = c("random", "by order"), n_items = c(5, 15),
+                                 n_iteration = 1000,
+                                 id.var = "SERIAL", all_items = c('aerger1', 'aerger2', 'aerger3',
+                                                                  'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
+                                                                  'angst1', 'angst2', 'angst3',
+                                                                  'scham1', 'scham2', 'scham3',
+                                                                  'schuld1', 'schuld2', 'schuld3'),
+                                 categories = c("aerger", "aerger", "aerger",
+                                               "traurigkeit", "traurigkeit", "traurigkeit",
+                                               "angst", "angst", "angst",
+                                               "scham", "scham", "scham",
+                                               "schuld", "schuld", "schuld"),
+                                type = "consistency", unit = "single", occ.running.var = "occ_running",
+                                seed_item = global.seed.item.set, seed_sim = 666, cores = 10)
+tictoc::toc()
+
+res2_highNED$group <- "high NED"
+
+
+# '' Medium NED Group -----------------------------------------------------
+
+tictoc::tic()
+res2_mediumNED <- simulation_study(data = bench_mediumNED, n_occasions = c(3, 5, seq(10, 100, 10)),
+                                   occasions_drawn = c("random", "by order"), n_items = c(5, 15),
+                                   n_iteration = 1000,
+                                   id.var = "SERIAL", all_items = c('aerger1', 'aerger2', 'aerger3',
+                                                                    'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
+                                                                    'angst1', 'angst2', 'angst3',
+                                                                    'scham1', 'scham2', 'scham3',
+                                                                    'schuld1', 'schuld2', 'schuld3'),
+                                   categories = c("aerger", "aerger", "aerger",
+                                                  "traurigkeit", "traurigkeit", "traurigkeit",
+                                                  "angst", "angst", "angst",
+                                                  "scham", "scham", "scham",
+                                                  "schuld", "schuld", "schuld"),
+                                   type = "consistency", unit = "single", occ.running.var = "occ_running",
+                                   seed_item = global.seed.item.set, seed_sim = 111, cores = 10)
+tictoc::toc()
+
+res2_mediumNED$group <- "medium NED"
+
+
+# '' Low NED Group --------------------------------------------------------
+
+tictoc::tic()
+res2_lowNED <- simulation_study(data = bench_lowNED, n_occasions = c(3, 5, seq(10, 100, 10)),
+                                occasions_drawn = c("random", "by order"), n_items = c(5, 15),
+                                n_iteration = 1000,
+                                id.var = "SERIAL", all_items = c('aerger1', 'aerger2', 'aerger3',
+                                                                 'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
+                                                                 'angst1', 'angst2', 'angst3',
+                                                                 'scham1', 'scham2', 'scham3',
+                                                                 'schuld1', 'schuld2', 'schuld3'),
+                                categories = c("aerger", "aerger", "aerger",
+                                               "traurigkeit", "traurigkeit", "traurigkeit",
+                                               "angst", "angst", "angst",
+                                               "scham", "scham", "scham",
+                                               "schuld", "schuld", "schuld"),
+                                type = "consistency", unit = "single", occ.running.var = "occ_running",
+                                seed_item = global.seed.item.set, seed_sim = 555, cores = 10)
+tictoc::toc()
+
+res2_lowNED$group <- "low NED"
+
+
+
+# Bind Data Frames --------------------------------------------------------
+res2_group <- rbind(res2_highNED, res2_mediumNED, res2_lowNED)
+
+# adjust variable order
+res2_group <- res2_group[ , c('group', 'condition', 'n_occasions', 'occasions_drawn',
+                              'n_items', 'items', 'n_iteration', 'min_diff_ICC',
+                              'mean_diff_ICC', 'max_diff_ICC', 'N_valid_ICC.z',
+                              'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z',
+                              'cor_ICC', 'cor_ICC.z', 'RMSE_ICC', 'RMSE_ICC.z',
+                              'rel', 'N_rel', 'sd_ICC', 'sd_ICC.z', 'negICC',
+                              'estimationProbNeg', 'estimationProbPos')] 
+
+
+
+
+
+
+# Save Results ------------------------------------------------------------
+save(res2_group, file="results/check nr of iterations/sim_results_subgroups_Study1.rda")
+
+
+
+
+
+
+
 # Session Info ------------------------------------------------------------
 # 
 # R version 4.5.1 (2025-06-13 ucrt)

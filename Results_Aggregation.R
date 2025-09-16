@@ -464,7 +464,11 @@ rm(list=ls())
 
 
 # Check Sufficient Number of Iterations  ----------------------------------
+source("functions/function_aggregate_results.R")
+
 load("results/check nr of iterations/sim_results_whole_data_set_Study1.rda")
+load("results/check nr of iterations/sim_results_subgroups_Study1.rda")
+
 agg2 <- aggregate_results(res2,
                          outcomes = c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC',
                                       'N_valid_ICC.z',
@@ -486,6 +490,38 @@ agg2 <- aggregate_results(res2,
                          group_var = NULL)
 
 save(agg2, file = "results/check nr of iterations/aggregated_whole_data_set_Study1.rda")
+
+
+
+
+agg_grp2 <- aggregate_results(res2_group,
+                              outcomes = c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC',
+                                           'N_valid_ICC.z',
+                                           'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z',
+                                           'cor_ICC', 'cor_ICC.z',
+                                           'RMSE_ICC', 'RMSE_ICC.z',
+                                           'rel', 'N_rel',
+                                           'sd_ICC', 'sd_ICC.z',
+                                           'negICC', 'estimationProbNeg', 'estimationProbPos'),
+                              rel_outcomes = c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC',
+                                               'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z',
+                                               'cor_ICC', 'cor_ICC.z',
+                                               'RMSE_ICC', 'RMSE_ICC.z'),
+                              abs_outcomes = c('N_valid_ICC.z',
+                                               'rel', 'N_rel',
+                                               'sd_ICC', 'sd_ICC.z',
+                                               'negICC', 'estimationProbNeg', 'estimationProbPos'),
+                              groupwise = TRUE,
+                              group_var = "group")
+
+
+
+
+# Save Aggregated Results -------------------------------------------------
+save(agg_grp2, file = "results/check nr of iterations/aggregated_subgroups_Study1.rda")
+
+
+
 
 
 # Session Info ------------------------------------------------------------
