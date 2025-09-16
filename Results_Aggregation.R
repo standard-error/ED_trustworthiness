@@ -262,6 +262,7 @@ names(MCSE)
 # round and save MCSE as csv
 # round to 3 decimals in this case
 MCSE[3:35] <- round(MCSE[3:35], 3)
+MCSE <- MCSE[order(MCSE$n_occasions, MCSE$n_items), ]
 write.csv(MCSE, "results/MCSE_table_whole_data_set_Study1.csv", row.names = F)
 
 
