@@ -10,6 +10,42 @@
 
 
 
+# Write Helper Function (Fisher's Z-transformation) -----------------------
+# For correlation with the benchmark as outcome, the correlations
+# need to be Fisher's Z-transformed before averaging, and backtransformed after
+# averaging. For this purpose, we want a helper function to keep the code
+# below clean.
+
+# natural logarithm = log() function in R
+
+# Fisher's Z-transformation
+fisher_z <- function(r) {
+  z <- 0.5 * log( (1 + r) / (1 - r) )
+  return(z)
+}
+# fisher_z(0.5)
+# fisher_z(c(0.5, 0.5))
+
+# back-transformation
+inverse_fisher_z <- function(z) {
+  r <- ( exp(2*z) - 1 ) / ( exp(2*z) + 1 )
+  return(r)
+}
+
+# inverse_fisher_z(0.5)
+# 
+# inverse_fisher_z(fisher_z(0.5))
+
+
+# r <- c(0.3, 0.4, 0.5)
+# z <- fisher_z(r)
+# mean <- mean(z)
+# r_mean <- inverse_fisher_z(mean)
+# r_mean
+# 
+# inverse_fisher_z(mean(fisher_z(r)))
+
+
 
 # Create Function to Aggregrate Results Across Iterations -----------------
 # For each outcome, calculate mean, min and max across all iterations of each
@@ -83,10 +119,19 @@ aggregate_results <- function(data, outcomes, rel_outcomes, abs_outcomes,
     
     
     # aggregate results across iterations
+    # if outcome is correlation -> use Fisher's Z-transformation before averaging,
+    # and backtransform
+    
     tmp <- do.call(
       data.frame,
       aggregate(formula, data = use_data, FUN = function(x) {
+        if (outcome == "cor_ICC" | outcome == "cor_ICC.z") { # if outcome is correlation
+        c(min(x),
+          inverse_fisher_z(mean(fisher_z(x))), # apply Fisher's Z-transformation, average, backtransform
+          max(x))          
+        } else { # else just calculate mean
         c(min(x), mean(x), max(x))
+        }
       })
     )
     
