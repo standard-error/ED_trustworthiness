@@ -363,15 +363,15 @@ ggsave("plots/Study 1/overall data set/plots_Z-transformed_whole_data_set_Study1
 
 # for raw ICC
 # bind all results
-all_agg_results <- merge(cor, diff, by = c("occasions_drawn", "n_occasions", "n_items"))
-all_agg_results <- merge(all_agg_results, rmse, by = c("occasions_drawn", "n_occasions", "n_items"))
-all_agg_results <- merge(all_agg_results, sd, by = c("occasions_drawn", "n_occasions", "n_items"))
-all_agg_results <- merge(all_agg_results, rel, by = c("occasions_drawn", "n_occasions", "n_items"))
-all_agg_results <- merge(all_agg_results, nnegICC, by = c("occasions_drawn", "n_occasions", "n_items"))
-all_agg_results <- merge(all_agg_results, estimProbNeg, by = c("occasions_drawn", "n_occasions", "n_items"))
-all_agg_results <- merge(all_agg_results, estimProbPos, by = c("occasions_drawn", "n_occasions", "n_items"))
-all_agg_results <- merge(all_agg_results, N_rel, by = c("occasions_drawn", "n_occasions", "n_items"))
-all_agg_results <- merge(all_agg_results, N_valid_ICC.z, by = c("occasions_drawn", "n_occasions", "n_items"))
+all_agg_results <- merge(cor, diff, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results <- merge(all_agg_results, rmse, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results <- merge(all_agg_results, sd, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results <- merge(all_agg_results, rel, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results <- merge(all_agg_results, nnegICC, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results <- merge(all_agg_results, estimProbNeg, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results <- merge(all_agg_results, estimProbPos, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results <- merge(all_agg_results, N_rel, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results <- merge(all_agg_results, N_valid_ICC.z, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
 # round to 2 decimals
 all_agg_results[4:33] <- round(all_agg_results[4:33], 2) 
 # sort
@@ -383,15 +383,15 @@ write.csv(all_agg_results, "results/results_table_whole_data_set_Study1.csv", ro
 
 # for ICC.z
 # bind all results
-all_agg_results <- merge(cor.z, diff.z, by = c("occasions_drawn", "n_occasions", "n_items"))
-all_agg_results <- merge(all_agg_results, rmse.z, by = c("occasions_drawn", "n_occasions", "n_items"))
-all_agg_results <- merge(all_agg_results, sd.z, by = c("occasions_drawn", "n_occasions", "n_items"))
-all_agg_results <- merge(all_agg_results, rel, by = c("occasions_drawn", "n_occasions", "n_items"))
-all_agg_results <- merge(all_agg_results, nnegICC, by = c("occasions_drawn", "n_occasions", "n_items"))
-all_agg_results <- merge(all_agg_results, estimProbNeg, by = c("occasions_drawn", "n_occasions", "n_items"))
-all_agg_results <- merge(all_agg_results, estimProbPos, by = c("occasions_drawn", "n_occasions", "n_items"))
-all_agg_results <- merge(all_agg_results, N_rel, by = c("occasions_drawn", "n_occasions", "n_items"))
-all_agg_results <- merge(all_agg_results, N_valid_ICC.z, by = c("occasions_drawn", "n_occasions", "n_items"))
+all_agg_results <- merge(cor.z, diff.z, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results <- merge(all_agg_results, rmse.z, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results <- merge(all_agg_results, sd.z, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results <- merge(all_agg_results, rel, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results <- merge(all_agg_results, nnegICC, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results <- merge(all_agg_results, estimProbNeg, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results <- merge(all_agg_results, estimProbPos, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results <- merge(all_agg_results, N_rel, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results <- merge(all_agg_results, N_valid_ICC.z, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
 # round to 2 decimals
 all_agg_results[4:33] <- round(all_agg_results[4:33], 2) 
 # sort
@@ -643,15 +643,15 @@ ggsave("plots/Study 1/groupwise/single plots/N_rel.svg",plot = plot_list[["N_Rel
 # for raw ICCs
 
 # bind all results
-all_agg_results_grp <- merge(cor, diff, by = c("group", "occasions_drawn", "n_occasions", "n_items"))
-all_agg_results_grp <- merge(all_agg_results_grp, rmse, by = c("group", "occasions_drawn", "n_occasions", "n_items"))
-all_agg_results_grp <- merge(all_agg_results_grp, sd, by = c("group", "occasions_drawn", "n_occasions", "n_items"))
-all_agg_results_grp <- merge(all_agg_results_grp, rel, by = c("group", "occasions_drawn", "n_occasions", "n_items"))
-all_agg_results_grp <- merge(all_agg_results_grp, nnegICC, by = c("group", "occasions_drawn", "n_occasions", "n_items"))
-all_agg_results_grp <- merge(all_agg_results_grp, estimProbNeg, by = c("group", "occasions_drawn", "n_occasions", "n_items"))
-all_agg_results_grp <- merge(all_agg_results_grp, estimProbPos, by = c("group", "occasions_drawn", "n_occasions", "n_items"))
-all_agg_results_grp <- merge(all_agg_results_grp, N_rel, by = c("group", "occasions_drawn", "n_occasions", "n_items"))
-all_agg_results_grp <- merge(all_agg_results_grp, N_valid_ICC.z, by = c("group", "occasions_drawn", "n_occasions", "n_items"))
+all_agg_results_grp <- merge(cor, diff, by = c("group", "occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results_grp <- merge(all_agg_results_grp, rmse, by = c("group", "occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results_grp <- merge(all_agg_results_grp, sd, by = c("group", "occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results_grp <- merge(all_agg_results_grp, rel, by = c("group", "occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results_grp <- merge(all_agg_results_grp, nnegICC, by = c("group", "occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results_grp <- merge(all_agg_results_grp, estimProbNeg, by = c("group", "occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results_grp <- merge(all_agg_results_grp, estimProbPos, by = c("group", "occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results_grp <- merge(all_agg_results_grp, N_rel, by = c("group", "occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results_grp <- merge(all_agg_results_grp, N_valid_ICC.z, by = c("group", "occasions_drawn", "n_occasions", "n_items"), all = TRUE)
 # round to 2 decimals
 all_agg_results_grp[5:34] <- round(all_agg_results_grp[5:34], 2) 
 # sort
@@ -666,15 +666,15 @@ write.csv(all_agg_results_grp, "results/results_table_subgroups_Study1.csv", row
 # for ICC.z
 
 # bind all results
-all_agg_results_grp <- merge(cor.z, diff.z, by = c("group", "occasions_drawn", "n_occasions", "n_items"))
-all_agg_results_grp <- merge(all_agg_results_grp, rmse.z, by = c("group", "occasions_drawn", "n_occasions", "n_items"))
-all_agg_results_grp <- merge(all_agg_results_grp, sd.z, by = c("group", "occasions_drawn", "n_occasions", "n_items"))
-all_agg_results_grp <- merge(all_agg_results_grp, rel, by = c("group", "occasions_drawn", "n_occasions", "n_items"))
-all_agg_results_grp <- merge(all_agg_results_grp, nnegICC, by = c("group", "occasions_drawn", "n_occasions", "n_items"))
-all_agg_results_grp <- merge(all_agg_results_grp, estimProbNeg, by = c("group", "occasions_drawn", "n_occasions", "n_items"))
-all_agg_results_grp <- merge(all_agg_results_grp, estimProbPos, by = c("group", "occasions_drawn", "n_occasions", "n_items"))
-all_agg_results_grp <- merge(all_agg_results_grp, N_rel, by = c("group", "occasions_drawn", "n_occasions", "n_items"))
-all_agg_results_grp <- merge(all_agg_results_grp, N_valid_ICC.z, by = c("group", "occasions_drawn", "n_occasions", "n_items"))
+all_agg_results_grp <- merge(cor.z, diff.z, by = c("group", "occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results_grp <- merge(all_agg_results_grp, rmse.z, by = c("group", "occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results_grp <- merge(all_agg_results_grp, sd.z, by = c("group", "occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results_grp <- merge(all_agg_results_grp, rel, by = c("group", "occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results_grp <- merge(all_agg_results_grp, nnegICC, by = c("group", "occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results_grp <- merge(all_agg_results_grp, estimProbNeg, by = c("group", "occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results_grp <- merge(all_agg_results_grp, estimProbPos, by = c("group", "occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results_grp <- merge(all_agg_results_grp, N_rel, by = c("group", "occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results_grp <- merge(all_agg_results_grp, N_valid_ICC.z, by = c("group", "occasions_drawn", "n_occasions", "n_items"), all = TRUE)
 # round to 2 decimals
 all_agg_results_grp[5:34] <- round(all_agg_results_grp[5:34], 2) 
 # sort
