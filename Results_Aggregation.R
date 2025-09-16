@@ -260,7 +260,8 @@ names(MCSE)
 
 
 # round and save MCSE as csv
-MCSE[3:35] <- round(MCSE[3:35], 2)
+# round to 3 decimals in this case
+MCSE[3:35] <- round(MCSE[3:35], 3)
 write.csv(MCSE, "results/MCSE_table_whole_data_set_Study1.csv", row.names = F)
 
 
