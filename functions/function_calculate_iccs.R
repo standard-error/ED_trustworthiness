@@ -36,6 +36,16 @@ calculate_icc <- function(data,
   # unit: character indicating whether to use single measurements ("single", default)
           # or average of k measurements ("average")
   
+  # Note: Formula for Fisher's Z-transformation differs depending on whether you apply
+  # it to a correlation or an intraclass correlation (see McGraw & Wong, 1996, Appendix B,
+  # doi: 10.1037/1082-989X.1.1.30).
+  # This function transforms the ICCs, but it does not check whether values are infinite 
+  # (which is the case for ICC = 1 and ICC = -1/(K_i - 1)) or whether the transformation
+  # cannot be calculated (which is the case for ICC > 1 and ICC < -1/(K_i - 1)).
+  # The former case results in -Inf or Inf, the latter case in NaN (because the natural
+  # logarithm is not defined for negative numbers).
+  # This check is performed in the one_simulation_run()-function.
+  
 
   # extract (unique) participant IDs as vector
   ids <- unique(data[ , id.var])
