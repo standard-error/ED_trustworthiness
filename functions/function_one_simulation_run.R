@@ -112,7 +112,25 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
   # involving ICC.z
   merged.c <- merged[!is.infinite(merged[ , "comp_ICC.z"]), ]
   # if all participants have valid ICC.z, then merged.c = merged
-  # 
+  
+    # some participants may have NaN for ICC.z because the Fisher's Z-transformation
+  # uses the natural logarithm, which is not defined for negative values. The
+  # expression within log() becomes negative if the numerator is positive and the
+  # denominator is negative, and vice versa.
+  # (for formula, see McGraw & Wong, 1996, Appendix B, doi: 10.1037/1082-989X.1.1.30)
+  # K_i = number of items
+  # numerator: 1+(K_i - 1)*ICC
+  # denominator: 1 - ICC
+  
+  # Case 1: Denominator negative (and numerator positive)
+      # if ICC > 1
+  # Case 2: Numerator negative (and denominator positive)
+      # if ICC < -1/(K_i - 1)
+  
+  # if ICC.z = NaN, remove participant from reliability analyses
+  merged.c <- merged.c[!is.nan(merged.c[ , "comp_ICC.z"]), ]
+  
+  
   N_valid_ICC.z <- nrow(merged.c)
   #### FOR ICC.Z OUTCOMES, MERGED.C IS USED 
 
@@ -125,11 +143,38 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
   
   # ESTIMATION PROBLEMS
   # only relevant for raw ICCs
-  estimationProbNeg <- nrow(merged[merged[ , "comp_ICC"] <= -1, ]) # number of ICCs <= -1
+  
+  # define estimation problems:
+  # Fisher's Z-transformationuses the natural logarithm,
+  # which is not defined for negative values.
+  # The expression within log() becomes negative if the numerator is positive
+  # and the denominator is negative, and vice versa.
+  # (for formula, see McGraw & Wong, 1996, Appendix B, doi: 10.1037/1082-989X.1.1.30)
+  # K_i = number of items
+  # numerator: 1+(K_i - 1)*ICC
+  # denominator: 1 - ICC
+  
+  # Case 1: Denominator negative (and numerator positive)
+  # if ICC > 1
+  # Case 2: Numerator negative (and denominator positive)
+  # if ICC < -1/(K_i - 1)
+  
+  # for ICC = 1 -> ICC.z = inf
+  # for ICC = -1/(K_i -1) -> ICC.z = -inf
+  
+  # -> estimationProbNeg -> if ICC =< -1/(K_i - 1)
+  # -> estimationProbPos -> if ICC >= 1
+  
+  # K_i will be defined below (for reliability)
+  # plug in nr.of.items here for K_i
+  
+  estimationProbNeg <- nrow(merged[merged[ , "comp_ICC"] <= ( (-1) / (nr.of.items - 1) ), ])
+  # number of ICCs <= -1/(K_i -1)
   
   estimationProbPos <- nrow(merged[merged[ , "comp_ICC"] >= 1, ]) # number of ICCs >= 1
   
   negICC <- nrow(merged[merged[ , "comp_ICC"] < 0, ]) # number of negative ICCs
+  # (theoretically impossible)
   
   
   # STANDARD DEVIATION OF ICCs
@@ -142,7 +187,9 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
   # can only be calculated for transformed ICCs
   # ICCs are already transformed in data frame (ICC.z)
   
-  # some participants may have ICC +/- infinite after transformation
+  # some participants may have ICC +/- infinite after transformation (for ICC = 1
+  # or ICC = -1/(K_i - 1))
+  # or they may have NaN (for ICC > 1 or ICC < -1/(K_i - 1))
   # -> problems for reliability estimation
   # -> only use participants with valid values (merged.c) and store number of 
   # participants used for reliability analysis
