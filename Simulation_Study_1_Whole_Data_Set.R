@@ -44,8 +44,8 @@ source("Global_Seed_Item_Sets.R")
 
 # Run Simulation ----------------------------------------------------------
 tictoc::tic()
-res <- simulation_study(data = bench, n_occasions = c(3, 5, seq(10, 100, 10)),
-                        occasions_drawn = c("random", "by order"), n_items = c(5, 15),
+res <- simulation_study(data = bench, n_occasions = c(3, seq(10, 100, 10)),
+                        occasions_drawn = c("random", "by order"), n_items = c(5, 10, 15),
                         n_iteration = 1000,
                         id.var = "SERIAL", all_items = c('aerger1', 'aerger2', 'aerger3',
                                                          'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
@@ -75,8 +75,8 @@ save(res, file="results/sim_results_whole_data_set_Study1.rda")
 # -> check whether results are comparable
 # (but use the same seed for the item set)
 
-res2 <- simulation_study(data = bench, n_occasions = c(3, 5, seq(10, 100, 10)),
-                         occasions_drawn = c("random", "by order"), n_items = c(5, 15),
+res2 <- simulation_study(data = bench, n_occasions = c(3, seq(10, 100, 10)),
+                         occasions_drawn = c("random", "by order"), n_items = c(5, 10, 15),
                          n_iteration = 1000,
                          id.var = "SERIAL", all_items = c('aerger1', 'aerger2', 'aerger3',
                                                           'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
