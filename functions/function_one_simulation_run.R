@@ -105,17 +105,16 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
   merged <- merge(benchmark_ICCdata, sim_ICCdata, by = id.var)
   
   
-  # some participants may have ICC.z +/- infinite after transformation
-  # -> problems for reliability estimation and other outcomes involving ICC.z
+  # Some participants may have an ICC.z of +/- infinite or NaN
+  # -> estimation problems
   # -> only use participants with valid values and store number of 
   # participants used for reliability analysis and other outcomes
   # involving ICC.z
-  merged.c <- merged[!is.infinite(merged[ , "comp_ICC.z"]), ]
-  # if all participants have valid ICC.z, then merged.c = merged
   
-    # some participants may have NaN for ICC.z because the Fisher's Z-transformation
-  # uses the natural logarithm, which is not defined for negative values. The
-  # expression within log() becomes negative if the numerator is positive and the
+  # Explanation:
+  # some participants may have NaN for ICC.z because the Fisher's Z-transformation
+  # uses the natural logarithm, which is not defined for values <= 0. The
+  # expression within log() becomes negative (< 0) if the numerator is positive and the
   # denominator is negative, and vice versa.
   # (for formula, see McGraw & Wong, 1996, Appendix B, doi: 10.1037/1082-989X.1.1.30)
   # K_i = number of items
@@ -123,12 +122,32 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
   # denominator: 1 - ICC
   
   # Case 1: Denominator negative (and numerator positive)
-      # if ICC > 1
+  # if ICC > 1
   # Case 2: Numerator negative (and denominator positive)
-      # if ICC < -1/(K_i - 1)
+  # if ICC < -1/(K_i - 1)
   
+  # Furthermore, the expression within log() becomes 0
+  # if ICC == -1/(K_i - 1)
+  
+  # The expression within log() is also not defined for
+  # ICC == 1
+  # because the denominator would be 0.
+  
+  # Therefore, the domain of the function is:
+  # D = R \ {<= -1/(K_i - 1), >= 1}
+  # D = ]-1/(K_i - 1); 1[
+  
+  # So, strictly speaking the function is not defined for ICC <= -1/(K_i - 1)
+  # and ICC >= 1. However, for ICC = -1/(K_i - 1) and ICC = 1,
+  # R returns infinite values, as the function
+  # tends towards -inf / inf at the boundaries of its domain.
+  
+  # exclude participants with invalid ICC.z:
+  # if ICC.z = +/- inf, remove participant
+  merged.c <- merged[!is.infinite(merged[ , "comp_ICC.z"]), ]
   # if ICC.z = NaN, remove participant from reliability analyses
   merged.c <- merged.c[!is.nan(merged.c[ , "comp_ICC.z"]), ]
+    # if all participants have valid ICC.z, then merged.c = merged
   
   
   N_valid_ICC.z <- nrow(merged.c)

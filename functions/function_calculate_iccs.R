@@ -44,6 +44,11 @@ calculate_icc <- function(data,
   # cannot be calculated (which is the case for ICC > 1 and ICC < -1/(K_i - 1)).
   # The former case results in -Inf or Inf, the latter case in NaN (because the natural
   # logarithm is not defined for negative numbers).
+  # Strictly speaking, the function is not defined for ICC <= -1/(K_i - 1)
+  # and ICC >= 1. However, for ICC = -1/(K_i - 1) and ICC = 1,
+  # R returns infinite values, as the function
+  # tends towards -inf / inf at the boundaries of its domain.
+  
   # This check is performed in the one_simulation_run()-function.
   
 
