@@ -67,19 +67,20 @@ plot_outcome <- function(data, ylims=NULL, ylabel=NULL, x_breaks = seq(0, 100, 1
       y = .data[[col_mean]], # y axis: mean outcome
       color = factor(n_items), # different lines for n_items
       shape = factor(n_items),
+      linetype = factor(n_items),
       group = factor(n_items)
     )) +
     geom_point(position = position_dodge(width = 2)) +
-    geom_line(linewidth = 0.3) +
+    geom_line(linewidth = 0.3, position = position_dodge(width = 2)) +
     geom_errorbar(aes(ymin = .data[[col_min]], ymax = .data[[col_max]]),
                   position = position_dodge(width = 2)) + # error bar: min and max outcome
     scale_x_continuous(breaks = x_breaks) +
     xlab("Number of Occasions") +
     #  if y label is provided, use it; else, use the outcome name extracted from column names of data 
     ylab(ifelse(!is.null(ylabel), ylabel, outcome_name)) +
-    labs(color = "Number of Items", shape = "Number of Items") +
+    labs(color = "Number of Items", shape = "Number of Items", linetype = "Number of Items") +
     facet_formula +
-    scale_color_viridis_d(option = "magma", begin = 0.20, end = 0.80) +
+    scale_color_grey(start = 0.30, end = 0.00) +
     theme_custom
   
   if (!is.null(ylims)) {
