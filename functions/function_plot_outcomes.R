@@ -27,14 +27,18 @@ my_theme <- theme_bw() +
 
 # Function for Data Visualization (Overall) -------------------------------
 plot_outcome <- function(data, ylims=NULL, ylabel=NULL, x_breaks = seq(0, 100, 10), theme_custom = my_theme,
-                         groupwise = FALSE) {
+                         dodge_width = 2,
+                         groupwise = FALSE, split_facets = FALSE) {
   # data : data frame with the results
   # ylims: optional y-limit per outcome 
   # ylabel: optional y-axis label
   # x_breaks: breaks to use on x-axis, e.g., seq(0, 100, 10)
   # theme_custom : ggplot theme
+  # dodge_width: argument indicating how much to jitter points from different grouping variables
   # groupwise: logical indicating whether or not the data contains high/medium/low NED group 
           # and if it should be plotted groupwise
+  # split_facets: logical indicating whether the two facets (occasions_drawn) should be
+          # plotted in one plot or in separate plots
   
 
   # Identify mean, min, max columns automatically from data frame
@@ -57,11 +61,14 @@ plot_outcome <- function(data, ylims=NULL, ylabel=NULL, x_breaks = seq(0, 100, 1
   } else if (groupwise == TRUE & "group" %in% names(data)) {
     data[ , "group"] <- factor(data[ , "group"], levels = c("high NED", "medium NED", "low NED"))
     facet_formula <- facet_grid(rows = vars(group), cols = vars(occasions_drawn))
+    facet_var <- "occasions_drawn" # facet variable to split plots by (if split_facet == TRUE)
   } else if (groupwise == FALSE ) {
     facet_formula <- facet_wrap(~factor(occasions_drawn))
+    facet_var <- "occasions_drawn" # facet variable to split plots by (if split_facet == TRUE)
   }
   
-  # Build plot
+  # Build function for base plot
+  base_plot <- function(data) {
   p <- ggplot(data, aes(
       x = n_occasions, # x axis: n_occasions
       y = .data[[col_mean]], # y axis: mean outcome
@@ -70,16 +77,15 @@ plot_outcome <- function(data, ylims=NULL, ylabel=NULL, x_breaks = seq(0, 100, 1
       linetype = factor(n_items),
       group = factor(n_items)
     )) +
-    geom_point(position = position_dodge(width = 2)) +
-    geom_line(linewidth = 0.3, position = position_dodge(width = 2)) +
+    geom_point(position = position_dodge(width = dodge_width)) +
+    geom_line(linewidth = 0.3, position = position_dodge(width = dodge_width)) +
     geom_errorbar(aes(ymin = .data[[col_min]], ymax = .data[[col_max]]),
-                  position = position_dodge(width = 2)) + # error bar: min and max outcome
+                  position = position_dodge(width = dodge_width)) + # error bar: min and max outcome
     scale_x_continuous(breaks = x_breaks) +
     xlab("Number of Occasions") +
     #  if y label is provided, use it; else, use the outcome name extracted from column names of data 
     ylab(ifelse(!is.null(ylabel), ylabel, outcome_name)) +
     labs(color = "Number of Items", shape = "Number of Items", linetype = "Number of Items") +
-    facet_formula +
     scale_color_grey(start = 0.30, end = 0.00) +
     theme_custom
   
@@ -88,8 +94,32 @@ plot_outcome <- function(data, ylims=NULL, ylabel=NULL, x_breaks = seq(0, 100, 1
   }
   
   return(p)
+  }
+  
+  
+  # Plot according to split_facet == TRUE or FALSE
+  if (split_facets == FALSE) {
+    return(base_plot(data) + facet_formula)
+  } else if (split_facets == TRUE) {
+    
+    split_plots <- lapply(unique(data[[facet_var]]), # apply to each unique facet of the facet_var to split by
+                          function(facet) { # function of facet
+                            data_sub <- data[which(data[ , facet_var] == facet), ] # subset data according to facet
+                            p <- base_plot(data_sub)
+                            p <- p + ggtitle(paste0("Occasions drawn: ", facet))
+                            return(p)
+                          })
+    return(split_plots)
+    
+  }
   
 }
+
+
+
+
+
+
 
 
 

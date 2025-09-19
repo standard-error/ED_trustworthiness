@@ -190,12 +190,11 @@ plot_list <- lapply(names(data_list), function(outcome) {
   df <- data_list[[outcome]]
   plot_outcome(df, ylabel = ylabels[[outcome]], ylims=ylim_list[[outcome]],
                x_breaks = seq(0, 100, 20), theme_custom = my_theme,
-               groupwise = FALSE)
+               dodge_width = 2,
+               groupwise = FALSE, split_facets = FALSE)
 })
 
 names(plot_list) <- names(data_list)
-
-
 
 
 
@@ -219,38 +218,38 @@ plot_list[["N_rel"]]
 
 
 # Save Single Plots -------------------------------------------------------
-ggsave("plots/Study 1/overall data set/single plots/correlation.pdf",plot = plot_list[["cor"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/correlation.z.pdf",plot = plot_list[["cor.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/difference.pdf",plot = plot_list[["diff"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/difference.z.pdf",plot = plot_list[["diff.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/rmse.pdf",plot = plot_list[["rmse"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/rmse.z.pdf",plot = plot_list[["rmse.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/sd.pdf",plot = plot_list[["sd"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/sd.z.pdf",plot = plot_list[["sd.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/reliability.pdf",plot = plot_list[["rel"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/NnegICC.pdf",plot = plot_list[["nnegICC"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/EstimProbNeg.pdf",plot = plot_list[["estimProbNeg"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/EstimProbPos.pdf",plot = plot_list[["estimProbPos"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/N_ValidICC.z.pdf",plot = plot_list[["N_valid_ICC.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/N_rel.pdf",plot = plot_list[["N_Rel"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/correlation.pdf",plot = plot_list[["cor"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/correlation.z.pdf",plot = plot_list[["cor.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/difference.pdf",plot = plot_list[["diff"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/difference.z.pdf",plot = plot_list[["diff.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/rmse.pdf",plot = plot_list[["rmse"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/rmse.z.pdf",plot = plot_list[["rmse.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/sd.pdf",plot = plot_list[["sd"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/sd.z.pdf",plot = plot_list[["sd.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/reliability.pdf",plot = plot_list[["rel"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/NnegICC.pdf",plot = plot_list[["nnegICC"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/EstimProbNeg.pdf",plot = plot_list[["estimProbNeg"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/EstimProbPos.pdf",plot = plot_list[["estimProbPos"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/N_ValidICC.z.pdf",plot = plot_list[["N_valid_ICC.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/N_rel.pdf",plot = plot_list[["N_Rel"]], device="pdf", height = 148, width = 210, unit="mm")
 
 
 # as svg (for presentations)
 
-ggsave("plots/Study 1/overall data set/single plots/correlation.svg",plot = plot_list[["cor"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/correlation.z.svg",plot = plot_list[["cor.z"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/difference.svg",plot = plot_list[["diff"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/difference.z.svg",plot = plot_list[["diff.z"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/rmse.svg",plot = plot_list[["rmse"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/rmse.z.svg",plot = plot_list[["rmse.z"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/sd.svg",plot = plot_list[["sd"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/sd.z.svg",plot = plot_list[["sd.z"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/reliability.svg",plot = plot_list[["rel"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/NnegICC.svg",plot = plot_list[["nnegICC"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/EstimProbNeg.svg",plot = plot_list[["estimProbNeg"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/EstimProbPos.svg",plot = plot_list[["estimProbPos"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/N_ValidICC.z.svg",plot = plot_list[["N_valid_ICC.z"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/N_rel.svg",plot = plot_list[["N_Rel"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/correlation.svg",plot = plot_list[["cor"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/correlation.z.svg",plot = plot_list[["cor.z"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/difference.svg",plot = plot_list[["diff"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/difference.z.svg",plot = plot_list[["diff.z"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/rmse.svg",plot = plot_list[["rmse"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/rmse.z.svg",plot = plot_list[["rmse.z"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/sd.svg",plot = plot_list[["sd"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/sd.z.svg",plot = plot_list[["sd.z"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/reliability.svg",plot = plot_list[["rel"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/NnegICC.svg",plot = plot_list[["nnegICC"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/EstimProbNeg.svg",plot = plot_list[["estimProbNeg"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/EstimProbPos.svg",plot = plot_list[["estimProbPos"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/N_ValidICC.z.svg",plot = plot_list[["N_valid_ICC.z"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/N_rel.svg",plot = plot_list[["N_Rel"]], device="svg", height = 148, width = 210, unit="mm")
 
 
 
@@ -357,6 +356,274 @@ ggsave("plots/Study 1/overall data set/plots_Z-transformed_whole_data_set_Study1
 
 ggsave("plots/Study 1/overall data set/plots_Z-transformed_whole_data_set_Study1.svg",plot = combined, device="svg", height = 148, width = 210, unit="mm")
 # save in DIN A5 format
+
+
+
+
+
+# Single Plots Split by occasions_drawn -----------------------------------
+
+plot_list_split <- lapply(names(data_list), function(outcome) {
+  dat <- data_list[[outcome]]
+  plot_outcome(dat, ylabel=ylabels[[outcome]], ylims=ylim_list[[outcome]],
+               x_breaks = seq(0, 100, 20), theme_custom = my_theme,
+               dodge_width = 5,
+               groupwise = FALSE,
+               split_facets = TRUE)
+})
+names(plot_list_split) <- names(data_list)
+
+plot_list_split[["cor"]][[1]]
+plot_list_split[["cor"]][[2]]
+plot_list_split[["cor.z"]][[1]]
+plot_list_split[["cor.z"]][[2]]
+plot_list_split[["diff"]][[1]]
+plot_list_split[["diff"]][[2]]
+plot_list_split[["diff.z"]][[1]]
+plot_list_split[["diff.z"]][[2]]
+plot_list_split[["rmse"]][[1]]
+plot_list_split[["rmse"]][[2]]
+plot_list_split[["rmse.z"]][[1]]
+plot_list_split[["rmse.z"]][[2]]
+plot_list_split[["sd"]][[1]]
+plot_list_split[["sd"]][[2]]
+plot_list_split[["sd.z"]][[1]]
+plot_list_split[["sd.z"]][[2]]
+plot_list_split[["rel"]][[1]]
+plot_list_split[["rel"]][[2]]
+plot_list_split[["nnegICC"]][[1]]
+plot_list_split[["nnegICC"]][[2]]
+plot_list_split[["estimProbNeg"]][[1]]
+plot_list_split[["estimProbNeg"]][[2]]
+plot_list_split[["estimProbPos"]][[1]]
+plot_list_split[["estimProbPos"]][[2]]
+plot_list_split[["N_valid_ICC.z"]][[1]]
+plot_list_split[["N_valid_ICC.z"]][[2]]
+plot_list_split[["N_rel"]][[1]]
+plot_list_split[["N_rel"]][[2]]
+
+
+
+
+# Combine Plots Split by occasions_drawn ----------------------------------
+
+
+# for ICC, random draws
+# adjust the plots a little (e.g., no y-axis lable but title, no x-axis label)
+a <- plot_list_split[["cor"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+                                  plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
+                                  axis.text = element_text(size=10)) + ggtitle("Correlation with Benchmark")
+# a
+b <- plot_list_split[["diff"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+                                   plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
+                                   axis.text = element_text(size=10)) + ggtitle("Difference to Benchmark")
+# b
+c <- plot_list_split[["rmse"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+                                   plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
+                                   axis.text = element_text(size=10)) + ggtitle("RMSE")
+# c
+d <- plot_list_split[["sd"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+                                 plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
+                                 axis.text = element_text(size=10)) + ggtitle("SD of ICCs")
+# d
+e <- plot_list_split[["rel"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+                                plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
+                                axis.text = element_text(size=10)) + ggtitle("Reliability of ICCs")
+# e
+f <- plot_list_split[["nnegICC"]][[1]]+ theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+                                    plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
+                                    axis.text = element_text(size=10)) + ggtitle("Number of Negative ICCs")
+
+
+
+panel_random <- ggpubr::ggarrange(a,b,c,d,e,f , ncol=3, nrow=2, common.legend = TRUE, legend = "top",
+                                  align = "hv", widths = c(1,1,1), heights = c(1, 1)) # equal panel sizes
+
+# 
+panel_random <- annotate_figure(panel_random,
+                                top = text_grob("Occasions drawn randomly", face="bold"),
+                                bottom = text_grob("Number of occasions"))
+
+panel_random
+
+
+
+# for ICC, ordered draws
+# adjust the plots a little (e.g., no y-axis lable but title, no x-axis label)
+a <- plot_list_split[["cor"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+                                           plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
+                                           axis.text = element_text(size=10)) + ggtitle("Correlation with Benchmark")
+# a
+b <- plot_list_split[["diff"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+                                            plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
+                                            axis.text = element_text(size=10)) + ggtitle("Difference to Benchmark")
+# b
+c <- plot_list_split[["rmse"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+                                            plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
+                                            axis.text = element_text(size=10)) + ggtitle("RMSE")
+# c
+d <- plot_list_split[["sd"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+                                          plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
+                                          axis.text = element_text(size=10)) + ggtitle("SD of ICCs")
+# d
+e <- plot_list_split[["rel"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+                                           plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
+                                           axis.text = element_text(size=10)) + ggtitle("Reliability of ICCs")
+# e
+f <- plot_list_split[["nnegICC"]][[2]]+ theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+                                              plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
+                                              axis.text = element_text(size=10)) + ggtitle("Number of Negative ICCs")
+
+
+
+panel_order <- ggpubr::ggarrange(a,b,c,d,e,f , ncol=3, nrow=2, common.legend=TRUE, legend = "top",
+                                  align = "hv", widths = c(1,1,1), heights = c(1, 1)) # equal panel sizes
+
+
+panel_order <- annotate_figure(panel_order,
+                               top = text_grob("Occasions drawn by order", face="bold"),
+                               bottom = text_grob("Number of occasions"))
+
+panel_order
+
+
+combined <- ggpubr::ggarrange(panel_random, panel_order, nrow=2, ncol=1,
+                             align="hv",widths = c(1,1), heights = c(1, 1))
+
+combined
+
+
+# save panels
+ggsave("plots/Study 1/overall data set/single plots/split by facet/ICC_random_draws.pdf", plot = panel_random,
+       device="pdf", height=148, width=210, unit="mm")
+
+ggsave("plots/Study 1/overall data set/single plots/split by facet/ICC_random_draws.svg", plot = panel_random,
+       device="svg", height=148, width=210, unit="mm")
+
+ggsave("plots/Study 1/overall data set/single plots/split by facet/ICC_ordered_draws.pdf", plot = panel_order,
+       device="pdf", height=148, width=210, unit="mm")
+
+ggsave("plots/Study 1/overall data set/single plots/split by facet/ICC_ordered_draws.svg", plot = panel_order,
+       device="svg", height=148, width=210, unit="mm")
+
+
+ggsave("plots/Study 1/overall data set/single plots/split by facet/ICC_combined.pdf", plot = combined,
+       device="pdf", height=250, width=210, unit="mm")
+
+ggsave("plots/Study 1/overall data set/single plots/split by facet/ICC_combined.svg", plot = combined,
+       device="svg", height=250, width=210, unit="mm")
+
+
+
+# for ICC.z, random draws
+# adjust the plots a little (e.g., no y-axis lable but title, no x-axis label)
+a <- plot_list_split[["cor.z"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+                                           plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
+                                           axis.text = element_text(size=10)) + ggtitle("Correlation with Benchmark")
+# a
+b <- plot_list_split[["diff.z"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+                                            plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
+                                            axis.text = element_text(size=10)) + ggtitle("Difference to Benchmark")
+# b
+c <- plot_list_split[["rmse.z"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+                                            plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
+                                            axis.text = element_text(size=10)) + ggtitle("RMSE")
+# c
+d <- plot_list_split[["sd.z"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+                                          plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
+                                          axis.text = element_text(size=10)) + ggtitle("SD of ICCs")
+# d
+e <- plot_list_split[["rel"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+                                           plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
+                                           axis.text = element_text(size=10)) + ggtitle("Reliability of ICCs")
+# e
+f <- plot_list_split[["nnegICC"]][[1]]+ theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+                                              plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
+                                              axis.text = element_text(size=10)) + ggtitle("Number of Negative ICCs")
+
+
+
+panel_random <- ggpubr::ggarrange(a,b,c,d,e,f , ncol=3, nrow=2, common.legend = TRUE, legend = "top",
+                                  align = "hv", widths = c(1,1,1), heights = c(1, 1)) # equal panel sizes
+
+# 
+panel_random <- annotate_figure(panel_random,
+                                top = text_grob("Occasions drawn randomly", face="bold"),
+                                bottom = text_grob("Number of occasions"))
+
+panel_random
+
+
+
+# for ICC, ordered draws
+# adjust the plots a little (e.g., no y-axis lable but title, no x-axis label)
+a <- plot_list_split[["cor.z"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+                                           plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
+                                           axis.text = element_text(size=10)) + ggtitle("Correlation with Benchmark")
+# a
+b <- plot_list_split[["diff.z"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+                                            plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
+                                            axis.text = element_text(size=10)) + ggtitle("Difference to Benchmark")
+# b
+c <- plot_list_split[["rmse.z"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+                                            plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
+                                            axis.text = element_text(size=10)) + ggtitle("RMSE")
+# c
+d <- plot_list_split[["sd.z"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+                                          plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
+                                          axis.text = element_text(size=10)) + ggtitle("SD of ICCs")
+# d
+e <- plot_list_split[["rel"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+                                           plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
+                                           axis.text = element_text(size=10)) + ggtitle("Reliability of ICCs")
+# e
+f <- plot_list_split[["nnegICC"]][[2]]+ theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+                                              plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
+                                              axis.text = element_text(size=10)) + ggtitle("Number of Negative ICCs")
+
+
+
+panel_order <- ggpubr::ggarrange(a,b,c,d,e,f , ncol=3, nrow=2, common.legend=TRUE, legend = "top",
+                                 align = "hv", widths = c(1,1,1), heights = c(1, 1)) # equal panel sizes
+
+
+panel_order <- annotate_figure(panel_order,
+                               top = text_grob("Occasions drawn by order", face="bold"),
+                               bottom = text_grob("Number of occasions"))
+
+panel_order
+
+
+combined <- ggpubr::ggarrange(panel_random, panel_order, nrow=2, ncol=1,
+                              align="hv",widths = c(1,1), heights = c(1, 1))
+
+combined
+
+
+# save panels
+ggsave("plots/Study 1/overall data set/single plots/split by facet/ICC.z_random_draws.pdf", plot = panel_random,
+       device="pdf", height=148, width=210, unit="mm")
+
+ggsave("plots/Study 1/overall data set/single plots/split by facet/ICC.z_random_draws.svg", plot = panel_random,
+       device="svg", height=148, width=210, unit="mm")
+
+ggsave("plots/Study 1/overall data set/single plots/split by facet/ICC.z_ordered_draws.pdf", plot = panel_order,
+       device="pdf", height=148, width=210, unit="mm")
+
+ggsave("plots/Study 1/overall data set/single plots/split by facet/ICC.z_ordered_draws.svg", plot = panel_order,
+       device="svg", height=148, width=210, unit="mm")
+
+
+ggsave("plots/Study 1/overall data set/single plots/split by facet/ICC.z_combined.pdf", plot = combined,
+       device="pdf", height=250, width=210, unit="mm")
+
+ggsave("plots/Study 1/overall data set/single plots/split by facet/ICC.z_combined.svg", plot = combined,
+       device="svg", height=250, width=210, unit="mm")
+
+
+
+
+
 
 
 # Build .csv Table --------------------------------------------------------
