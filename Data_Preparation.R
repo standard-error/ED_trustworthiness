@@ -59,13 +59,15 @@ rm(list=ls())
 load("internal use/prepared data/emolive_clean_all_participants.rda")
 
 L2 <- dplyr::distinct(AA.c, SERIAL, n_occ) 
-table(L2$n_occ >= 100)
-# 36 participants with at least 100 occasions
+# table(L2$n_occ >= 100)
+# # 36 participants with at least 100 occasions
+table(L2$n_occ >= 70) 
+# 109 participants with at least 70 occasions
 # use these as benchmark
 
 
-# select participants with at least 100 occasions
-bench <- AA.c[which(AA.c$n_occ >= 100), ]
+# select participants with at least 70 occasions
+bench <- AA.c[which(AA.c$n_occ >= 70), ]
 
 # order occasions
 bench <- bench[order(bench$SERIAL, bench$occasion_total), ]
@@ -76,9 +78,9 @@ bench <- bench %>%
   as.data.frame()
 
 
-# select only 100 occasions for each participant
+# select only 70 occasions for each participant
 # by order!
-bench <- bench[which(bench$occ_running <= 100), ]
+bench <- bench[which(bench$occ_running <= 70), ]
 
 
 # select variables relevant for analyses (i.e. ID [SERIAL],
@@ -108,10 +110,10 @@ ICCdata <- calculate_icc(data=bench,id.var="SERIAL", items = c('aerger1', 'aerge
                                                                'scham1', 'scham2', 'scham3',
                                                                'schuld1', 'schuld2', 'schuld3'),
                          type="consistency", unit="single")
-quantile(ICCdata[ ,"ICC"], probs=c(0.33, 0.66))[1]
-# raw ICCs: 33% percentile  = 0.1921, 66% percentile = 0.2882
+quantile(ICCdata[ ,"ICC"], probs=c(0.33, 0.66))
+# raw ICCs: 33% percentile  = 0.2002618, 66% percentile = 0.2882
 quantile(ICCdata[ ,"ICC.z"], probs=c(0.33, 0.66))
-# ICC.z: 33% percentile = 0.7595, 66% percentile = 0.9781
+# ICC.z: 33% percentile = 0.7797178, 66% percentile = 1.0186924
 
 # -> same participants in sub groups when using ICC vs. ICC.z?
 # CAVE: ICCs not reversed -> low ICC = high NED
@@ -137,6 +139,10 @@ bench_highNED <- bench[which(bench$SERIAL %in% highNED.ID), ]
 bench_mediumNED <- bench[which(bench$SERIAL %in% mediumNED.ID), ]
 bench_lowNED <- bench[which(bench$SERIAL %in% lowNED.ID), ]
 
+
+# length(unique(bench_highNED$SERIAL)) # 36 participants in high NED
+# length(unique(bench_mediumNED$SERIAL)) # 36 participants in medium NED
+# length(unique(bench_lowNED$SERIAL)) # 37 participants in low NED
 
 # save data
 save(bench_highNED, file="internal use/prepared data/benchmark_data_highNED_Study1.rda") # for internal use (just for consistency)
