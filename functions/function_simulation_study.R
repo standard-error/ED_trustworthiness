@@ -150,7 +150,7 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
 
   
   # PREPARE BENCHMARK DATA
-  benchmark_ICCdata <- calculate_icc(data, id.var=id.var,
+  benchmark_ICCdata <- calculate_icc(data=data, id.var=id.var,
                                      items = all_items,
                                      type = type,
                                      unit = unit)
