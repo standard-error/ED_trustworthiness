@@ -137,7 +137,7 @@ ylabels <- list("Correlation with Benchmark",
              "Number of ICCs for Reliability") 
 names(ylabels) <- names(data_list)
 
-# Check minimum and maximum for y limits of each plot and define
+# # Check minimum and maximum for y limits of each plot and define
 # min(cor$cor_ICC_min)
 # max(cor$cor_ICC_max)
 # min(cor.z$cor_ICC.z_min)
@@ -169,27 +169,27 @@ names(ylabels) <- names(data_list)
 # max(N_rel$N_rel_max)
 
 ylim_list <- list(
-  c(-0.35, 1), # correlation with benchmark
-  c(-0.35, 1), # correlation with benchmark (ICC.z)
-  c(-0.7, 0.85), # difference in ICCs (compared to benchmark)
-  c(-5.5, 3.5), # difference in ICCs (compared to benchmark) for ICC.z
-  c(0, 0.35), # RMSE
-  c(0, 1.5), # RMSE (ICC.z)
-  c(0, 0.32), # SD of ICCs
-  c(0, 1.2), # SD of ICC.z
+  c(0.3, 1), # correlation with benchmark
+  c(0.3, 1), # correlation with benchmark (ICC.z)
+  c(-0.8, 0.8), # difference in ICCs (compared to benchmark)
+  c(-2.2, 1.7), # difference in ICCs (compared to benchmark) for ICC.z
+  c(0, 0.2), # RMSE
+  c(0, 0.7), # RMSE (ICC.z)
+  c(0.1, 0.2), # SD of ICCs
+  c(0.2, 0.45), # SD of ICC.z
   c(0, 1), # Reliability
-  c(0, 22), # number of negative ICCs
+  c(0, 25), # number of negative ICCs
   c(0, 1), # number of estimation problems (negative)
   c(0, 1), # number of estimation problems (positive)
-  c(35, 36), # number of valid ICC.z
-  c(35, 36) # number of ICCs used for reliability
+  c(105, 109), # number of valid ICC.z
+  c(105, 109) # number of ICCs used for reliability
 )
 names(ylim_list) <- names(data_list)
 
 plot_list <- lapply(names(data_list), function(outcome) {
   df <- data_list[[outcome]]
   plot_outcome(df, ylabel = ylabels[[outcome]], ylims=ylim_list[[outcome]],
-               x_breaks = seq(0, 100, 20), theme_custom = my_theme,
+               x_breaks = seq(0, 70, 10), theme_custom = my_theme,
                dodge_width = 3,
                groupwise = FALSE, split_facets = FALSE)
 })
@@ -941,7 +941,7 @@ ylabels <- list("Correlation with Benchmark",
                 "Number of ICCs for Reliability") 
 names(ylabels) <- names(data_list)
 
-# Check minimum and maximum for y limits of each plot and define
+# # Check minimum and maximum for y limits of each plot and define
 # min(cor$cor_ICC_min)
 # max(cor$cor_ICC_max)
 # min(cor.z$cor_ICC.z_min)
@@ -973,20 +973,20 @@ names(ylabels) <- names(data_list)
 # max(N_rel$N_rel_max)
 
 ylim_list <- list(
-  c(-1, 1), # correlation with benchmark
-  c(-1, 1), # correlation with benchmark (ICC.z)
-  c(-0.7, 0.85), # difference in ICCs (compared to benchmark)
-  c(-5, 3.5), # difference in ICCs (compared to benchmark) for ICC.z
-  c(0, 0.5), # RMSE
-  c(0, 1.8), # RMSE (ICC.z)
-  c(0, 0.45), # SD of ICCs
-  c(0, 1.4), # SD of ICCs (ICC.z)
+  c(-0.4, 1), # correlation with benchmark
+  c(-0.45, 1), # correlation with benchmark (ICC.z)
+  c(-0.8, 0.7), # difference in ICCs (compared to benchmark)
+  c(-2.2, 2.2), # difference in ICCs (compared to benchmark) for ICC.z
+  c(0, 0.25), # RMSE
+  c(0, 0.8), # RMSE (ICC.z)
+  c(0, 0.23), # SD of ICCs
+  c(0, 0.5), # SD of ICCs (ICC.z)
   c(0, 1), # Reliability
-  c(0, 10), # number of negative ICCs
+  c(0, 16), # number of negative ICCs
   c(0, 1), # number of estimation problems (negative)
   c(0, 1), # number of estimation problems (positive)
-  c(11, 12), # number of valid ICC.z
-  c(11, 12) # number of ICCs used for reliability
+  c(36, 37), # number of valid ICC.z
+  c(36, 37) # number of ICCs used for reliability
 )
 names(ylim_list) <- names(data_list)
 
@@ -1330,20 +1330,20 @@ names(ylabels) <- names(data_list)
 # max(N_rel$N_rel_max)
 
 ylim_list <- list(
-  c(-0.35, 1), # correlation with benchmark
-  c(-0.35, 1), # correlation with benchmark (ICC.z)
-  c(-0.7, 0.85), # difference in ICCs (compared to benchmark)
-  c(-5.5, 3.5), # difference in ICCs (compared to benchmark) for ICC.z
-  c(0, 0.35), # RMSE
-  c(0, 1.5), # RMSE (ICC.z)
-  c(0, 0.32), # SD of ICCs
-  c(0, 1.2), # SD of ICC.z
+  c(0.3, 1), # correlation with benchmark
+  c(0.3, 1), # correlation with benchmark (ICC.z)
+  c(-0.8, 0.8), # difference in ICCs (compared to benchmark)
+  c(-2.2, 1.7), # difference in ICCs (compared to benchmark) for ICC.z
+  c(0, 0.2), # RMSE
+  c(0, 0.7), # RMSE (ICC.z)
+  c(0.1, 0.2), # SD of ICCs
+  c(0.2, 0.45), # SD of ICC.z
   c(0, 1), # Reliability
-  c(0, 22), # number of negative ICCs
+  c(0, 25), # number of negative ICCs
   c(0, 1), # number of estimation problems (negative)
   c(0, 1), # number of estimation problems (positive)
-  c(35, 36), # number of valid ICC.z
-  c(35, 36) # number of ICCs used for reliability
+  c(105, 109), # number of valid ICC.z
+  c(105, 109) # number of ICCs used for reliability
 )
 names(ylim_list) <- names(data_list)
 
@@ -1545,20 +1545,20 @@ names(ylabels) <- names(data_list)
 # max(N_rel$N_rel_max)
 
 ylim_list <- list(
-  c(-1, 1), # correlation with benchmark
-  c(-1, 1), # correlation with benchmark (ICC.z)
-  c(-0.7, 0.85), # difference in ICCs (compared to benchmark)
-  c(-5, 3.5), # difference in ICCs (compared to benchmark) for ICC.z
-  c(0, 0.5), # RMSE
-  c(0, 1.8), # RMSE (ICC.z)
-  c(0, 0.45), # SD of ICCs
-  c(0, 1.4), # SD of ICCs (ICC.z)
+  c(-0.4, 1), # correlation with benchmark
+  c(-0.45, 1), # correlation with benchmark (ICC.z)
+  c(-0.8, 0.7), # difference in ICCs (compared to benchmark)
+  c(-2.2, 2.2), # difference in ICCs (compared to benchmark) for ICC.z
+  c(0, 0.25), # RMSE
+  c(0, 0.8), # RMSE (ICC.z)
+  c(0, 0.23), # SD of ICCs
+  c(0, 0.5), # SD of ICCs (ICC.z)
   c(0, 1), # Reliability
-  c(0, 10), # number of negative ICCs
+  c(0, 16), # number of negative ICCs
   c(0, 1), # number of estimation problems (negative)
   c(0, 1), # number of estimation problems (positive)
-  c(11, 12), # number of valid ICC.z
-  c(11, 12) # number of ICCs used for reliability
+  c(36, 37), # number of valid ICC.z
+  c(36, 37) # number of ICCs used for reliability
 )
 names(ylim_list) <- names(data_list)
 

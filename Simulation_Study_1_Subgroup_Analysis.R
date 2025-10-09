@@ -58,7 +58,8 @@ source("Global_Seed_Item_Sets.R")
 # '' High NED Group -------------------------------------------------------
 
 tictoc::tic()
-res_highNED <- simulation_study(data = bench_highNED, n_occasions = c(3, seq(10, 100, 10)),
+# n_occasions: 14, 20, ..., 70 in steps of 10
+res_highNED <- simulation_study(data = bench_highNED, n_occasions = c(14, seq(20, 70, 10)),
                                 occasions_drawn = c("random", "by order"), n_items = c(5, 10, 15),
                                 n_iteration = 1000,
                                 id.var = "SERIAL", all_items = c('aerger1', 'aerger2', 'aerger3',
@@ -81,7 +82,7 @@ res_highNED$group <- "high NED"
 # '' Medium NED Group -----------------------------------------------------
 
 tictoc::tic()
-res_mediumNED <- simulation_study(data = bench_mediumNED, n_occasions = c(3, seq(10, 100, 10)),
+res_mediumNED <- simulation_study(data = bench_mediumNED, n_occasions = c(14, seq(20, 70, 10)),
                                 occasions_drawn = c("random", "by order"), n_items = c(5, 10, 15),
                                 n_iteration = 1000,
                                 id.var = "SERIAL", all_items = c('aerger1', 'aerger2', 'aerger3',
@@ -104,7 +105,7 @@ res_mediumNED$group <- "medium NED"
 # '' Low NED Group --------------------------------------------------------
 
 tictoc::tic()
-res_lowNED <- simulation_study(data = bench_lowNED, n_occasions = c(3, seq(10, 100, 10)),
+res_lowNED <- simulation_study(data = bench_lowNED, n_occasions = c(14, seq(20, 70, 10)),
                                 occasions_drawn = c("random", "by order"), n_items = c(5, 10, 15),
                                 n_iteration = 1000,
                                 id.var = "SERIAL", all_items = c('aerger1', 'aerger2', 'aerger3',
@@ -161,7 +162,7 @@ save(res_group, file="results/sim_results_subgroups_Study1.rda")
 # '' High NED Group -------------------------------------------------------
 
 tictoc::tic()
-res2_highNED <- simulation_study(data = bench_highNED, n_occasions = c(3, seq(10, 100, 10)),
+res2_highNED <- simulation_study(data = bench_highNED, n_occasions = c(14, seq(20, 70, 10)),
                                  occasions_drawn = c("random", "by order"), n_items = c(5, 10, 15),
                                  n_iteration = 1000,
                                  id.var = "SERIAL", all_items = c('aerger1', 'aerger2', 'aerger3',
@@ -184,7 +185,7 @@ res2_highNED$group <- "high NED"
 # '' Medium NED Group -----------------------------------------------------
 
 tictoc::tic()
-res2_mediumNED <- simulation_study(data = bench_mediumNED, n_occasions = c(3, seq(10, 100, 10)),
+res2_mediumNED <- simulation_study(data = bench_mediumNED, n_occasions = c(14, seq(20, 70, 10)),
                                    occasions_drawn = c("random", "by order"), n_items = c(5, 10, 15),
                                    n_iteration = 1000,
                                    id.var = "SERIAL", all_items = c('aerger1', 'aerger2', 'aerger3',
@@ -207,7 +208,7 @@ res2_mediumNED$group <- "medium NED"
 # '' Low NED Group --------------------------------------------------------
 
 tictoc::tic()
-res2_lowNED <- simulation_study(data = bench_lowNED, n_occasions = c(3, seq(10, 100, 10)),
+res2_lowNED <- simulation_study(data = bench_lowNED, n_occasions = c(14, seq(20, 70, 10)),
                                 occasions_drawn = c("random", "by order"), n_items = c(5, 10, 15),
                                 n_iteration = 1000,
                                 id.var = "SERIAL", all_items = c('aerger1', 'aerger2', 'aerger3',
