@@ -27,11 +27,11 @@ load("internal use/prepared data/emolive_clean_all_participants.rda")
 
 
 names(AA.c)
-table(dplyr::distinct(AA.c, SERIAL, n_occ)$n_occ >= 100)
+table(dplyr::distinct(AA.c, SERIAL, n_occ)$n_occ >= 70)
 
 
 # Select Benchmark Sample -------------------------------------------------
-samp <- AA.c[which(AA.c$n_occ >= 100), ]
+samp <- AA.c[which(AA.c$n_occ >= 70), ]
 # length(unique(samp$SERIAL))
 
 samp <- as.data.frame(samp) # data frame needed for ICC calculation
@@ -50,8 +50,8 @@ ICC_all <- calculate_icc(data = samp, id.var = "SERIAL",
 colnames(ICC_all) <- c("SERIAL", "ICC_all", "ICC.z_all")
 
 
-# with 100 occasions used for the analyses (ICC_100, ICC.z_100)
-## select first 100 occasions per participant
+# with 70 occasions used for the analyses (ICC_70, ICC.z_70)
+## select first 70 occasions per participant
 ## order occasions
 samp <- samp[order(samp$SERIAL, samp$occasion_total), ]
 ## re-number the measurement occasions (only valid occasions)
@@ -61,12 +61,12 @@ samp <- samp %>%
   as.data.frame()
 
 
-## select only 100 occasions for each participant
+## select only 70 occasions for each participant
 # by order!
-samp_100 <- samp[which(samp$occ_running <= 100), ]
+samp_70 <- samp[which(samp$occ_running <= 70), ]
 
 ## calculate ICCs
-ICC_100 <- calculate_icc(data = samp_100, id.var = "SERIAL",
+ICC_70 <- calculate_icc(data = samp_70, id.var = "SERIAL",
                          items = c('aerger1', 'aerger2', 'aerger3',
                                    'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
                                    'angst1', 'angst2', 'angst3',
@@ -74,15 +74,15 @@ ICC_100 <- calculate_icc(data = samp_100, id.var = "SERIAL",
                                    'schuld1', 'schuld2', 'schuld3'),
                          type = "consistency",
                          unit = "single")
-colnames(ICC_100) <- c("SERIAL", "ICC_100", "ICC.z_100")
+colnames(ICC_70) <- c("SERIAL", "ICC_70", "ICC.z_70")
 
 ## merge with sample data
 samp <- merge(samp, ICC_all, by="SERIAL")
-samp <- merge(samp, ICC_100, by="SERIAL")
+samp <- merge(samp, ICC_70, by="SERIAL")
 
 
-samp_100 <- merge(samp_100, ICC_all, by="SERIAL")
-samp_100 <- merge(samp_100, ICC_100, by="SERIAL")
+samp_70 <- merge(samp_70, ICC_all, by="SERIAL")
+samp_70 <- merge(samp_70, ICC_70, by="SERIAL")
 
 # Describe Sample ---------------------------------------------------------
 
@@ -90,7 +90,7 @@ samp_100 <- merge(samp_100, ICC_100, by="SERIAL")
 # L2 variables: gender, age, education, education_other, occupation,
 # occupation_other, language_skills, schedule, n_occ_completed,
 # n_occ_completed_perc, n_occ_valid, n_occ_valid_perc, ICC_all,
-# ICC.z_all, ICC_100, ICC.z_100
+# ICC.z_all, ICC_70, ICC.z_70
 
 
 
@@ -99,7 +99,7 @@ L2 <- dplyr::distinct(samp, SERIAL, gender, age, education, education_other,
                       occupation, occupation_other, language_skills,
                       schedule, n_occ_completed, n_occ_completed_perc,
                       n_occ_valid, n_occ_valid_perc, ICC_all, ICC.z_all,
-                      ICC_100, ICC.z_100)
+                      ICC_70, ICC.z_70)
 
 table(L2$gender, useNA="always")
 prop.table(table(L2$gender, useNA="always"))
@@ -107,12 +107,15 @@ prop.table(table(L2$gender, useNA="always"))
 table(L2$education)
 prop.table(table(L2$education))
 
-table(L2$education_other)
+table(L2$education_other) # Bachelor = university degree
+# Fachhochschul-/Hochschulabschluss = 53
+# 53/109 = 0.486 = 49%
 
 table(L2$occupation, useNA="always")
 prop.table(table(L2$occupation, useNA="always"))
 
 table(L2$occupation_other)
+
 
 table(L2$language_skills, useNA="always")
 prop.table(table(L2$language_skills, useNA="always"))
@@ -128,14 +131,14 @@ psych::describe(L2$n_occ_valid)
 psych::describe(L2$n_occ_valid_perc)
 psych::describe(L2$ICC_all)
 psych::describe(L2$ICC.z_all)
-psych::describe(L2$ICC_100)
-psych::describe(L2$ICC.z_100)
+psych::describe(L2$ICC_70)
+psych::describe(L2$ICC.z_70)
 
 # Level 1 -----------------------------------------------------------------
 # L1 variables: emotions
 # -> M and SD (within/between) for each emotion term, inter-correlations between emotion terms
 
-# based on 100 occasions per participant (samp_100)
+# based on 70 occasions per participant (samp_70)
 
 
 # empty storage for descriptive statistics
@@ -156,7 +159,7 @@ for (item in desc_stats$item) {
   
   formula <- as.formula(paste0(item, "~ 1 + (1 | SERIAL)"))
   
-  null.mod <- lme4::lmer(formula, data=samp_100)
+  null.mod <- lme4::lmer(formula, data=samp_70)
   
   # extract information from model
   mean <- summary(null.mod)[["coefficients"]][1,1] # extract intercept from null model
@@ -165,7 +168,7 @@ for (item in desc_stats$item) {
   
   icc <- performance::icc(null.mod)$ICC_unadjusted
   
-  range <- paste0(range(samp_100[ , item])[1], " - ", range(samp_100[ , item])[2])
+  range <- paste0(range(samp_70[ , item])[1], " - ", range(samp_70[ , item])[2])
   
   # round and save in storage
   desc_stats[which(desc_stats$item == item), "M"] <- round(mean, 2)
@@ -181,7 +184,7 @@ write.csv(desc_stats, "results/descriptive_statistics_emotions_Study1.csv", row.
 
 
 # intercorrelations (within- and between person)
-# cors <- misty::multilevel.cor(samp_100[ , c('SERIAL',
+# cors <- misty::multilevel.cor(samp_70[ , c('SERIAL',
 #                                             'aerger1', 'aerger2', 'aerger3',
 #                                             'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
 #                                             'angst1', 'angst2', 'angst3',
@@ -214,7 +217,7 @@ write.csv(desc_stats, "results/descriptive_statistics_emotions_Study1.csv", row.
 # 
 # for (row in 1:nrow(pairs)) {
 #   
-#   cor <- misty::multilevel.cor(samp_100[ , c('SERIAL',
+#   cor <- misty::multilevel.cor(samp_70[ , c('SERIAL',
 #                                              pairs[row, "item1"], # select item 1
 #                                              pairs[row, "item2"])], # select item 2
 #                                cluster = "SERIAL",
