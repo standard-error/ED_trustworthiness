@@ -85,8 +85,8 @@ sd.z <- agg[["sd_ICC.z"]][["agg_res"]]
 rel <- agg[["rel"]][["agg_res"]]
 
 
-## NUMBER OF NEGATIVE ICCS
-nnegICC <- agg[["negICC"]][["agg_res"]]
+## PROPORTION OF NUMBER OF NEGATIVE ICCS
+percnegICC <- agg[["percnegICC"]][["agg_res"]]
 
 
 ## ESTIMATION PROBLEMS
@@ -114,7 +114,7 @@ data_list <- list(cor = cor,
                   sd = sd,
                   sd.z = sd.z,
                   rel = rel,
-                  nnegICC = nnegICC,
+                  percnegICC = percnegICC,
                   estimProbNeg = estimProbNeg,
                   estimProbPos = estimProbPos,
                   N_valid_ICC.z = N_valid_ICC.z,
@@ -130,7 +130,7 @@ ylabels <- list("Correlation with Benchmark",
              "SD of ICCs",
              "SD of ICC.z",
              "Reliability of ICCs",
-             "Number of Negative ICCs",
+             "Proportion of Negative ICCs",
              "Number of Estimation Problems (Negative)",
              "Number of Estimation Problems (Positive)",
              "Number of Valid ICC.z",
@@ -156,8 +156,8 @@ names(ylabels) <- names(data_list)
 # max(sd.z$sd_ICC.z_max)
 # min(rel$rel_min)
 # max(rel$rel_max)
-# min(nnegICC$negICC_min)
-# max(nnegICC$negICC_max)
+# min(percnegICC$percnegICC_min)
+# max(percnegICC$percnegICC_max)
 # min(estimProbNeg$estimationProbNeg_min)
 # max(estimProbNeg$estimationProbNeg_max)
 # min(estimProbPos$estimationProbPos_min)
@@ -168,17 +168,18 @@ names(ylabels) <- names(data_list)
 # min(N_rel$N_rel_min)
 # max(N_rel$N_rel_max)
 
+# for correlation, reliability, proportions, ... -> use theoretical range (e.g., difference max and min: 1 and -1)
 ylim_list <- list(
-  c(0.3, 1), # correlation with benchmark
-  c(0.3, 1), # correlation with benchmark (ICC.z)
-  c(-0.8, 0.8), # difference in ICCs (compared to benchmark)
+  c(0, 1), # correlation with benchmark
+  c(0, 1), # correlation with benchmark (ICC.z)
+  c(-1, 1), # difference in ICCs (compared to benchmark)
   c(-2.2, 1.7), # difference in ICCs (compared to benchmark) for ICC.z
   c(0, 0.2), # RMSE
   c(0, 0.7), # RMSE (ICC.z)
   c(0.1, 0.2), # SD of ICCs
   c(0.2, 0.45), # SD of ICC.z
   c(0, 1), # Reliability
-  c(0, 25), # number of negative ICCs
+  c(0, 1), # proportion of negative ICCs
   c(0, 1), # number of estimation problems (negative)
   c(0, 1), # number of estimation problems (positive)
   c(105, 109), # number of valid ICC.z
@@ -209,7 +210,7 @@ plot_list[["rmse.z"]]
 plot_list[["sd"]]
 plot_list[["sd.z"]]
 plot_list[["rel"]]
-plot_list[["nnegICC"]]
+plot_list[["percnegICC"]]
 plot_list[["estimProbNeg"]]
 plot_list[["estimProbPos"]]
 plot_list[["N_valid_ICC.z"]]
@@ -227,7 +228,7 @@ ggsave("plots/Study 1/overall data set/single plots/facet per plot/rmse.z.pdf",p
 ggsave("plots/Study 1/overall data set/single plots/facet per plot/sd.pdf",plot = plot_list[["sd"]], device="pdf", height = 148, width = 210, unit="mm")
 ggsave("plots/Study 1/overall data set/single plots/facet per plot/sd.z.pdf",plot = plot_list[["sd.z"]], device="pdf", height = 148, width = 210, unit="mm")
 ggsave("plots/Study 1/overall data set/single plots/facet per plot/reliability.pdf",plot = plot_list[["rel"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/NnegICC.pdf",plot = plot_list[["nnegICC"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/percnegICC.pdf",plot = plot_list[["percnegICC"]], device="pdf", height = 148, width = 210, unit="mm")
 ggsave("plots/Study 1/overall data set/single plots/facet per plot/EstimProbNeg.pdf",plot = plot_list[["estimProbNeg"]], device="pdf", height = 148, width = 210, unit="mm")
 ggsave("plots/Study 1/overall data set/single plots/facet per plot/EstimProbPos.pdf",plot = plot_list[["estimProbPos"]], device="pdf", height = 148, width = 210, unit="mm")
 ggsave("plots/Study 1/overall data set/single plots/facet per plot/N_ValidICC.z.pdf",plot = plot_list[["N_valid_ICC.z"]], device="pdf", height = 148, width = 210, unit="mm")
@@ -245,7 +246,7 @@ ggsave("plots/Study 1/overall data set/single plots/facet per plot/rmse.z.svg",p
 ggsave("plots/Study 1/overall data set/single plots/facet per plot/sd.svg",plot = plot_list[["sd"]], device="svg", height = 148, width = 210, unit="mm")
 ggsave("plots/Study 1/overall data set/single plots/facet per plot/sd.z.svg",plot = plot_list[["sd.z"]], device="svg", height = 148, width = 210, unit="mm")
 ggsave("plots/Study 1/overall data set/single plots/facet per plot/reliability.svg",plot = plot_list[["rel"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/NnegICC.svg",plot = plot_list[["nnegICC"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/Study 1/overall data set/single plots/facet per plot/percnegICC.svg",plot = plot_list[["percnegICC"]], device="svg", height = 148, width = 210, unit="mm")
 ggsave("plots/Study 1/overall data set/single plots/facet per plot/EstimProbNeg.svg",plot = plot_list[["estimProbNeg"]], device="svg", height = 148, width = 210, unit="mm")
 ggsave("plots/Study 1/overall data set/single plots/facet per plot/EstimProbPos.svg",plot = plot_list[["estimProbPos"]], device="svg", height = 148, width = 210, unit="mm")
 ggsave("plots/Study 1/overall data set/single plots/facet per plot/N_ValidICC.z.svg",plot = plot_list[["N_valid_ICC.z"]], device="svg", height = 148, width = 210, unit="mm")
@@ -266,7 +267,8 @@ ggsave("plots/Study 1/overall data set/single plots/facet per plot/N_rel.svg",pl
 # adjust the plots a little (e.g., no y-axis lable but title, no x-axis label)
 a <- plot_list[["cor"]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                 plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                axis.text = element_text(size=10)) + ggtitle("(A) Correlation with Benchmark")
+                                axis.text = element_text(size=10)) + ggtitle("(A) Correlation with Benchmark") +
+                          geom_hline(yintercept=0.80, linetype="twodash", color = "black")
 # a
 b <- plot_list[["diff"]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                  plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
@@ -278,15 +280,18 @@ c <- plot_list[["rmse"]] + theme(axis.title.y = element_blank(), axis.title.x = 
 # c
 d <- plot_list[["sd"]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                               axis.text = element_text(size=10)) + ggtitle("(D) SD of ICCs")
+                               axis.text = element_text(size=10)) + ggtitle("(D) SD of ICCs") +
+                          geom_hline(yintercept=agg[["sd_ICC"]][["agg_res"]][["sd_ICC_mean"]][[39]], # use benchmark SD
+                                     linetype="twodash", color = "black")
 # d
 e <- plot_list[["rel"]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                 plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                axis.text = element_text(size=10)) + ggtitle("(E) Reliability of ICCs")
+                                axis.text = element_text(size=10)) + ggtitle("(E) Reliability of ICCs") +
+                          geom_hline(yintercept=0.80, linetype="twodash", color = "black")
 # e
-f <- plot_list[["nnegICC"]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+f <- plot_list[["percnegICC"]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                     plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                    axis.text = element_text(size=10)) + ggtitle("(F) Number of Negative ICCs")
+                                    axis.text = element_text(size=10)) + ggtitle("(F) Proportion of Negative ICCs")
 
 
 
@@ -315,7 +320,8 @@ ggsave("plots/Study 1/overall data set/plots_whole_data_set_Study1.svg",plot = c
 # adjust the plots a little (e.g., no y-axis lable but title, no x-axis label)
 a <- plot_list[["cor.z"]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                 plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                axis.text = element_text(size=10)) + ggtitle("(A) Correlation with Benchmark")
+                                axis.text = element_text(size=10)) + ggtitle("(A) Correlation with Benchmark") +
+                            geom_hline(yintercept=0.80, linetype="twodash", color = "black")
 # a
 b <- plot_list[["diff.z"]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                  plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
@@ -327,15 +333,17 @@ c <- plot_list[["rmse.z"]] + theme(axis.title.y = element_blank(), axis.title.x 
 # c
 d <- plot_list[["sd.z"]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                               axis.text = element_text(size=10)) + ggtitle("(D) SD of ICCs")
+                               axis.text = element_text(size=10)) + ggtitle("(D) SD of ICCs") +
+                           geom_hline(yintercept=agg[["sd_ICC.z"]][["agg_res"]][["sd_ICC.z_mean"]][[39]], linetype="twodash", color = "black")
 # d
 e <- plot_list[["rel"]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                 plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                axis.text = element_text(size=10)) + ggtitle("(E) Reliability of ICCs")
+                                axis.text = element_text(size=10)) + ggtitle("(E) Reliability of ICCs")  +
+                          geom_hline(yintercept=0.80, linetype="twodash", color = "black")
 # e
-f <- plot_list[["nnegICC"]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+f <- plot_list[["percnegICC"]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                     plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                    axis.text = element_text(size=10)) + ggtitle("(F) Number of Negative ICCs")
+                                    axis.text = element_text(size=10)) + ggtitle("(F) Proportion of Negative ICCs")
 
 
 
@@ -391,8 +399,8 @@ plot_list_split[["sd.z"]][[1]]
 plot_list_split[["sd.z"]][[2]]
 plot_list_split[["rel"]][[1]]
 plot_list_split[["rel"]][[2]]
-plot_list_split[["nnegICC"]][[1]]
-plot_list_split[["nnegICC"]][[2]]
+plot_list_split[["percnegICC"]][[1]]
+plot_list_split[["percnegICC"]][[2]]
 plot_list_split[["estimProbNeg"]][[1]]
 plot_list_split[["estimProbNeg"]][[2]]
 plot_list_split[["estimProbPos"]][[1]]
@@ -412,7 +420,8 @@ plot_list_split[["N_rel"]][[2]]
 # adjust the plots a little (e.g., no y-axis lable but title, no x-axis label)
 a <- plot_list_split[["cor"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                   plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                  axis.text = element_text(size=10)) + ggtitle("Correlation with Benchmark")
+                                  axis.text = element_text(size=10)) + ggtitle("Correlation with Benchmark") +
+                                  geom_hline(yintercept=0.80, linetype="twodash", color = "black")
 # a
 b <- plot_list_split[["diff"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                    plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
@@ -424,15 +433,19 @@ c <- plot_list_split[["rmse"]][[1]] + theme(axis.title.y = element_blank(), axis
 # c
 d <- plot_list_split[["sd"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                  plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                 axis.text = element_text(size=10)) + ggtitle("SD of ICCs")
+                                 axis.text = element_text(size=10)) + ggtitle("SD of ICCs")+
+                                geom_hline(yintercept=agg[["sd_ICC"]][["agg_res"]][["sd_ICC_mean"]][[39]], linetype="twodash", color = "black")
+
+
 # d
 e <- plot_list_split[["rel"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                 plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                axis.text = element_text(size=10)) + ggtitle("Reliability of ICCs")
+                                axis.text = element_text(size=10)) + ggtitle("Reliability of ICCs") +
+                                geom_hline(yintercept=0.80, linetype="twodash", color = "black")
 # e
-f <- plot_list_split[["nnegICC"]][[1]]+ theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+f <- plot_list_split[["percnegICC"]][[1]]+ theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                     plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                    axis.text = element_text(size=10)) + ggtitle("Number of Negative ICCs")
+                                    axis.text = element_text(size=10)) + ggtitle("Proportion of Negative ICCs")
 
 
 
@@ -452,7 +465,9 @@ panel_random
 # adjust the plots a little (e.g., no y-axis lable but title, no x-axis label)
 a <- plot_list_split[["cor"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                            plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                           axis.text = element_text(size=10)) + ggtitle("Correlation with Benchmark")
+                                           axis.text = element_text(size=10)) + ggtitle("Correlation with Benchmark")+
+                                    geom_hline(yintercept=0.80, linetype="twodash", color = "black")
+
 # a
 b <- plot_list_split[["diff"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                             plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
@@ -464,15 +479,19 @@ c <- plot_list_split[["rmse"]][[2]] + theme(axis.title.y = element_blank(), axis
 # c
 d <- plot_list_split[["sd"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                           plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                          axis.text = element_text(size=10)) + ggtitle("SD of ICCs")
+                                          axis.text = element_text(size=10)) + ggtitle("SD of ICCs")+
+  geom_hline(yintercept=agg[["sd_ICC"]][["agg_res"]][["sd_ICC_mean"]][[39]], linetype="twodash", color = "black")
+
 # d
 e <- plot_list_split[["rel"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                            plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                           axis.text = element_text(size=10)) + ggtitle("Reliability of ICCs")
+                                           axis.text = element_text(size=10)) + ggtitle("Reliability of ICCs")+
+                                      geom_hline(yintercept=0.80, linetype="twodash", color = "black")
+
 # e
-f <- plot_list_split[["nnegICC"]][[2]]+ theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+f <- plot_list_split[["percnegICC"]][[2]]+ theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                               plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                              axis.text = element_text(size=10)) + ggtitle("Number of Negative ICCs")
+                                              axis.text = element_text(size=10)) + ggtitle("Proprtion of Negative ICCs")
 
 
 
@@ -519,7 +538,9 @@ ggsave("plots/Study 1/overall data set/single plots/split by facet/ICC_combined.
 # adjust the plots a little (e.g., no y-axis lable but title, no x-axis label)
 a <- plot_list_split[["cor.z"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                            plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                           axis.text = element_text(size=10)) + ggtitle("Correlation with Benchmark")
+                                           axis.text = element_text(size=10)) + ggtitle("Correlation with Benchmark")+
+                                         geom_hline(yintercept=0.80, linetype="twodash", color = "black")
+
 # a
 b <- plot_list_split[["diff.z"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                             plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
@@ -531,15 +552,19 @@ c <- plot_list_split[["rmse.z"]][[1]] + theme(axis.title.y = element_blank(), ax
 # c
 d <- plot_list_split[["sd.z"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                           plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                          axis.text = element_text(size=10)) + ggtitle("SD of ICCs")
+                                          axis.text = element_text(size=10)) + ggtitle("SD of ICCs")+
+  geom_hline(yintercept=agg[["sd_ICC.z"]][["agg_res"]][["sd_ICC.z_mean"]][[39]], linetype="twodash", color = "black")
+
 # d
 e <- plot_list_split[["rel"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                            plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                           axis.text = element_text(size=10)) + ggtitle("Reliability of ICCs")
+                                           axis.text = element_text(size=10)) + ggtitle("Reliability of ICCs")+
+                                      geom_hline(yintercept=0.80, linetype="twodash", color = "black")
+
 # e
-f <- plot_list_split[["nnegICC"]][[1]]+ theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+f <- plot_list_split[["percnegICC"]][[1]]+ theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                               plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                              axis.text = element_text(size=10)) + ggtitle("Number of Negative ICCs")
+                                              axis.text = element_text(size=10)) + ggtitle("Proportion of Negative ICCs")
 
 
 
@@ -559,7 +584,9 @@ panel_random
 # adjust the plots a little (e.g., no y-axis lable but title, no x-axis label)
 a <- plot_list_split[["cor.z"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                            plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                           axis.text = element_text(size=10)) + ggtitle("Correlation with Benchmark")
+                                           axis.text = element_text(size=10)) + ggtitle("Correlation with Benchmark")+
+                                       geom_hline(yintercept=0.80, linetype="twodash", color = "black")
+
 # a
 b <- plot_list_split[["diff.z"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                             plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
@@ -571,15 +598,19 @@ c <- plot_list_split[["rmse.z"]][[2]] + theme(axis.title.y = element_blank(), ax
 # c
 d <- plot_list_split[["sd.z"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                           plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                          axis.text = element_text(size=10)) + ggtitle("SD of ICCs")
+                                          axis.text = element_text(size=10)) + ggtitle("SD of ICCs")+
+  geom_hline(yintercept=agg[["sd_ICC.z"]][["agg_res"]][["sd_ICC.z_mean"]][[39]], linetype="twodash", color = "black")
+
 # d
 e <- plot_list_split[["rel"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                            plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                           axis.text = element_text(size=10)) + ggtitle("Reliability of ICCs")
+                                           axis.text = element_text(size=10)) + ggtitle("Reliability of ICCs")+
+                                    geom_hline(yintercept=0.80, linetype="twodash", color = "black")
+
 # e
-f <- plot_list_split[["nnegICC"]][[2]]+ theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+f <- plot_list_split[["percnegICC"]][[2]]+ theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                               plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                              axis.text = element_text(size=10)) + ggtitle("Number of Negative ICCs")
+                                              axis.text = element_text(size=10)) + ggtitle("Proportion of Negative ICCs")
 
 
 
@@ -656,8 +687,8 @@ plot_list_split_col[["sd.z"]][[1]]
 plot_list_split_col[["sd.z"]][[2]]
 plot_list_split_col[["rel"]][[1]]
 plot_list_split_col[["rel"]][[2]]
-plot_list_split_col[["nnegICC"]][[1]]
-plot_list_split_col[["nnegICC"]][[2]]
+plot_list_split_col[["percnegICC"]][[1]]
+plot_list_split_col[["percnegICC"]][[2]]
 plot_list_split_col[["estimProbNeg"]][[1]]
 plot_list_split_col[["estimProbNeg"]][[2]]
 plot_list_split_col[["estimProbPos"]][[1]]
@@ -674,7 +705,9 @@ plot_list_split_col[["N_rel"]][[2]]
 # adjust the plots a little (e.g., no y-axis lable but title, no x-axis label)
 a <- plot_list_split_col[["cor"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                            plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                           axis.text = element_text(size=10)) + ggtitle("Correlation with Benchmark")
+                                           axis.text = element_text(size=10)) + ggtitle("Correlation with Benchmark")+
+                                        geom_hline(yintercept=0.80, linetype="twodash", color = "red")
+
 # a
 b <- plot_list_split_col[["diff"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                             plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
@@ -686,15 +719,19 @@ c <- plot_list_split_col[["rmse"]][[1]] + theme(axis.title.y = element_blank(), 
 # c
 d <- plot_list_split_col[["sd"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                           plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                          axis.text = element_text(size=10)) + ggtitle("SD of ICCs")
+                                          axis.text = element_text(size=10)) + ggtitle("SD of ICCs")+
+  geom_hline(yintercept=agg[["sd_ICC"]][["agg_res"]][["sd_ICC_mean"]][[39]], linetype="twodash", color = "red")
+
 # d
 e <- plot_list_split_col[["rel"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                            plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                           axis.text = element_text(size=10)) + ggtitle("Reliability of ICCs")
+                                           axis.text = element_text(size=10)) + ggtitle("Reliability of ICCs")+
+                                         geom_hline(yintercept=0.80, linetype="twodash", color = "red")
+
 # e
-f <- plot_list_split_col[["nnegICC"]][[1]]+ theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+f <- plot_list_split_col[["percnegICC"]][[1]]+ theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                               plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                              axis.text = element_text(size=10)) + ggtitle("Number of Negative ICCs")
+                                              axis.text = element_text(size=10)) + ggtitle("Proportion of Negative ICCs")
 
 
 
@@ -714,7 +751,9 @@ panel_random
 # adjust the plots a little (e.g., no y-axis lable but title, no x-axis label)
 a <- plot_list_split_col[["cor"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                            plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                           axis.text = element_text(size=10)) + ggtitle("Correlation with Benchmark")
+                                           axis.text = element_text(size=10)) + ggtitle("Correlation with Benchmark")+
+                                        geom_hline(yintercept=0.80, linetype="twodash", color = "red")
+
 # a
 b <- plot_list_split_col[["diff"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                             plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
@@ -726,15 +765,19 @@ c <- plot_list_split_col[["rmse"]][[2]] + theme(axis.title.y = element_blank(), 
 # c
 d <- plot_list_split_col[["sd"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                           plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                          axis.text = element_text(size=10)) + ggtitle("SD of ICCs")
+                                          axis.text = element_text(size=10)) + ggtitle("SD of ICCs")+
+  geom_hline(yintercept=agg[["sd_ICC"]][["agg_res"]][["sd_ICC_mean"]][[39]], linetype="twodash", color = "red")
+
 # d
 e <- plot_list_split_col[["rel"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                            plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                           axis.text = element_text(size=10)) + ggtitle("Reliability of ICCs")
+                                           axis.text = element_text(size=10)) + ggtitle("Reliability of ICCs")+
+                                         geom_hline(yintercept=0.80, linetype="twodash", color = "red")
+
 # e
-f <- plot_list_split_col[["nnegICC"]][[2]]+ theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
+f <- plot_list_split_col[["percnegICC"]][[2]]+ theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                               plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                              axis.text = element_text(size=10)) + ggtitle("Number of Negative ICCs")
+                                              axis.text = element_text(size=10)) + ggtitle("Proportion of Negative ICCs")
 
 
 
@@ -788,7 +831,7 @@ all_agg_results <- merge(cor, diff, by = c("occasions_drawn", "n_occasions", "n_
 all_agg_results <- merge(all_agg_results, rmse, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
 all_agg_results <- merge(all_agg_results, sd, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
 all_agg_results <- merge(all_agg_results, rel, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
-all_agg_results <- merge(all_agg_results, nnegICC, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results <- merge(all_agg_results, percnegICC, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
 all_agg_results <- merge(all_agg_results, estimProbNeg, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
 all_agg_results <- merge(all_agg_results, estimProbPos, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
 all_agg_results <- merge(all_agg_results, N_rel, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
@@ -808,7 +851,7 @@ all_agg_results <- merge(cor.z, diff.z, by = c("occasions_drawn", "n_occasions",
 all_agg_results <- merge(all_agg_results, rmse.z, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
 all_agg_results <- merge(all_agg_results, sd.z, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
 all_agg_results <- merge(all_agg_results, rel, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
-all_agg_results <- merge(all_agg_results, nnegICC, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
+all_agg_results <- merge(all_agg_results, percnegICC, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
 all_agg_results <- merge(all_agg_results, estimProbNeg, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
 all_agg_results <- merge(all_agg_results, estimProbPos, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
 all_agg_results <- merge(all_agg_results, N_rel, by = c("occasions_drawn", "n_occasions", "n_items"), all = TRUE)
