@@ -28,6 +28,16 @@ source("functions/function_aggregate_results.R")
 
 
 
+# Calculate %negICC -------------------------------------------------------
+# calculate proportion of negative ICCs
+res$percnegICC <- res$negICC / 109 # divide by total number of participants
+res_group$percnegICC <- NA
+res_group$percnegICC[res_group$group == "high NED"] <- res_group$negICC[res_group$group == "high NED"] / 36 # divide by number of participants in group
+res_group$percnegICC[res_group$group == "medium NED"] <- res_group$negICC[res_group$group == "medium NED"] / 36 # divide by number of participants in group
+res_group$percnegICC[res_group$group == "low NED"] <- res_group$negICC[res_group$group == "low NED"] / 37 # divide by number of participants in group
+
+
+
 # Aggregate Results -------------------------------------------------------
 agg <- aggregate_results(res,
                          outcomes = c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC',
@@ -37,7 +47,8 @@ agg <- aggregate_results(res,
                                       'RMSE_ICC', 'RMSE_ICC.z',
                                       'rel', 'N_rel',
                                       'sd_ICC', 'sd_ICC.z',
-                                      'negICC', 'estimationProbNeg', 'estimationProbPos'),
+                                      'negICC', 'percnegICC',
+                                      'estimationProbNeg', 'estimationProbPos'),
                          rel_outcomes = c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC',
                                           'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z',
                                           'cor_ICC', 'cor_ICC.z',
@@ -45,7 +56,8 @@ agg <- aggregate_results(res,
                          abs_outcomes = c('N_valid_ICC.z',
                                           'rel', 'N_rel',
                                           'sd_ICC', 'sd_ICC.z',
-                                          'negICC', 'estimationProbNeg', 'estimationProbPos'),
+                                          'negICC', 'percnegICC',
+                                          'estimationProbNeg', 'estimationProbPos'),
                          groupwise = FALSE,
                          group_var = NULL)
 
@@ -59,7 +71,8 @@ agg_grp <- aggregate_results(res_group,
                                          'RMSE_ICC', 'RMSE_ICC.z',
                                          'rel', 'N_rel',
                                          'sd_ICC', 'sd_ICC.z',
-                                         'negICC', 'estimationProbNeg', 'estimationProbPos'),
+                                         'negICC', 'percnegICC',
+                                         'estimationProbNeg', 'estimationProbPos'),
                             rel_outcomes = c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC',
                                              'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z',
                                              'cor_ICC', 'cor_ICC.z',
@@ -67,7 +80,8 @@ agg_grp <- aggregate_results(res_group,
                             abs_outcomes = c('N_valid_ICC.z',
                                              'rel', 'N_rel',
                                              'sd_ICC', 'sd_ICC.z',
-                                             'negICC', 'estimationProbNeg', 'estimationProbPos'),
+                                             'negICC', 'percnegICC',
+                                             'estimationProbNeg', 'estimationProbPos'),
                             groupwise = TRUE,
                             group_var = "group")
 
@@ -219,16 +233,16 @@ MCSE9 <- do.call(data.frame, aggregate(sd_ICC.z ~ n_occasions + n_items, data = 
 names(MCSE9) <- c("n_occasions", "n_items", "sd_ICC.z_sim_mean", "sd_ICC.z_sim_var", "sd_ICC.z_MCSE")
 
 
-## for negICC
+## for % negICC
 # performance measure: mean of generic statistic G
-MCSE10 <- do.call(data.frame, aggregate(negICC ~ n_occasions + n_items, data = rd, FUN = function(x) {
+MCSE10 <- do.call(data.frame, aggregate(percnegICC ~ n_occasions + n_items, data = rd, FUN = function(x) {
   c(mean = mean(x),
     var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
     MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
 })
 )
 
-names(MCSE10) <- c("n_occasions", "n_items", "negICC_sim_mean", "negICC_sim_var", "negICC_MCSE")
+names(MCSE10) <- c("n_occasions", "n_items", "percnegICC_sim_mean", "percnegICC_sim_var", "percnegICC_MCSE")
 
 
 ## for N_rel
@@ -244,6 +258,8 @@ MCSE11 <- do.call(data.frame, aggregate(N_rel ~ n_occasions + n_items, data = rd
 names(MCSE11) <- c("n_occasions", "n_items", "N_rel_sim_mean", "N_rel_sim_var", "N_rel_MCSE")
 
 ## for estimation problems, no MCSE can be calculated because there is zero variance
+range(rd$estimationProbNeg)
+range(rd$estimationProbPos)
 
 
 # combine
@@ -405,16 +421,16 @@ MCSE9 <- do.call(data.frame, aggregate(sd_ICC.z ~ group + n_occasions + n_items,
 names(MCSE9) <- c("group", "n_occasions", "n_items", "sd_ICC.z_sim_mean", "sd_ICC.z_sim_var", "sd_ICC.z_MCSE")
 
 
-## for negICC
+## for % negICC
 # performance measure: mean of generic statistic G
-MCSE10 <- do.call(data.frame, aggregate(negICC ~ group + n_occasions + n_items, data = rd_grp, FUN = function(x) {
+MCSE10 <- do.call(data.frame, aggregate(percnegICC ~ group + n_occasions + n_items, data = rd_grp, FUN = function(x) {
   c(mean = mean(x),
     var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
     MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
 })
 )
 
-names(MCSE10) <- c("group", "n_occasions", "n_items", "negICC_sim_mean", "negICC_sim_var", "negICC_MCSE")
+names(MCSE10) <- c("group", "n_occasions", "n_items", "percnegICC_sim_mean", "percnegICC_sim_var", "percnegICC_MCSE")
 
 
 ## for N_rel
@@ -469,6 +485,19 @@ source("functions/function_aggregate_results.R")
 load("results/check nr of iterations/sim_results_whole_data_set_Study1.rda")
 load("results/check nr of iterations/sim_results_subgroups_Study1.rda")
 
+
+
+# Calculate %negICC
+# calculate proportion of negative ICCs
+res2$percnegICC <- res2$negICC / 109 # divide by total number of participants
+res2_group$percnegICC <- NA
+res2_group$percnegICC[res2_group$group == "high NED"] <- res2_group$negICC[res2_group$group == "high NED"] / 36 # divide by number of participants in group
+res2_group$percnegICC[res2_group$group == "medium NED"] <- res2_group$negICC[res2_group$group == "medium NED"] / 36 # divide by number of participants in group
+res2_group$percnegICC[res2_group$group == "low NED"] <- res2_group$negICC[res2_group$group == "low NED"] / 37 # divide by number of participants in group
+
+
+
+
 agg2 <- aggregate_results(res2,
                          outcomes = c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC',
                                       'N_valid_ICC.z',
@@ -477,7 +506,8 @@ agg2 <- aggregate_results(res2,
                                       'RMSE_ICC', 'RMSE_ICC.z',
                                       'rel', 'N_rel',
                                       'sd_ICC', 'sd_ICC.z',
-                                      'negICC', 'estimationProbNeg', 'estimationProbPos'),
+                                      'negICC', 'percnegICC',
+                                      'estimationProbNeg', 'estimationProbPos'),
                          rel_outcomes = c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC',
                                           'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z',
                                           'cor_ICC', 'cor_ICC.z',
@@ -485,7 +515,8 @@ agg2 <- aggregate_results(res2,
                          abs_outcomes = c('N_valid_ICC.z',
                                           'rel', 'N_rel',
                                           'sd_ICC', 'sd_ICC.z',
-                                          'negICC', 'estimationProbNeg', 'estimationProbPos'),
+                                          'negICC', 'percnegICC',
+                                          'estimationProbNeg', 'estimationProbPos'),
                          groupwise = FALSE,
                          group_var = NULL)
 
@@ -502,7 +533,8 @@ agg_grp2 <- aggregate_results(res2_group,
                                            'RMSE_ICC', 'RMSE_ICC.z',
                                            'rel', 'N_rel',
                                            'sd_ICC', 'sd_ICC.z',
-                                           'negICC', 'estimationProbNeg', 'estimationProbPos'),
+                                           'negICC', 'percnegICC',
+                                           'estimationProbNeg', 'estimationProbPos'),
                               rel_outcomes = c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC',
                                                'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z',
                                                'cor_ICC', 'cor_ICC.z',
@@ -510,7 +542,8 @@ agg_grp2 <- aggregate_results(res2_group,
                               abs_outcomes = c('N_valid_ICC.z',
                                                'rel', 'N_rel',
                                                'sd_ICC', 'sd_ICC.z',
-                                               'negICC', 'estimationProbNeg', 'estimationProbPos'),
+                                               'negICC', 'percnegICC',
+                                               'estimationProbNeg', 'estimationProbPos'),
                               groupwise = TRUE,
                               group_var = "group")
 
