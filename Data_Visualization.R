@@ -176,8 +176,8 @@ ylim_list <- list(
   c(-2.2, 1.7), # difference in ICCs (compared to benchmark) for ICC.z
   c(0, 0.2), # RMSE
   c(0, 0.7), # RMSE (ICC.z)
-  c(0.1, 0.2), # SD of ICCs
-  c(0.2, 0.45), # SD of ICC.z
+  c(0, 0.2), # SD of ICCs
+  c(0, 0.45), # SD of ICC.z
   c(0, 1), # Reliability
   c(0, 1), # proportion of negative ICCs
   c(0, 1), # number of estimation problems (negative)
@@ -1379,8 +1379,8 @@ ylim_list <- list(
   c(-2.2, 1.7), # difference in ICCs (compared to benchmark) for ICC.z
   c(0, 0.2), # RMSE
   c(0, 0.7), # RMSE (ICC.z)
-  c(0.1, 0.2), # SD of ICCs
-  c(0.2, 0.45), # SD of ICC.z
+  c(0, 0.2), # SD of ICCs
+  c(0, 0.45), # SD of ICC.z
   c(0, 1), # Reliability
   c(0, 25), # number of negative ICCs
   c(0, 1), # number of estimation problems (negative)
@@ -1652,3 +1652,4 @@ ggsave("plots/Study 1/groupwise/check nr of iterations/EstimProbNeg.pdf",plot = 
 ggsave("plots/Study 1/groupwise/check nr of iterations/EstimProbPos.pdf",plot = plot_list[["estimProbPos"]], device="pdf", height = 148, width = 210, unit="mm")
 ggsave("plots/Study 1/groupwise/check nr of iterations/N_ValidICC.z.pdf",plot = plot_list[["N_valid_ICC.z"]], device="pdf", height = 148, width = 210, unit="mm")
 ggsave("plots/Study 1/groupwise/check nr of iterations/N_rel.pdf",plot = plot_list[["N_Rel"]], device="pdf", height = 148, width = 210, unit="mm")
+
