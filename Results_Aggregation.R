@@ -38,21 +38,228 @@ res_group$percnegICC[res_group$group == "low NED"] <- res_group$negICC[res_group
 
 
 
+# Calcute RMSE for Each Participant Across Replications -------------------
+
+
+# '' For ICCs -------------------------------------------------------------
+# extract squared differences for each replication and each condition per participant
+part_dat <- data.frame(matrix(nrow=18021, ncol=112))
+part_dat[ , 1:3] <- res[ , 2:4]
+names(part_dat) <- c("n_occasions", "occasions_drawn", "n_items", paste0("sq_diff_ICC_", 1:109))
+
+for (i in 1:109) {
+  
+  for (row in 1:18021) {
+    
+    part_dat[row, paste0("sq_diff_ICC_", i)] <- res[row , "sq_diff_ICC"][[1]][i]
+    
+  }
+  
+}
+
+# save
+save(part_dat, file="results/squared_errors_per_replication_and_participant.rda")
+
+
+### aggregate
+
+# subset for random draws
+rd <- part_dat[part_dat$occasions_drawn == "random", ]
+
+# storage
+RMSE_random <- as.data.frame(matrix(nrow=18, ncol=112))
+names(RMSE_random)[1:3] <- c("occasions_drawn", "n_occasions", "n_items")
+names(RMSE_random)[4:112] <- c(paste0("RMSE_", 1:109))
+
+
+
+for (i in 1:109) {
+  
+  part_res <- do.call(data.frame,
+                      aggregate(as.formula(paste0("sq_diff_ICC_", i, " ~ occasions_drawn + n_occasions + n_items")),
+                      data = rd,
+                      FUN = function(x) {
+                        sqrt(sum(x)/1000) # sum the squared differences, divide by number of replications and take sqrt
+                      }))
+  names(part_res) <- c("occasions_drawn", "n_occasions", "n_items", "part_RMSE")
+  
+  if (i == 1) {
+    RMSE_random[, 1:4] <- part_res
+  } else {
+    RMSE_random[ , paste0("RMSE_", i)] <- part_res$part_RMSE
+  }
+}
+
+
+# repeat for ordered draws -> different number of replications (i.e., 1)
+# subset for ordered draws
+od <- part_dat[part_dat$occasions_drawn == "by order", ]
+
+# storage
+RMSE_order <- as.data.frame(matrix(nrow=21, ncol=112))
+names(RMSE_order)[1:3] <- c("occasions_drawn", "n_occasions", "n_items")
+names(RMSE_order)[4:112] <- c(paste0("RMSE_", 1:109))
+
+
+
+for (i in 1:109) {
+  
+  part_res <- do.call(data.frame,
+                      aggregate(as.formula(paste0("sq_diff_ICC_", i, " ~ occasions_drawn + n_occasions + n_items")),
+                                data = od,
+                                FUN = function(x) {
+                                  sqrt(sum(x)/1) # sum the squared differences, divide by number of replications and take sqrt
+                                }))
+  names(part_res) <- c("occasions_drawn", "n_occasions", "n_items", "part_RMSE")
+  
+  if (i == 1) {
+    RMSE_order[, 1:4] <- part_res
+  } else {
+    RMSE_order[ , paste0("RMSE_", i)] <- part_res$part_RMSE
+  }
+}
+
+
+# combine RMSE data frames
+RMSE <- rbind(RMSE_random, RMSE_order)
+rm(RMSE_random, RMSE_order)
+
+# remove benchmark row
+# (values are correctly 0)
+RMSE <- RMSE[-(which(RMSE$occasions_drawn == "by order" & RMSE$n_occasions == 70 & RMSE$n_items == 15)), ]
+
+# save 
+save(RMSE, file="results/RMSE_values_per_participant.rda")
+
+
+# Calculate min, mean, and max across participants
+RMSE$RMSE_mean <- rowMeans(RMSE[ ,4:112], na.rm=TRUE)
+RMSE$RMSE_min <- apply(RMSE[ , 4:112], 1, FUN = min, na.rm = TRUE)
+RMSE$RMSE_max <- apply(RMSE[ , 4:112], 1, FUN = max, na.rm = TRUE)
+# subset 
+RMSE <- RMSE[ , c(1:3, 113:115)]
+
+
+
+
+
+# '' For ICC.z ------------------------------------------------------------
+# extract squared differences for each replication and each condition per participant
+part_dat.z <- data.frame(matrix(nrow=18021, ncol=112))
+part_dat.z[ , 1:3] <- res[ , 2:4]
+names(part_dat.z) <- c("n_occasions", "occasions_drawn", "n_items", paste0("sq_diff_ICC.z_", 1:109))
+
+for (i in 1:109) {
+  
+  for (row in 1:18021) {
+    
+    part_dat.z[row, paste0("sq_diff_ICC.z_", i)] <- res[row , "sq_diff_ICC.z"][[1]][i]
+    
+  }
+  
+}
+
+# save
+save(part_dat.z, file="results/squared_errors.z_per_replication_and_participant.rda")
+
+
+### aggregate
+
+# subset for random draws
+rd.z <- part_dat.z[part_dat.z$occasions_drawn == "random", ]
+
+# storage
+RMSE.z_random <- as.data.frame(matrix(nrow=18, ncol=112))
+names(RMSE.z_random)[1:3] <- c("occasions_drawn", "n_occasions", "n_items")
+names(RMSE.z_random)[4:112] <- c(paste0("RMSE.z_", 1:109))
+
+
+
+for (i in 1:109) {
+  
+  part_res.z <- do.call(data.frame,
+                      aggregate(as.formula(paste0("sq_diff_ICC.z_", i, " ~ occasions_drawn + n_occasions + n_items")),
+                                data = rd.z,
+                                FUN = function(x) {
+                                  sqrt(sum(x)/1000) # sum the squared differences, divide by number of replications and take sqrt
+                                }))
+  names(part_res.z) <- c("occasions_drawn", "n_occasions", "n_items", "part_RMSE.z")
+  
+  if (i == 1) {
+    RMSE.z_random[, 1:4] <- part_res.z
+  } else {
+    RMSE.z_random[ , paste0("RMSE.z_", i)] <- part_res.z$part_RMSE.z
+  }
+}
+
+
+# repeat for ordered draws -> different number of replications (i.e., 1)
+# subset for ordered draws
+od.z <- part_dat.z[part_dat.z$occasions_drawn == "by order", ]
+
+# storage
+RMSE.z_order <- as.data.frame(matrix(nrow=21, ncol=112))
+names(RMSE.z_order)[1:3] <- c("occasions_drawn", "n_occasions", "n_items")
+names(RMSE.z_order)[4:112] <- c(paste0("RMSE.z_", 1:109))
+
+
+
+for (i in 1:109) {
+  
+  part_res.z <- do.call(data.frame,
+                      aggregate(as.formula(paste0("sq_diff_ICC.z_", i, " ~ occasions_drawn + n_occasions + n_items")),
+                                data = od.z,
+                                FUN = function(x) {
+                                  sqrt(sum(x)/1) # sum the squared differences, divide by number of replications and take sqrt
+                                }))
+  names(part_res.z) <- c("occasions_drawn", "n_occasions", "n_items", "part_RMSE.z")
+  
+  if (i == 1) {
+    RMSE.z_order[, 1:4] <- part_res.z
+  } else {
+    RMSE.z_order[ , paste0("RMSE.z_", i)] <- part_res.z$part_RMSE.z
+  }
+}
+
+
+# combine RMSE data frames
+RMSE.z <- rbind(RMSE.z_random, RMSE.z_order)
+rm(RMSE.z_random, RMSE.z_order)
+
+# remove benchmark row
+# (values are correctly 0)
+RMSE.z <- RMSE.z[-(which(RMSE.z$occasions_drawn == "by order" & RMSE.z$n_occasions == 70 & RMSE.z$n_items == 15)), ]
+
+
+# save 
+save(RMSE.z, file="results/RMSE.z_values_per_participant.rda")
+
+
+# Calculate min, mean, and max across participants
+RMSE.z$RMSE.z_mean <- rowMeans(RMSE.z[ ,4:112], na.rm=TRUE)
+RMSE.z$RMSE.z_min <- apply(RMSE.z[ , 4:112], 1, FUN = min, na.rm = TRUE)
+RMSE.z$RMSE.z_max <- apply(RMSE.z[ , 4:112], 1, FUN = max, na.rm = TRUE)
+# subset 
+RMSE.z <- RMSE.z[ , c(1:3, 113:115)]
+
+
+
+
+
+
 # Aggregate Results -------------------------------------------------------
 agg <- aggregate_results(res,
                          outcomes = c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC',
                                       'N_valid_ICC.z',
                                       'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z',
                                       'cor_ICC', 'cor_ICC.z',
-                                      'RMSE_ICC', 'RMSE_ICC.z',
                                       'rel', 'N_rel',
                                       'sd_ICC', 'sd_ICC.z',
                                       'negICC', 'percnegICC',
                                       'estimationProbNeg', 'estimationProbPos'),
                          rel_outcomes = c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC',
                                           'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z',
-                                          'cor_ICC', 'cor_ICC.z',
-                                          'RMSE_ICC', 'RMSE_ICC.z'),
+                                          'cor_ICC', 'cor_ICC.z'),
                          abs_outcomes = c('N_valid_ICC.z',
                                           'rel', 'N_rel',
                                           'sd_ICC', 'sd_ICC.z',
@@ -60,6 +267,18 @@ agg <- aggregate_results(res,
                                           'estimationProbNeg', 'estimationProbPos'),
                          groupwise = FALSE,
                          group_var = NULL)
+
+# merge RMSE to agg
+agg_res <- list(RMSE) # should be nested as other outcomes so that function works
+names(agg_res) <- "agg_res"
+agg$RMSE_ICC <- agg_res
+
+
+agg_res <- list(RMSE.z) # should be nested as other outcomes so that function works
+names(agg_res) <- "agg_res"
+agg$RMSE_ICC.z <- agg_res
+
+
 
 
 
@@ -97,7 +316,6 @@ save(agg_grp, file = "results/aggregated_subgroups_Study1.rda")
 
 # Calculate Monte Carlo Standard Error ------------------------------------
 # for formulas, see Siepe et al. (2024), doi: 10.1037/met0000695
-
 
 
 # '' For Whole Data Set ---------------------------------------------------
@@ -165,97 +383,69 @@ MCSE4 <- do.call(data.frame, aggregate(cor_ICC.z ~ n_occasions + n_items, data =
 names(MCSE4) <- c("n_occasions", "n_items", "cor_ICC.z_sim_mean", "cor_ICC.z_sim_var", "cor_ICC.z_MCSE")
 
 
-## for RMSE (ICC)
-# we have RMSE for each simulation run (because we have multiple participants)
-# -> therefore, the performance measure across iterations is not RMSE, but mean of RMSE
-# -> use formula for mean of generic statistic G (see Siepe et al., 2024)
-
-MCSE5 <- do.call(data.frame, aggregate(RMSE_ICC ~ n_occasions + n_items, data = rd, FUN = function(x) {
-  c(mean = mean(x),
-    var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
-    MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
-})
-)
-
-names(MCSE5) <- c("n_occasions", "n_items", "RMSE_ICC_sim_mean", "RMSE_ICC_sim_var", "RMSE_ICC_MCSE")
-
-## for RMSE (ICC.z)
-# we have RMSE for each simulation run (because we have multiple participants)
-# -> therefore, the performance measure across iterations is not RMSE, but mean of RMSE
-# -> use formula for mean of generic statistic G (see Siepe et al., 2024)
-
-MCSE6 <- do.call(data.frame, aggregate(RMSE_ICC.z ~ n_occasions + n_items, data = rd, FUN = function(x) {
-  c(mean = mean(x),
-    var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
-    MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
-})
-)
-
-names(MCSE6) <- c("n_occasions", "n_items", "RMSE_ICC.z_sim_mean", "RMSE_ICC.z_sim_var", "RMSE_ICC.z_MCSE")
-
 
 ## for reliability
 # -> mean of generic statistic G
 
-MCSE7 <- do.call(data.frame, aggregate(rel ~ n_occasions + n_items, data = rd, FUN = function(x) {
+MCSE5 <- do.call(data.frame, aggregate(rel ~ n_occasions + n_items, data = rd, FUN = function(x) {
   c(mean = mean(x),
     var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
     MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
 })
 )
 
-names(MCSE7) <- c("n_occasions", "n_items", "rel_sim_mean", "rel_sim_var", "rel_MCSE")
+names(MCSE5) <- c("n_occasions", "n_items", "rel_sim_mean", "rel_sim_var", "rel_MCSE")
 
 
 ## for SD (ICC)
 # we have one SD for each replicate -> performance measure = mean of SD across replicates
 # use formula for mean of generic statistic G
-MCSE8 <- do.call(data.frame, aggregate(sd_ICC ~ n_occasions + n_items, data = rd, FUN = function(x) {
+MCSE6 <- do.call(data.frame, aggregate(sd_ICC ~ n_occasions + n_items, data = rd, FUN = function(x) {
   c(mean = mean(x),
     var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
     MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
 })
 )
 
-names(MCSE8) <- c("n_occasions", "n_items", "sd_ICC_sim_mean", "sd_ICC_sim_var", "sd_ICC_MCSE")
+names(MCSE6) <- c("n_occasions", "n_items", "sd_ICC_sim_mean", "sd_ICC_sim_var", "sd_ICC_MCSE")
 
 
 ## for SD (ICC.z)
 # we have one SD for each replicate -> performance measure = mean of SD across replicates
 # use formula for mean of generic statistic G
-MCSE9 <- do.call(data.frame, aggregate(sd_ICC.z ~ n_occasions + n_items, data = rd, FUN = function(x) {
+MCSE7 <- do.call(data.frame, aggregate(sd_ICC.z ~ n_occasions + n_items, data = rd, FUN = function(x) {
   c(mean = mean(x),
     var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
     MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
 })
 )
 
-names(MCSE9) <- c("n_occasions", "n_items", "sd_ICC.z_sim_mean", "sd_ICC.z_sim_var", "sd_ICC.z_MCSE")
+names(MCSE7) <- c("n_occasions", "n_items", "sd_ICC.z_sim_mean", "sd_ICC.z_sim_var", "sd_ICC.z_MCSE")
 
 
 ## for % negICC
 # performance measure: mean of generic statistic G
-MCSE10 <- do.call(data.frame, aggregate(percnegICC ~ n_occasions + n_items, data = rd, FUN = function(x) {
+MCSE8 <- do.call(data.frame, aggregate(percnegICC ~ n_occasions + n_items, data = rd, FUN = function(x) {
   c(mean = mean(x),
     var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
     MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
 })
 )
 
-names(MCSE10) <- c("n_occasions", "n_items", "percnegICC_sim_mean", "percnegICC_sim_var", "percnegICC_MCSE")
+names(MCSE8) <- c("n_occasions", "n_items", "percnegICC_sim_mean", "percnegICC_sim_var", "percnegICC_MCSE")
 
 
 ## for N_rel
 # performance measure: mean of generic statistic G
 
-MCSE11 <- do.call(data.frame, aggregate(N_rel ~ n_occasions + n_items, data = rd, FUN = function(x) {
+MCSE9 <- do.call(data.frame, aggregate(N_rel ~ n_occasions + n_items, data = rd, FUN = function(x) {
   c(mean = mean(x),
     var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
     MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
 })
 )
 
-names(MCSE11) <- c("n_occasions", "n_items", "N_rel_sim_mean", "N_rel_sim_var", "N_rel_MCSE")
+names(MCSE9) <- c("n_occasions", "n_items", "N_rel_sim_mean", "N_rel_sim_var", "N_rel_MCSE")
 
 ## for estimation problems, no MCSE can be calculated because there is zero variance
 range(rd$estimationProbNeg)
@@ -271,17 +461,121 @@ MCSE <- merge(MCSE, MCSE6, by = c("n_occasions", "n_items"))
 MCSE <- merge(MCSE, MCSE7, by = c("n_occasions", "n_items"))
 MCSE <- merge(MCSE, MCSE8, by = c("n_occasions", "n_items"))
 MCSE <- merge(MCSE, MCSE9, by = c("n_occasions", "n_items"))
-MCSE <- merge(MCSE, MCSE10, by = c("n_occasions", "n_items"))
-MCSE <- merge(MCSE, MCSE11, by = c("n_occasions", "n_items"))
 
 MCSE
 names(MCSE)
+
+
+
+# for RMSE per participant
+# for each participant, calculate sampling variance of squared errors
+# and mean of squared errors (across replications per condition)
+# -> calculate MCSE per participant and condition
+
+# for formula, see Siepe et al. (2024), Table 3, formula for MCSE of RMSE
+# MSE hat = expected value for squared errors = mean of squared errors across replications
+
+# use data from random draws only
+part_dat.rd <- part_dat[which(part_dat$occasions_drawn == "random"), ]
+
+# # for one participant
+# MCSE_RMSE_part1 <- data.frame(matrix(ncol=3, nrow=18))
+# names(MCSE_RMSE_part1) <- c("n_occasions", "n_items", "MCSE_RMSE_1")
+# 
+# MCSE_RMSE_part1 <- do.call(data.frame,
+#                            aggregate(sq_diff_ICC_1 ~ n_occasions + n_items,
+#                                      data = part_dat.rd,
+#                                      FUN = function(x) {
+#                                        MCSE = sqrt( ( (sum( ( x - (sum(x)/1000) )^2 )) / (1000 - 1) ) / (4*1000*mean(x)))
+#                                      }))
+
+## for ICCs
+# automize over participants
+MCSE_RMSE <- data.frame(matrix(ncol=111, nrow=18))
+names(MCSE_RMSE) <- c("n_occasions", "n_items", paste0("MCSE_RMSE_", 1:109))
+
+for (i in 1:109) {
+  
+  res_mcse <- do.call(data.frame,
+                 aggregate(as.formula(paste0("sq_diff_ICC_", i, " ~ n_occasions + n_items")),
+                           data = part_dat.rd,
+                           FUN = function(x) {
+                             MCSE = sqrt( ( (sum( ( x - (sum(x)/1000) )^2 )) / (1000 - 1) ) / (4*1000*mean(x)))
+                           }))
+  names(res_mcse) <- c("n_occasions", "n_items", "MCSE_RMSE_part")
+  
+  if (i == 1) {
+    MCSE_RMSE[ , 1:3] <- res_mcse
+  } else {
+    MCSE_RMSE[ , paste0("MCSE_RMSE_", i)] <- res_mcse$MCSE_RMSE_part
+  }
+}
+
+
+# save
+save(MCSE_RMSE, file="results/MCSE_RMSE_per_participant.rda")
+
+# calculate mean, min, max per condition
+MCSE_RMSE$MCSE_RMSE_mean <- rowMeans(MCSE_RMSE[ , c(3:111)], na.rm=T)
+MCSE_RMSE$MCSE_RMSE_min <- apply(MCSE_RMSE[ , 3:111], 1, FUN = min, na.rm = TRUE)
+MCSE_RMSE$MCSE_RMSE_max <- apply(MCSE_RMSE[ , 3:111], 1, FUN = max, na.rm = TRUE)
+
+
+# add to MCSE object
+MCSE <- merge(MCSE, MCSE_RMSE[ , c("n_occasions", "n_items", "MCSE_RMSE_min", "MCSE_RMSE_mean", "MCSE_RMSE_max")],
+              by = c("n_occasions", "n_items"))
+
+
+
+
+## for ICC.z
+part_dat.z.rd <- part_dat.z[which(part_dat.z$occasions_drawn == "random"), ]
+
+MCSE_RMSE.z <- data.frame(matrix(ncol=111, nrow=18))
+names(MCSE_RMSE.z) <- c("n_occasions", "n_items", paste0("MCSE_RMSE.z_", 1:109))
+
+for (i in 1:109) {
+  
+  res_mcse <- do.call(data.frame,
+                      aggregate(as.formula(paste0("sq_diff_ICC.z_", i, " ~ n_occasions + n_items")),
+                                data = part_dat.z.rd,
+                                FUN = function(x) {
+                                  MCSE = sqrt( ( (sum( ( x - (sum(x)/1000) )^2 )) / (1000 - 1) ) / (4*1000*mean(x)))
+                                }))
+  names(res_mcse) <- c("n_occasions", "n_items", "MCSE_RMSE.z_part")
+  
+  if (i == 1) {
+    MCSE_RMSE.z[ , 1:3] <- res_mcse
+  } else {
+    MCSE_RMSE.z[ , paste0("MCSE_RMSE.z_", i)] <- res_mcse$MCSE_RMSE.z_part
+  }
+}
+
+
+# save
+save(MCSE_RMSE.z, file="results/MCSE_RMSE.z_per_participant.rda")
+
+# calculate mean, min, max per condition
+MCSE_RMSE.z$MCSE_RMSE.z_mean <- rowMeans(MCSE_RMSE.z[ , c(3:111)], na.rm=T)
+MCSE_RMSE.z$MCSE_RMSE.z_min <- apply(MCSE_RMSE.z[ , 3:111], 1, FUN = min, na.rm = TRUE)
+MCSE_RMSE.z$MCSE_RMSE.z_max <- apply(MCSE_RMSE.z[ , 3:111], 1, FUN = max, na.rm = TRUE)
+
+
+
+# merge to MCSE
+MCSE <- merge(MCSE, MCSE_RMSE.z[ , c("n_occasions", "n_items", "MCSE_RMSE.z_min", "MCSE_RMSE.z_mean", "MCSE_RMSE.z_max")],
+              by = c("n_occasions", "n_items"))
+
 
 
 # round and save MCSE as csv
 # round to 3 decimals in this case
 MCSE[3:35] <- round(MCSE[3:35], 3)
 MCSE <- MCSE[order(MCSE$n_occasions, MCSE$n_items), ]
+# use only MCSE (not mean or var)
+MCSE <- MCSE[ , c('n_occasions', 'n_items', 'diff_ICC_MCSE','diff_ICC.z_MCSE','cor_ICC_MCSE', 'cor_ICC.z_MCSE',
+                  'rel_MCSE', 'sd_ICC_MCSE','sd_ICC.z_MCSE', 'percnegICC_MCSE', 'N_rel_MCSE', 'MCSE_RMSE_min',
+                  'MCSE_RMSE_mean', 'MCSE_RMSE_max', 'MCSE_RMSE.z_min', 'MCSE_RMSE.z_mean', 'MCSE_RMSE.z_max')]
 write.csv(MCSE, "results/MCSE_table_whole_data_set_Study1.csv", row.names = F)
 
 
@@ -495,6 +789,209 @@ res2_group$percnegICC[res2_group$group == "high NED"] <- res2_group$negICC[res2_
 res2_group$percnegICC[res2_group$group == "medium NED"] <- res2_group$negICC[res2_group$group == "medium NED"] / 36 # divide by number of participants in group
 res2_group$percnegICC[res2_group$group == "low NED"] <- res2_group$negICC[res2_group$group == "low NED"] / 37 # divide by number of participants in group
 
+# Calcute RMSE for Each Participant Across Replications 
+
+# '' For ICCs 
+# extract squared differences for each replication and each condition per participant
+part_dat2 <- data.frame(matrix(nrow=18021, ncol=112))
+part_dat2[ , 1:3] <- res2[ , 2:4]
+names(part_dat2) <- c("n_occasions", "occasions_drawn", "n_items", paste0("sq_diff_ICC_", 1:109))
+
+for (i in 1:109) {
+  
+  for (row in 1:18021) {
+    
+    part_dat2[row, paste0("sq_diff_ICC_", i)] <- res2[row , "sq_diff_ICC"][[1]][i]
+    
+  }
+  
+}
+
+# save
+save(part_dat2, file="results/check nr of iterations/squared_errors_per_replication_and_participant.rda")
+
+
+### aggregate
+
+# subset for random draws
+rd2 <- part_dat2[part_dat2$occasions_drawn == "random", ]
+
+# storage
+RMSE2_random <- as.data.frame(matrix(nrow=18, ncol=112))
+names(RMSE2_random)[1:3] <- c("occasions_drawn", "n_occasions", "n_items")
+names(RMSE2_random)[4:112] <- c(paste0("RMSE_", 1:109))
+
+
+
+for (i in 1:109) {
+  
+  part_res2 <- do.call(data.frame,
+                      aggregate(as.formula(paste0("sq_diff_ICC_", i, " ~ occasions_drawn + n_occasions + n_items")),
+                                data = rd2,
+                                FUN = function(x) {
+                                  sqrt(sum(x)/1000) # sum the squared differences, divide by number of replications and take sqrt
+                                }))
+  names(part_res2) <- c("occasions_drawn", "n_occasions", "n_items", "part_RMSE")
+  
+  if (i == 1) {
+    RMSE2_random[, 1:4] <- part_res2
+  } else {
+    RMSE2_random[ , paste0("RMSE_", i)] <- part_res2$part_RMSE
+  }
+}
+
+
+# repeat for ordered draws -> different number of replications (i.e., 1)
+# subset for ordered draws
+od2 <- part_dat2[part_dat2$occasions_drawn == "by order", ]
+
+# storage
+RMSE2_order <- as.data.frame(matrix(nrow=21, ncol=112))
+names(RMSE2_order)[1:3] <- c("occasions_drawn", "n_occasions", "n_items")
+names(RMSE2_order)[4:112] <- c(paste0("RMSE_", 1:109))
+
+
+
+for (i in 1:109) {
+  
+  part_res2 <- do.call(data.frame,
+                      aggregate(as.formula(paste0("sq_diff_ICC_", i, " ~ occasions_drawn + n_occasions + n_items")),
+                                data = od2,
+                                FUN = function(x) {
+                                  sqrt(sum(x)/1) # sum the squared differences, divide by number of replications and take sqrt
+                                }))
+  names(part_res2) <- c("occasions_drawn", "n_occasions", "n_items", "part_RMSE")
+  
+  if (i == 1) {
+    RMSE2_order[, 1:4] <- part_res2
+  } else {
+    RMSE2_order[ , paste0("RMSE_", i)] <- part_res2$part_RMSE
+  }
+}
+
+
+# combine RMSE data frames
+RMSE2 <- rbind(RMSE2_random, RMSE2_order)
+rm(RMSE2_random, RMSE2_order)
+
+# remove benchmark row
+# (values are correctly 0)
+RMSE2 <- RMSE2[-(which(RMSE2$occasions_drawn == "by order" & RMSE2$n_occasions == 70 & RMSE2$n_items == 15)), ]
+
+
+# save 
+save(RMSE2, file="results/check nr of iterations/RMSE_values_per_participant.rda")
+
+
+# Calculate min, mean, and max across participants
+RMSE2$RMSE_mean <- rowMeans(RMSE2[ ,4:112], na.rm=TRUE)
+RMSE2$RMSE_min <- apply(RMSE2[ , 4:112], 1, FUN = min, na.rm = TRUE)
+RMSE2$RMSE_max <- apply(RMSE2[ , 4:112], 1, FUN = max, na.rm = TRUE)
+# subset 
+RMSE2 <- RMSE2[ , c(1:3, 113:115)]
+
+
+
+
+
+# '' For ICC.z 
+# extract squared differences for each replication and each condition per participant
+part_dat.z2 <- data.frame(matrix(nrow=18021, ncol=112))
+part_dat.z2[ , 1:3] <- res2[ , 2:4]
+names(part_dat.z2) <- c("n_occasions", "occasions_drawn", "n_items", paste0("sq_diff_ICC.z_", 1:109))
+
+for (i in 1:109) {
+  
+  for (row in 1:18021) {
+    
+    part_dat.z2[row, paste0("sq_diff_ICC.z_", i)] <- res2[row , "sq_diff_ICC.z"][[1]][i]
+    
+  }
+  
+}
+
+# save
+save(part_dat.z2, file="results/check nr of iterations/squared_errors.z_per_replication_and_participant.rda")
+
+
+### aggregate
+
+# subset for random draws
+rd.z2 <- part_dat.z2[part_dat.z2$occasions_drawn == "random", ]
+
+# storage
+RMSE.z_random2 <- as.data.frame(matrix(nrow=18, ncol=112))
+names(RMSE.z_random2)[1:3] <- c("occasions_drawn", "n_occasions", "n_items")
+names(RMSE.z_random2)[4:112] <- c(paste0("RMSE.z_", 1:109))
+
+
+
+for (i in 1:109) {
+  
+  part_res2.z <- do.call(data.frame,
+                        aggregate(as.formula(paste0("sq_diff_ICC.z_", i, " ~ occasions_drawn + n_occasions + n_items")),
+                                  data = rd.z2,
+                                  FUN = function(x) {
+                                    sqrt(sum(x)/1000) # sum the squared differences, divide by number of replications and take sqrt
+                                  }))
+  names(part_res2.z) <- c("occasions_drawn", "n_occasions", "n_items", "part_RMSE.z")
+  
+  if (i == 1) {
+    RMSE.z_random2[, 1:4] <- part_res2.z
+  } else {
+    RMSE.z_random2[ , paste0("RMSE.z_", i)] <- part_res2.z$part_RMSE.z
+  }
+}
+
+
+# repeat for ordered draws -> different number of replications (i.e., 1)
+# subset for ordered draws
+od.z2 <- part_dat.z2[part_dat.z2$occasions_drawn == "by order", ]
+
+# storage
+RMSE.z_order2 <- as.data.frame(matrix(nrow=21, ncol=112))
+names(RMSE.z_order2)[1:3] <- c("occasions_drawn", "n_occasions", "n_items")
+names(RMSE.z_order2)[4:112] <- c(paste0("RMSE.z_", 1:109))
+
+
+
+for (i in 1:109) {
+  
+  part_res2.z <- do.call(data.frame,
+                        aggregate(as.formula(paste0("sq_diff_ICC.z_", i, " ~ occasions_drawn + n_occasions + n_items")),
+                                  data = od.z2,
+                                  FUN = function(x) {
+                                    sqrt(sum(x)/1) # sum the squared differences, divide by number of replications and take sqrt
+                                  }))
+  names(part_res2.z) <- c("occasions_drawn", "n_occasions", "n_items", "part_RMSE.z")
+  
+  if (i == 1) {
+    RMSE.z_order2[, 1:4] <- part_res2.z
+  } else {
+    RMSE.z_order2[ , paste0("RMSE.z_", i)] <- part_res2.z$part_RMSE.z
+  }
+}
+
+
+# combine RMSE data frames
+RMSE.z2 <- rbind(RMSE.z_random2, RMSE.z_order2)
+rm(RMSE.z_random2, RMSE.z_order2)
+
+# remove benchmark row
+# (values are correctly 0)
+RMSE.z2 <- RMSE.z2[-(which(RMSE.z2$occasions_drawn == "by order" & RMSE.z2$n_occasions == 70 & RMSE.z2$n_items == 15)), ]
+
+
+# save 
+save(RMSE.z2, file="results/check nr of iterations/RMSE.z_values_per_participant.rda")
+
+
+# Calculate min, mean, and max across participants
+RMSE.z2$RMSE.z_mean <- rowMeans(RMSE.z2[ ,4:112], na.rm=TRUE)
+RMSE.z2$RMSE.z_min <- apply(RMSE.z2[ , 4:112], 1, FUN = min, na.rm = TRUE)
+RMSE.z2$RMSE.z_max <- apply(RMSE.z2[ , 4:112], 1, FUN = max, na.rm = TRUE)
+# subset 
+RMSE.z2 <- RMSE.z2[ , c(1:3, 113:115)]
 
 
 
@@ -503,15 +1000,13 @@ agg2 <- aggregate_results(res2,
                                       'N_valid_ICC.z',
                                       'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z',
                                       'cor_ICC', 'cor_ICC.z',
-                                      'RMSE_ICC', 'RMSE_ICC.z',
                                       'rel', 'N_rel',
                                       'sd_ICC', 'sd_ICC.z',
                                       'negICC', 'percnegICC',
                                       'estimationProbNeg', 'estimationProbPos'),
                          rel_outcomes = c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC',
                                           'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z',
-                                          'cor_ICC', 'cor_ICC.z',
-                                          'RMSE_ICC', 'RMSE_ICC.z'),
+                                          'cor_ICC', 'cor_ICC.z'),
                          abs_outcomes = c('N_valid_ICC.z',
                                           'rel', 'N_rel',
                                           'sd_ICC', 'sd_ICC.z',
@@ -519,6 +1014,17 @@ agg2 <- aggregate_results(res2,
                                           'estimationProbNeg', 'estimationProbPos'),
                          groupwise = FALSE,
                          group_var = NULL)
+
+# merge RMSE to agg
+agg_res <- list(RMSE2) # should be nested as other outcomes so that function works
+names(agg_res) <- "agg_res"
+agg2$RMSE_ICC <- agg_res
+
+
+agg_res <- list(RMSE.z2) # should be nested as other outcomes so that function works
+names(agg_res) <- "agg_res"
+agg2$RMSE_ICC.z <- agg_res
+
 
 save(agg2, file = "results/check nr of iterations/aggregated_whole_data_set_Study1.rda")
 

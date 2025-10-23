@@ -160,35 +160,33 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
   
   
   # CREATE RESULTS STORAGE
-  res <- data.frame(matrix(NA, nrow=nrow(design), ncol=18))
+  # already determine columns that will contain lists of squared differences (of all persons)
   # ncol = 18 -> we have 18 outcomes (6 outcome measures, but some for raw ICCs
   # and also for Fisher's Z-transformed ICCs)
-  
-  # rename columns; order as in the one_simulation_outcome_measures-function
-  colnames(res) <- c( 
+  # name columns; order as in the one_simulation_outcome_measures-function
+  res <- data.frame(
     # relative outcome measures
-    "min_diff_ICC",
-    "mean_diff_ICC",
-    "max_diff_ICC",
-    "N_valid_ICC.z",
-    "min_diff_ICC.z",
-    "mean_diff_ICC.z",
-    "max_diff_ICC.z",
-    "cor_ICC",
-    "cor_ICC.z",
-    "RMSE_ICC",
-    "RMSE_ICC.z",
+    min_diff_ICC = rep(NA, nrow(design)),
+    mean_diff_ICC = rep(NA, nrow(design)),
+    max_diff_ICC = rep(NA, nrow(design)),
+    N_valid_ICC.z = rep(NA, nrow(design)),
+    min_diff_ICC.z = rep(NA, nrow(design)),
+    mean_diff_ICC.z = rep(NA, nrow(design)),
+    max_diff_ICC.z = rep(NA, nrow(design)),
+    cor_ICC = rep(NA, nrow(design)),
+    cor_ICC.z = rep(NA, nrow(design)),
+    sq_diff_ICC = I(vector("list", nrow(design))),
+    sq_diff_ICC.z = I(vector("list", nrow(design))),
     # absolute outcome measures
-    "rel",
-    "N_rel",
-    "sd_ICC",
-    "sd_ICC.z",
-    "negICC",
-    "estimationProbNeg",
-    "estimationProbPos"
+    rel = rep(NA, nrow(design)),
+    N_rel = rep(NA, nrow(design)),
+    sd_ICC = rep(NA, nrow(design)),
+    sd_ICC.z = rep(NA, nrow(design)),
+    negICC = rep(NA, nrow(design)),
+    estimationProbNeg = rep(NA, nrow(design)),
+    estimationProbPos = rep(NA, nrow(design))
   )
 
-  
   
 
   # SET FUTURE PLAN FOR PARALLELIZATION
@@ -208,7 +206,7 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
   
 
   # RUN SIMULATION
-  res[] <- t(future_sapply(seq_len(nrow(design)),# apply function to row dimension of design matrix (i.e.,
+  res_list <- future_lapply(seq_len(nrow(design)),# apply function to row dimension of design matrix (i.e.,
                            # "loop" over rows) and then transpose to the results matrix
                            # seq_len(nrow(design))) -> sequence along row numbers of the
                            # design matrix (column vector of row numbers)
@@ -240,12 +238,16 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
                                  )
                                )
                              }
-                             as.vector(one_result)
+                             return(one_result)
                            },
-                           future.seed=future_seed)) # set TRUE/FALSE for future seed from above
+                           future.seed=future_seed) # set TRUE/FALSE for future seed from above
+  
+  # store results from list in pre-allocated res data frame
+  res <- do.call(rbind, res_list)
+  # future_lapply from future.apply preserves order of input and output -> design row 1 = res row 1
+  
   # combine design and results
-  res <- cbind(design, res)
-  return(res)
+  return(cbind(design, res))
 }
 
 
@@ -259,20 +261,21 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
 # # (relevant for ICC calculation: matrix can only store one data type)
 # is.numeric(bench$SERIAL)
 # 
-# test <- simulation_study(data = bench, n_occasions = c(3,5,10,100), occasions_drawn = c("random", "by order"),
-#                          n_items = c(5,15), n_iteration = 5,
+# 
+# test <- simulation_study(data = bench, n_occasions = c(14,70), occasions_drawn = c("random", "by order"),
+#                          n_items = c(5,15), n_iteration = 2,
 #                          id.var = "SERIAL", all_items = c('aerger1', 'aerger2', 'aerger3',
 #                                                           'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
 #                                                           'angst1', 'angst2', 'angst3',
 #                                                           'scham1', 'scham2', 'scham3',
 #                                                           'schuld1', 'schuld2', 'schuld3'),
 #                          categories = c(rep("aerger",3), rep("traurig", 3), rep("angst",3),
-#                                         rep("scham", 3), rep("schuld", 3)), 
+#                                         rep("scham", 3), rep("schuld", 3)),
 #                          type = "consistency", unit = "single",
 #                          occ.running.var = "occ_running",
-#                          seed = NULL, cores = 1)
+#                          seed_item = NULL, seed_sim = NULL, cores = 1)
 # #
-# 
+#
 # # without categories -> could draw multiple items from the same category
 # # should also work with number of items that would not lead to equal number per category (e.g., 7)
 # test <- simulation_study(data = bench, n_occasions = c(3,5,10,100), occasions_drawn = c("random", "by order"),
@@ -282,11 +285,11 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
 #                                                           'angst1', 'angst2', 'angst3',
 #                                                           'scham1', 'scham2', 'scham3',
 #                                                           'schuld1', 'schuld2', 'schuld3'),
-#                          categories = NULL, 
+#                          categories = NULL,
 #                          type = "consistency", unit = "single",
 #                          occ.running.var = "occ_running",
 #                          seed = NULL, cores = 1)
-# 
+#
 # # however, 7 items should not work when specifying categories:
 # test <- simulation_study(data = bench, n_occasions = c(3,5,10,100), occasions_drawn = c("random", "by order"),
 #                          n_items = c(5,7,15), n_iteration = 5,
@@ -296,7 +299,7 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
 #                                                           'scham1', 'scham2', 'scham3',
 #                                                           'schuld1', 'schuld2', 'schuld3'),
 #                          categories = c(rep("aerger",3), rep("traurig", 3), rep("angst",3),
-#                                         rep("scham", 3), rep("schuld", 3)), 
+#                                         rep("scham", 3), rep("schuld", 3)),
 #                          type = "consistency", unit = "single",
 #                          occ.running.var = "occ_running",
 #                          seed = NULL, cores = 1)
@@ -314,7 +317,7 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
 #                           type = "consistency", unit = "single",
 #                           occ.running.var = "occ_running",
 #                           seed = NULL, cores = 1)
-# 
+#
 # # test with wrong maximum number of items
 # names(bench)[1] <- "SERIAL"
 # test3 <- simulation_study(data = bench, n_occasions = c(3,5,100), occasions_drawn = c("random", "by order"),
@@ -327,8 +330,8 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
 #                           type = "consistency", unit = "single",
 #                           occ.running.var = "occ_running",
 #                           seed = NULL, cores = 1)
-# 
-# 
+#
+#
 # # test with non-numeric ID variable
 # bench$ID.chr <- rep(c(LETTERS[1:26], letters[1:10]), each = 100)
 # test4 <- simulation_study(data = bench, n_occasions = c(3,5,100), occasions_drawn = c("random", "by order"),
@@ -341,7 +344,7 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
 #                           type = "consistency", unit = "single",
 #                           occ.running.var = "occ_running",
 #                           seed = NULL, cores = 1)
-# 
+#
 # # test with wrong maximum number of occasions
 # test5 <- simulation_study(data = bench, n_occasions = c(3,5,10), occasions_drawn = c("random", "by order"),
 #                           n_items = c(5,15), n_iteration = 5,
@@ -353,5 +356,5 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
 #                           type = "consistency", unit = "single",
 #                           occ.running.var = "occ_running",
 #                           seed = NULL, cores = 1)
-# 
+#
 # rm(test, test2, test3, test4, test5)

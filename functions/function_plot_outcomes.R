@@ -14,7 +14,7 @@
 library(ggplot2)
 library(viridis) # for colors
 library(scales) # for "pretty" breaks in y axis
-
+library(ggh4x) # for facet_manual
 
 
 # Define Theme ------------------------------------------------------------
@@ -69,7 +69,8 @@ plot_outcome <- function(data, ylims=NULL, ylabel=NULL, x_breaks = seq(0, 70, 10
     data[ , "group"] <- factor(data[ , "group"], levels = c("high NED", "medium NED", "low NED"))
     facet_formula <- facet_grid(rows = vars(group), cols = vars(occasions_drawn))
   } else if (groupwise == FALSE ) {
-    facet_formula <- facet_wrap(~factor(occasions_drawn))
+    facet_formula <- ggh4x::facet_manual(~factor(occasions_drawn), design=matrix(c(1,2), nrow=1, ncol=2, byrow=TRUE), drop=FALSE)
+      # do not drop unused factor levels
   }
   
   # Build function for base plot
@@ -99,7 +100,10 @@ plot_outcome <- function(data, ylims=NULL, ylabel=NULL, x_breaks = seq(0, 70, 10
     theme_custom
   
   if (!is.null(ylims)) {
-    p <- p + scale_y_continuous(limits = ylims, breaks = scales::breaks_pretty(n = 5))
+    p <- p + scale_y_continuous(limits = ylims, breaks = scales::breaks_pretty(n = 5), labels = function(x) {
+      ifelse(x < 0, sprintf("%6.2f", x), sprintf(" %6.2f", x))
+    }
+    )
   }
   
   return(p)
@@ -108,7 +112,8 @@ plot_outcome <- function(data, ylims=NULL, ylabel=NULL, x_breaks = seq(0, 70, 10
   
   # Plot according to split_facet == TRUE or FALSE
   if (split_facets == FALSE) {
-    return(base_plot(data) + facet_formula)
+    return(base_plot(data) + facet_formula+
+             force_panelsizes(rows=1, cols=c(1,1)))
   } else if (split_facets == TRUE) {
     
     split_plots <- lapply(facet_order, # apply to each unique facet of the facet_var to split by
