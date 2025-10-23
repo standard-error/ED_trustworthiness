@@ -255,13 +255,19 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
   # root mean square error (for both raw ICCs and transformed ICCs)
   # -> compare ICC from comparison condition to benchmark ICC
   # --> deviation of the comp_ICC from the bench_ICC for each participant
-  # here: RMSE across participants in a single replication
-  # sum up all squared differences between comp_ICC and bench_ICC, divide by number of participants, take square root
+  # -> calculate an RMSE for each participant across all replications of a condition
+  # since we have a single simulation run (i.e., one replication) here, we cannot yet
+  # calculate the person-wise RMSE.
+  # instead, calculated squared difference between replication ICC and benchmark ICC for each participant
+  # and store this as a matrix for further calculations later
+  # -> later on, for each participant, the squared differences will be summed, divided by number of replications
+  # and square root taken (separately for each condition)
+  # -> one RMSE per person
   
   # differences were already calculated
   
-  RMSE_ICC <- sqrt( sum( merged[ , "difference_ICC"]^2 ) / nrow(merged) )
-  RMSE_ICC.z <- sqrt( sum( merged.c[ , "difference_ICC.z"]^2 ) / nrow(merged.c) )
+  sq_diff_ICC <- merged[ , "difference_ICC"]^2 
+  sq_diff_ICC.z <- merged.c[ , "difference_ICC.z"]^2
   
   
   # CORRELATION WITH BENCHMARK
@@ -272,13 +278,13 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
   
   
   # RETURN ALL OUTCOMES
-  return(cbind(
+  return(data.frame(
     # relative outcome measures
     min_diff_ICC, mean_diff_ICC, max_diff_ICC,
     N_valid_ICC.z,
     min_diff_ICC.z, mean_diff_ICC.z, max_diff_ICC.z,
     cor_ICC, cor_ICC.z,
-    RMSE_ICC, RMSE_ICC.z, 
+    sq_diff_ICC = I(list(sq_diff_ICC)), sq_diff_ICC.z = I(list(sq_diff_ICC.z)), # store list of squared differences (with according name, else it will be changed to list.sq_diff_ICC.)
     # absolute outcome measures
     rel, N_rel,
     sd_ICC, sd_ICC.z,
@@ -300,7 +306,7 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
 # 
 # colnames(benchmark_data) <- c("SERIAL", "bench_ICC", "bench_ICC.z")
 # 
-# sim_data <- one_sim_data_manipulation(data = bench, nr.of.occasions = 50, occasions.drawn = "by order",
+# sim_data <- one_sim_data_manipulation(data = bench, nr.of.occasions = 10, occasions.drawn = "by order",
 #                                       nr.of.items = 15, id.var = "SERIAL", occ.running.var = "occ_running")
 # 
 # sim_data_ICC <- calculate_icc(sim_data, id.var = "SERIAL", items = c("aerger1", "aerger2", "aerger3",
@@ -413,14 +419,17 @@ one_simulation <- function(data, nr.of.occasions, occasions.drawn,
 #                       type = "consistency", unit = "single",
 #                       benchmark_ICCdata = benchmark_data)
 # out
+# out$sq_diff_ICC
 # 
 # # Test one simulation with 100 replications
 # 
-# res <- matrix(NA, ncol=18, nrow=100)
-# colnames(res) <- c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC', 'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z', 'cor_ICC', 'cor_ICC.z', 'RMSE_ICC', 'RMSE_ICC.z', 'rel', 'N_rel', 'sd_ICC', 'sd_ICC.z', 'negICC', 'estimationProbNeg', 'estimationProbPos')
+# res <- as.data.frame(matrix(NA, ncol=18, nrow=100))
+# colnames(res) <- c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC', 'N_valid_ICC.z', 'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z', 'cor_ICC', 'cor_ICC.z', 'sq_diff_icc', 'sq_diff_icc.z', 'rel', 'N_rel', 'sd_ICC', 'sd_ICC.z', 'negICC', 'estimationProbNeg', 'estimationProbPos')
 # for (i in 1:100) {
 #   res[i, ] <- one_simulation(data = bench,
-#                              nr.of.occasions = 10, nr.of.items = 15,
+#                              nr.of.occasions = 10, nr.of.items = 6,
+#                              items = c("schuld1", "schuld2", "schuld3",
+#                                        "scham1", "scham2", "scham3"),
 #                              occasions.drawn = "random",
 #                              id.var = "SERIAL",
 #                              occ.running.var = "occ_running",

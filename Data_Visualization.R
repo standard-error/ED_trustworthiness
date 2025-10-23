@@ -76,6 +76,11 @@ rm(sub1,sub2,sub3)
 ## RMSE
 rmse <- agg[["RMSE_ICC"]][["agg_res"]]
 rmse.z <- agg[["RMSE_ICC.z"]][["agg_res"]]
+# for RMSE, only plot values for random draws -> set by order to NA
+rmse <- rmse[which(rmse$occasions_drawn == "random"), ]
+rmse.z <- rmse.z[which(rmse.z$occasions_drawn == "random"), ]
+
+
 
 ## SD
 sd <- agg[["sd_ICC"]][["agg_res"]]
@@ -146,10 +151,10 @@ names(ylabels) <- names(data_list)
 # max(diff$max_diff_ICC_max)
 # min(diff.z$min_diff_ICC.z_min)
 # max(diff.z$max_diff_ICC.z_max)
-# min(rmse$RMSE_ICC_min)
-# max(rmse$RMSE_ICC_max)
-# min(rmse.z$RMSE_ICC.z_min)
-# max(rmse.z$RMSE_ICC.z_max)
+# min(rmse$RMSE_min)
+# max(rmse$RMSE_max)
+# min(rmse.z$RMSE.z_min)
+# max(rmse.z$RMSE.z_max)
 # min(sd$sd_ICC_min)
 # max(sd$sd_ICC_max)
 # min(sd.z$sd_ICC.z_min)
@@ -174,8 +179,8 @@ ylim_list <- list(
   c(0, 1), # correlation with benchmark (ICC.z)
   c(-1, 1), # difference in ICCs (compared to benchmark)
   c(-2.2, 1.7), # difference in ICCs (compared to benchmark) for ICC.z
-  c(0, 0.2), # RMSE
-  c(0, 0.7), # RMSE (ICC.z)
+  c(0, 0.6), # RMSE
+  c(0, 1.5), # RMSE (ICC.z)
   c(0, 0.2), # SD of ICCs
   c(0, 0.45), # SD of ICC.z
   c(0, 1), # Reliability
@@ -267,33 +272,52 @@ ggsave("plots/Study 1/overall data set/single plots/facet per plot/N_rel.svg",pl
 # adjust the plots a little (e.g., no y-axis lable but title, no x-axis label)
 a <- plot_list[["cor"]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                 plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
+                                axis.text.y = element_text(hjust=1),
                                 axis.text = element_text(size=10)) + ggtitle("(A) Correlation with Benchmark") +
-                          geom_hline(yintercept=0.80, linetype="twodash", color = "black")
+                          geom_hline(yintercept=0.80, linetype="twodash", color = "black") + force_panelsizes(rows=1, cols = c(1,1))
 # a
 b <- plot_list[["diff"]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                  plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                 axis.text = element_text(size=10)) + ggtitle("(B) Difference to Benchmark")
+                                 axis.text.y = element_text(hjust=1),
+                                 axis.text = element_text(size=10)) + ggtitle("(B) Difference to Benchmark") + force_panelsizes(rows=1, cols = c(1,1))
 # b
 c <- plot_list[["rmse"]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                  plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                 axis.text = element_text(size=10)) + ggtitle("(C) RMSE")
+                                 axis.text.y = element_text(hjust=1),
+                                 axis.text = element_text(size=10)) + ggtitle("(C) RMSE")+ force_panelsizes(rows=1, cols = c(1,1))
+
+  
 # c
+
 d <- plot_list[["sd"]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
+                               axis.text.y = element_text(hjust=1),
                                axis.text = element_text(size=10)) + ggtitle("(D) SD of ICCs") +
                           geom_hline(yintercept=agg[["sd_ICC"]][["agg_res"]][["sd_ICC_mean"]][[39]], # use benchmark SD
-                                     linetype="twodash", color = "black")
+                                     linetype="twodash", color = "black")+ force_panelsizes(rows=1, cols = c(1,1))
 # d
 e <- plot_list[["rel"]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                 plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
+                                axis.text.y = element_text(hjust=1),
                                 axis.text = element_text(size=10)) + ggtitle("(E) Reliability of ICCs") +
-                          geom_hline(yintercept=0.80, linetype="twodash", color = "black")
+                          geom_hline(yintercept=0.80, linetype="twodash", color = "black")+ force_panelsizes(rows=1, cols = c(1,1))
 # e
 f <- plot_list[["percnegICC"]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                     plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                    axis.text = element_text(size=10)) + ggtitle("(F) Proportion of Negative ICCs")
-
-
+                                    axis.text.y = element_text(hjust=1),
+                                    axis.text = element_text(size=10)) + ggtitle("(F) Proportion of Negative ICCs")+ force_panelsizes(rows=1, cols = c(1,1))
+# 
+# legend <- ggpubr::get_legend(a)  # extract legend
+# plots <- list(a + theme(legend.position="none"),
+#               b + theme(legend.position="none"),
+#               c + theme(legend.position="none"),
+#               d + theme(legend.position="none"),
+#               e + theme(legend.position="none"),
+#               f + theme(legend.position="none"))
+# 
+# combined <- cowplot::plot_grid(plotlist = plots, ncol = 3)
+# final <- cowplot::plot_grid(legend, combined, ncol = 1, rel_heights = c(0.1, 1))
+# final
 
 combined <- ggpubr::ggarrange(a,b,c,d,e,f , ncol=3, nrow=2, common.legend = TRUE, legend="top",
                               align = "hv", widths = c(1,1,1), heights = c(1, 1)) # equal panel sizes
@@ -306,7 +330,8 @@ combined
 
 
 
-ggsave("plots/Study 1/overall data set/plots_whole_data_set_Study1.pdf",plot = combined, device="pdf", height = 148, width = 210, unit="mm")
+
+ggsave("plots/Study 1/overall data set/plots_whole_data_set_Study1.pdf",plot = combined, device="pdf", height = 148, width = 220, unit="mm")
 # save in DIN A5 format
 
 ggsave("plots/Study 1/overall data set/plots_whole_data_set_Study1.svg",plot = combined, device="svg", height = 148, width = 210, unit="mm")
@@ -1280,6 +1305,11 @@ rm(sub1,sub2,sub3)
 ## RMSE
 rmse <- agg2[["RMSE_ICC"]][["agg_res"]]
 rmse.z <- agg2[["RMSE_ICC.z"]][["agg_res"]]
+# for RMSE, only plot values for random draws -> set by order to NA
+rmse <- rmse[which(rmse$occasions_drawn == "random"), ]
+rmse.z <- rmse.z[which(rmse.z$occasions_drawn == "random"), ]
+
+
 
 ## SD
 sd <- agg2[["sd_ICC"]][["agg_res"]]
@@ -1350,10 +1380,10 @@ names(ylabels) <- names(data_list)
 # max(diff$max_diff_ICC_max)
 # min(diff.z$min_diff_ICC.z_min)
 # max(diff.z$max_diff_ICC.z_max)
-# min(rmse$RMSE_ICC_min)
-# max(rmse$RMSE_ICC_max)
-# min(rmse.z$RMSE_ICC.z_min)
-# max(rmse.z$RMSE_ICC.z_max)
+min(rmse$RMSE_min)
+max(rmse$RMSE_max)
+min(rmse.z$RMSE.z_min)
+max(rmse.z$RMSE.z_max)
 # min(sd$sd_ICC_min)
 # max(sd$sd_ICC_max)
 # min(sd.z$sd_ICC.z_min)
@@ -1377,8 +1407,8 @@ ylim_list <- list(
   c(0.3, 1), # correlation with benchmark (ICC.z)
   c(-0.8, 0.8), # difference in ICCs (compared to benchmark)
   c(-2.2, 1.7), # difference in ICCs (compared to benchmark) for ICC.z
-  c(0, 0.2), # RMSE
-  c(0, 0.7), # RMSE (ICC.z)
+  c(0, 0.55), # RMSE
+  c(0, 1.4), # RMSE (ICC.z)
   c(0, 0.2), # SD of ICCs
   c(0, 0.45), # SD of ICC.z
   c(0, 1), # Reliability
