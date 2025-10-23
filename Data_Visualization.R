@@ -1380,10 +1380,17 @@ names(ylabels) <- names(data_list)
 # max(diff$max_diff_ICC_max)
 # min(diff.z$min_diff_ICC.z_min)
 # max(diff.z$max_diff_ICC.z_max)
+<<<<<<< HEAD
 # min(rmse$RMSE_min)
 # max(rmse$RMSE_max)
 # min(rmse.z$RMSE.z_min)
 # max(rmse.z$RMSE.z_max)
+=======
+min(rmse$RMSE_min)
+max(rmse$RMSE_max)
+min(rmse.z$RMSE.z_min)
+max(rmse.z$RMSE.z_max)
+>>>>>>> cf2768558a1bf50762633e929d2690b4a54115b0
 # min(sd$sd_ICC_min)
 # max(sd$sd_ICC_max)
 # min(sd.z$sd_ICC.z_min)
@@ -1408,8 +1415,13 @@ ylim_list <- list(
   c(0, 1), # correlation with benchmark (ICC.z)
   c(-1, 1), # difference in ICCs (compared to benchmark)
   c(-2.2, 1.7), # difference in ICCs (compared to benchmark) for ICC.z
+<<<<<<< HEAD
   c(0, 0.6), # RMSE
   c(0, 1.5), # RMSE (ICC.z)
+=======
+  c(0, 0.55), # RMSE
+  c(0, 1.4), # RMSE (ICC.z)
+>>>>>>> cf2768558a1bf50762633e929d2690b4a54115b0
   c(0, 0.2), # SD of ICCs
   c(0, 0.45), # SD of ICC.z
   c(0, 1), # Reliability
