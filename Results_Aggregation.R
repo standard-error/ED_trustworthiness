@@ -133,8 +133,8 @@ save(RMSE, file="results/RMSE_values_per_participant.rda")
 
 
 # Calculate min, mean, and max across participants
-RMSE$RMSE_mean <- rowMeans(RMSE[ ,4:112], na.rm=TRUE)
 RMSE$RMSE_min <- apply(RMSE[ , 4:112], 1, FUN = min, na.rm = TRUE)
+RMSE$RMSE_mean <- rowMeans(RMSE[ ,4:112], na.rm=TRUE)
 RMSE$RMSE_max <- apply(RMSE[ , 4:112], 1, FUN = max, na.rm = TRUE)
 # subset 
 RMSE <- RMSE[ , c(1:3, 113:115)]
@@ -236,8 +236,8 @@ save(RMSE.z, file="results/RMSE.z_values_per_participant.rda")
 
 
 # Calculate min, mean, and max across participants
-RMSE.z$RMSE.z_mean <- rowMeans(RMSE.z[ ,4:112], na.rm=TRUE)
 RMSE.z$RMSE.z_min <- apply(RMSE.z[ , 4:112], 1, FUN = min, na.rm = TRUE)
+RMSE.z$RMSE.z_mean <- rowMeans(RMSE.z[ ,4:112], na.rm=TRUE)
 RMSE.z$RMSE.z_max <- apply(RMSE.z[ , 4:112], 1, FUN = max, na.rm = TRUE)
 # subset 
 RMSE.z <- RMSE.z[ , c(1:3, 113:115)]
