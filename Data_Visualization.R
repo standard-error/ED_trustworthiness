@@ -332,12 +332,14 @@ combined
 
 
 ggsave("plots/Study 1/overall data set/plots_whole_data_set_Study1.pdf",plot = combined, device="pdf", height = 148, width = 220, unit="mm")
-# save in DIN A5 format
 
-ggsave("plots/Study 1/overall data set/plots_whole_data_set_Study1.svg",plot = combined, device="svg", height = 148, width = 210, unit="mm")
-# save in DIN A5 format
+ggsave("plots/Study 1/overall data set/plots_whole_data_set_Study1.svg",plot = combined, device="svg", height = 148, width = 220, unit="mm")
 
 
+# as tiff
+tiff("plots/Study 1/overall data set/plots_whole_data_set_Study1.tiff", units="mm", width=220, height=148, res=1200)
+combined
+dev.off()
 
 
 # for ICC.z
@@ -383,12 +385,18 @@ combined
 
 
 
-ggsave("plots/Study 1/overall data set/plots_Z-transformed_whole_data_set_Study1.pdf",plot = combined, device="pdf", height = 148, width = 210, unit="mm")
-# save in DIN A5 format
+ggsave("plots/Study 1/overall data set/plots_Z-transformed_whole_data_set_Study1.pdf",plot = combined, device="pdf", height = 148, width = 220, unit="mm")
 
 
-ggsave("plots/Study 1/overall data set/plots_Z-transformed_whole_data_set_Study1.svg",plot = combined, device="svg", height = 148, width = 210, unit="mm")
-# save in DIN A5 format
+
+ggsave("plots/Study 1/overall data set/plots_Z-transformed_whole_data_set_Study1.svg",plot = combined, device="svg", height = 148, width = 220, unit="mm")
+
+
+# as tiff
+tiff("plots/Study 1/overall data set/plots_Z-transformed_whole_data_set_Study1.tiff", units="mm", width=220, height=148, res=1200)
+combined
+dev.off()
+
 
 
 
