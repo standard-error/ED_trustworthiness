@@ -43,13 +43,13 @@ res_group$percnegICC[res_group$group == "low NED"] <- res_group$negICC[res_group
 
 # '' For ICCs -------------------------------------------------------------
 # extract squared differences for each replication and each condition per participant
-part_dat <- data.frame(matrix(nrow=18021, ncol=112))
+part_dat <- data.frame(matrix(nrow=90021, ncol=112))
 part_dat[ , 1:3] <- res[ , 2:4]
 names(part_dat) <- c("n_occasions", "occasions_drawn", "n_items", paste0("sq_diff_ICC_", 1:109))
 
 for (i in 1:109) {
   
-  for (row in 1:18021) {
+  for (row in 1:90021) {
     
     part_dat[row, paste0("sq_diff_ICC_", i)] <- res[row , "sq_diff_ICC"][[1]][i]
     
@@ -79,7 +79,7 @@ for (i in 1:109) {
                       aggregate(as.formula(paste0("sq_diff_ICC_", i, " ~ occasions_drawn + n_occasions + n_items")),
                       data = rd,
                       FUN = function(x) {
-                        sqrt(sum(x)/1000) # sum the squared differences, divide by number of replications and take sqrt
+                        sqrt(sum(x)/5000) # sum the squared differences, divide by number of replications and take sqrt
                       }))
   names(part_res) <- c("occasions_drawn", "n_occasions", "n_items", "part_RMSE")
   
@@ -145,13 +145,13 @@ RMSE <- RMSE[ , c(1:3, 113:115)]
 
 # '' For ICC.z ------------------------------------------------------------
 # extract squared differences for each replication and each condition per participant
-part_dat.z <- data.frame(matrix(nrow=18021, ncol=112))
+part_dat.z <- data.frame(matrix(nrow=90021, ncol=112))
 part_dat.z[ , 1:3] <- res[ , 2:4]
 names(part_dat.z) <- c("n_occasions", "occasions_drawn", "n_items", paste0("sq_diff_ICC.z_", 1:109))
 
 for (i in 1:109) {
   
-  for (row in 1:18021) {
+  for (row in 1:90021) {
     
     part_dat.z[row, paste0("sq_diff_ICC.z_", i)] <- res[row , "sq_diff_ICC.z"][[1]][i]
     
@@ -181,7 +181,7 @@ for (i in 1:109) {
                       aggregate(as.formula(paste0("sq_diff_ICC.z_", i, " ~ occasions_drawn + n_occasions + n_items")),
                                 data = rd.z,
                                 FUN = function(x) {
-                                  sqrt(sum(x)/1000) # sum the squared differences, divide by number of replications and take sqrt
+                                  sqrt(sum(x)/5000) # sum the squared differences, divide by number of replications and take sqrt
                                 }))
   names(part_res.z) <- c("occasions_drawn", "n_occasions", "n_items", "part_RMSE.z")
   
@@ -332,12 +332,12 @@ rd <- res[which(res$occasions_drawn == "random"),]
 # mean differences are averaged across iterations
 # also calculate variance of the mean difference across iterations
 
-max(rd$n_iteration) # 1000 iterations
+max(rd$n_iteration) # 5000 iterations
 
 MCSE <- do.call(data.frame, aggregate(mean_diff_ICC ~ n_occasions + n_items, data = rd, FUN = function(x) {
   c(mean = mean(x),
-    var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
-    MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
+    var = (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1), # equal to using var()
+    MCSE = sqrt( ( (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1) ) / 5000 )) 
 })
 )
 
@@ -349,8 +349,8 @@ names(MCSE) <- c("n_occasions", "n_items", "diff_ICC_sim_mean", "diff_ICC_sim_va
 
 MCSE2 <- do.call(data.frame, aggregate(mean_diff_ICC.z ~ n_occasions + n_items, data = rd, FUN = function(x) {
   c(mean = mean(x),
-    var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
-    MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
+    var = (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1), # equal to using var()
+    MCSE = sqrt( ( (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1) ) / 5000 )) 
 })
 )
 
@@ -362,8 +362,8 @@ names(MCSE2) <- c("n_occasions", "n_items", "diff_ICC.z_sim_mean", "diff_ICC.z_s
 
 MCSE3 <- do.call(data.frame, aggregate(cor_ICC ~ n_occasions + n_items, data = rd, FUN = function(x) {
   c(mean = mean(x),
-    var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
-    MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
+    var = (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1), # equal to using var()
+    MCSE = sqrt( ( (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1) ) / 5000 )) 
 })
 )
 
@@ -375,8 +375,8 @@ names(MCSE3) <- c("n_occasions", "n_items", "cor_ICC_sim_mean", "cor_ICC_sim_var
 
 MCSE4 <- do.call(data.frame, aggregate(cor_ICC.z ~ n_occasions + n_items, data = rd, FUN = function(x) {
   c(mean = mean(x),
-    var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
-    MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
+    var = (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1), # equal to using var()
+    MCSE = sqrt( ( (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1) ) / 5000 )) 
 })
 )
 
@@ -389,8 +389,8 @@ names(MCSE4) <- c("n_occasions", "n_items", "cor_ICC.z_sim_mean", "cor_ICC.z_sim
 
 MCSE5 <- do.call(data.frame, aggregate(rel ~ n_occasions + n_items, data = rd, FUN = function(x) {
   c(mean = mean(x),
-    var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
-    MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
+    var = (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1), # equal to using var()
+    MCSE = sqrt( ( (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1) ) / 5000 )) 
 })
 )
 
@@ -402,8 +402,8 @@ names(MCSE5) <- c("n_occasions", "n_items", "rel_sim_mean", "rel_sim_var", "rel_
 # use formula for mean of generic statistic G
 MCSE6 <- do.call(data.frame, aggregate(sd_ICC ~ n_occasions + n_items, data = rd, FUN = function(x) {
   c(mean = mean(x),
-    var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
-    MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
+    var = (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1), # equal to using var()
+    MCSE = sqrt( ( (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1) ) / 5000 )) 
 })
 )
 
@@ -415,8 +415,8 @@ names(MCSE6) <- c("n_occasions", "n_items", "sd_ICC_sim_mean", "sd_ICC_sim_var",
 # use formula for mean of generic statistic G
 MCSE7 <- do.call(data.frame, aggregate(sd_ICC.z ~ n_occasions + n_items, data = rd, FUN = function(x) {
   c(mean = mean(x),
-    var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
-    MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
+    var = (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1), # equal to using var()
+    MCSE = sqrt( ( (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1) ) / 5000 )) 
 })
 )
 
@@ -427,8 +427,8 @@ names(MCSE7) <- c("n_occasions", "n_items", "sd_ICC.z_sim_mean", "sd_ICC.z_sim_v
 # performance measure: mean of generic statistic G
 MCSE8 <- do.call(data.frame, aggregate(percnegICC ~ n_occasions + n_items, data = rd, FUN = function(x) {
   c(mean = mean(x),
-    var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
-    MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
+    var = (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1), # equal to using var()
+    MCSE = sqrt( ( (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1) ) / 5000 )) 
 })
 )
 
@@ -440,8 +440,8 @@ names(MCSE8) <- c("n_occasions", "n_items", "percnegICC_sim_mean", "percnegICC_s
 
 MCSE9 <- do.call(data.frame, aggregate(N_rel ~ n_occasions + n_items, data = rd, FUN = function(x) {
   c(mean = mean(x),
-    var = (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1), # equal to using var()
-    MCSE = sqrt( ( (sum( ( x - (sum(x)/1000 ) )^2 )) / (1000 - 1) ) / 1000 )) 
+    var = (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1), # equal to using var()
+    MCSE = sqrt( ( (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1) ) / 5000 )) 
 })
 )
 
@@ -486,7 +486,7 @@ part_dat.rd <- part_dat[which(part_dat$occasions_drawn == "random"), ]
 #                            aggregate(sq_diff_ICC_1 ~ n_occasions + n_items,
 #                                      data = part_dat.rd,
 #                                      FUN = function(x) {
-#                                        MCSE = sqrt( ( (sum( ( x - (sum(x)/1000) )^2 )) / (1000 - 1) ) / (4*1000*mean(x)))
+#                                        MCSE = sqrt( ( (sum( ( x - (sum(x)/5000) )^2 )) / (5000 - 1) ) / (4*5000*mean(x)))
 #                                      }))
 
 ## for ICCs
@@ -500,7 +500,7 @@ for (i in 1:109) {
                  aggregate(as.formula(paste0("sq_diff_ICC_", i, " ~ n_occasions + n_items")),
                            data = part_dat.rd,
                            FUN = function(x) {
-                             MCSE = sqrt( ( (sum( ( x - (sum(x)/1000) )^2 )) / (1000 - 1) ) / (4*1000*mean(x)))
+                             MCSE = sqrt( ( (sum( ( x - (sum(x)/5000) )^2 )) / (5000 - 1) ) / (4*5000*mean(x)))
                            }))
   names(res_mcse) <- c("n_occasions", "n_items", "MCSE_RMSE_part")
   
@@ -540,7 +540,7 @@ for (i in 1:109) {
                       aggregate(as.formula(paste0("sq_diff_ICC.z_", i, " ~ n_occasions + n_items")),
                                 data = part_dat.z.rd,
                                 FUN = function(x) {
-                                  MCSE = sqrt( ( (sum( ( x - (sum(x)/1000) )^2 )) / (1000 - 1) ) / (4*1000*mean(x)))
+                                  MCSE = sqrt( ( (sum( ( x - (sum(x)/5000) )^2 )) / (5000 - 1) ) / (4*5000*mean(x)))
                                 }))
   names(res_mcse) <- c("n_occasions", "n_items", "MCSE_RMSE.z_part")
   
@@ -793,13 +793,13 @@ res2_group$percnegICC[res2_group$group == "low NED"] <- res2_group$negICC[res2_g
 
 # '' For ICCs 
 # extract squared differences for each replication and each condition per participant
-part_dat2 <- data.frame(matrix(nrow=18021, ncol=112))
+part_dat2 <- data.frame(matrix(nrow=90021, ncol=112))
 part_dat2[ , 1:3] <- res2[ , 2:4]
 names(part_dat2) <- c("n_occasions", "occasions_drawn", "n_items", paste0("sq_diff_ICC_", 1:109))
 
 for (i in 1:109) {
   
-  for (row in 1:18021) {
+  for (row in 1:90021) {
     
     part_dat2[row, paste0("sq_diff_ICC_", i)] <- res2[row , "sq_diff_ICC"][[1]][i]
     
@@ -829,7 +829,7 @@ for (i in 1:109) {
                       aggregate(as.formula(paste0("sq_diff_ICC_", i, " ~ occasions_drawn + n_occasions + n_items")),
                                 data = rd2,
                                 FUN = function(x) {
-                                  sqrt(sum(x)/1000) # sum the squared differences, divide by number of replications and take sqrt
+                                  sqrt(sum(x)/5000) # sum the squared differences, divide by number of replications and take sqrt
                                 }))
   names(part_res2) <- c("occasions_drawn", "n_occasions", "n_items", "part_RMSE")
   
@@ -896,13 +896,13 @@ RMSE2 <- RMSE2[ , c(1:3, 113:115)]
 
 # '' For ICC.z 
 # extract squared differences for each replication and each condition per participant
-part_dat.z2 <- data.frame(matrix(nrow=18021, ncol=112))
+part_dat.z2 <- data.frame(matrix(nrow=90021, ncol=112))
 part_dat.z2[ , 1:3] <- res2[ , 2:4]
 names(part_dat.z2) <- c("n_occasions", "occasions_drawn", "n_items", paste0("sq_diff_ICC.z_", 1:109))
 
 for (i in 1:109) {
   
-  for (row in 1:18021) {
+  for (row in 1:90021) {
     
     part_dat.z2[row, paste0("sq_diff_ICC.z_", i)] <- res2[row , "sq_diff_ICC.z"][[1]][i]
     
@@ -932,7 +932,7 @@ for (i in 1:109) {
                         aggregate(as.formula(paste0("sq_diff_ICC.z_", i, " ~ occasions_drawn + n_occasions + n_items")),
                                   data = rd.z2,
                                   FUN = function(x) {
-                                    sqrt(sum(x)/1000) # sum the squared differences, divide by number of replications and take sqrt
+                                    sqrt(sum(x)/5000) # sum the squared differences, divide by number of replications and take sqrt
                                   }))
   names(part_res2.z) <- c("occasions_drawn", "n_occasions", "n_items", "part_RMSE.z")
   

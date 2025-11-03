@@ -47,7 +47,7 @@ tictoc::tic()
 # n_occasions: 14, 20, ..., 70 in steps of 10
 res <- simulation_study(data = bench, n_occasions = c(14, seq(20, 70, 10)),
                         occasions_drawn = c("random", "by order"), n_items = c(5, 10, 15),
-                        n_iteration = 1000,
+                        n_iteration = 5000,
                         id.var = "SERIAL", all_items = c('aerger1', 'aerger2', 'aerger3',
                                                          'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
                                                          'angst1', 'angst2', 'angst3',
@@ -71,14 +71,14 @@ save(res, file="results/sim_results_whole_data_set_Study1.rda")
 
 
 # Check Sufficient Number of Iterations -----------------------------------
-# i.e., run simulation again with 1000 iterations and
+# i.e., run simulation again with 5000 iterations and
 # different seed
 # -> check whether results are comparable
 # (but use the same seed for the item set)
 
 res2 <- simulation_study(data = bench, n_occasions = c(14, seq(20, 70, 10)),
                          occasions_drawn = c("random", "by order"), n_items = c(5, 10, 15),
-                         n_iteration = 1000,
+                         n_iteration = 5000,
                          id.var = "SERIAL", all_items = c('aerger1', 'aerger2', 'aerger3',
                                                           'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
                                                           'angst1', 'angst2', 'angst3',
