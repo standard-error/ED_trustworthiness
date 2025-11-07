@@ -29,7 +29,7 @@ my_theme <- theme_bw() +
 # Function for Data Visualization (Overall) -------------------------------
 plot_outcome <- function(data, ylims=NULL, ylabel=NULL, x_breaks = seq(0, 70, 10), theme_custom = my_theme,
                          dodge_width = 2,
-                         scale_color = scale_color_grey(start = 0.50, end = 0.00),
+                         scale_color = scale_color_grey(start = 0.45, end = 0.00),
                          groupwise = FALSE, split_facets = FALSE,
                          facet_var = "occasions_drawn",
                          facet_order = c("random", "by order")) {
@@ -86,7 +86,8 @@ plot_outcome <- function(data, ylims=NULL, ylabel=NULL, x_breaks = seq(0, 70, 10
     geom_point(position = position_dodge(width = dodge_width)) +
     geom_line(linewidth = 0.3, position = position_dodge(width = dodge_width)) +
     geom_errorbar(aes(ymin = .data[[col_min]], ymax = .data[[col_max]]),
-                  position = position_dodge(width = dodge_width)) + # error bar: min and max outcome
+                  position = position_dodge(width = dodge_width),
+                  linewidth = 0.3) + # error bar: min and max outcome
     scale_x_continuous(breaks = x_breaks) +
     expand_limits(x = 70) + # make sure that 70 is always covered
     xlab("Number of Occasions") +

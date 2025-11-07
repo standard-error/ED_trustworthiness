@@ -178,7 +178,7 @@ ylim_list <- list(
   c(0, 1), # correlation with benchmark
   c(0, 1), # correlation with benchmark (ICC.z)
   c(-1, 1), # difference in ICCs (compared to benchmark)
-  c(-2.2, 1.7), # difference in ICCs (compared to benchmark) for ICC.z
+  c(-2.3, 1.7), # difference in ICCs (compared to benchmark) for ICC.z
   c(0, 0.6), # RMSE
   c(0, 1.5), # RMSE (ICC.z)
   c(0, 0.2), # SD of ICCs
@@ -1685,7 +1685,6 @@ ggsave("plots/Study 1/groupwise/check nr of iterations/difference.z.pdf",plot = 
 ggsave("plots/Study 1/groupwise/check nr of iterations/rmse.pdf",plot = plot_list[["rmse"]], device="pdf", height = 148, width = 210, unit="mm")
 ggsave("plots/Study 1/groupwise/check nr of iterations/rmse.z.pdf",plot = plot_list[["rmse.z"]], device="pdf", height = 148, width = 210, unit="mm")
 ggsave("plots/Study 1/groupwise/check nr of iterations/sd.pdf",plot = plot_list[["sd"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/check nr of iterations/sd.z.pdf",plot = plot_list[["sd.z"]], device="pdf", height = 148, width = 210, unit="mm")
 ggsave("plots/Study 1/groupwise/check nr of iterations/reliability.pdf",plot = plot_list[["rel"]], device="pdf", height = 148, width = 210, unit="mm")
 ggsave("plots/Study 1/groupwise/check nr of iterations/NnegICC.pdf",plot = plot_list[["nnegICC"]], device="pdf", height = 148, width = 210, unit="mm")
 ggsave("plots/Study 1/groupwise/check nr of iterations/EstimProbNeg.pdf",plot = plot_list[["estimProbNeg"]], device="pdf", height = 148, width = 210, unit="mm")
