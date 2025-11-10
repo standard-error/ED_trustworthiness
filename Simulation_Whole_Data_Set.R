@@ -102,10 +102,11 @@ save(res2, file="results/check nr of iterations/sim_results_whole_data_set.rda")
 
 
 # Session Info ------------------------------------------------------------
+sessionInfo()
 
 # R version 4.5.1 (2025-06-13 ucrt)
 # Platform: x86_64-w64-mingw32/x64
-# Running under: Windows 11 x64 (build 26100)
+# Running under: Windows 11 x64 (build 26200)
 # 
 # Matrix products: default
 #   LAPACK version 3.12.1
@@ -125,4 +126,4 @@ save(res2, file="results/check nr of iterations/sim_results_whole_data_set.rda")
 # 
 # loaded via a namespace (and not attached):
 #  [1] compiler_4.5.1    tictoc_1.2.1      parallelly_1.45.1 parallel_4.5.1    tools_4.5.1       rstudioapi_0.17.1
-#  [7] listenv_0.9.1     codetools_0.2-20  irr_0.84.1        digest_0.6.37     globals_0.18.0    lpSolve_5.6.23   
+#  [7] listenv_0.9.1     codetools_0.2-20  irr_0.84.1        digest_0.6.37     globals_0.18.0    lpSolve_5.6.23  

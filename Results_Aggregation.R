@@ -806,10 +806,11 @@ save(agg2, file = "results/check nr of iterations/aggregated_whole_data_set.rda"
 
 
 # Session Info ------------------------------------------------------------
-# 
+sessionInfo()
+
 # R version 4.5.1 (2025-06-13 ucrt)
 # Platform: x86_64-w64-mingw32/x64
-# Running under: Windows 11 x64 (build 26100)
+# Running under: Windows 11 x64 (build 26200)
 # 
 # Matrix products: default
 #   LAPACK version 3.12.1

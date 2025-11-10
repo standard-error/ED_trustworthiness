@@ -1127,3 +1127,35 @@ ggsave("plots/overall data set/check nr of iterations/N_rel.pdf",plot = plot_lis
 
 
 
+
+
+# Session Info ------------------------------------------------------------
+sessionInfo()
+
+# R version 4.5.1 (2025-06-13 ucrt)
+# Platform: x86_64-w64-mingw32/x64
+# Running under: Windows 11 x64 (build 26200)
+# 
+# Matrix products: default
+#   LAPACK version 3.12.1
+# 
+# locale:
+# [1] LC_COLLATE=German_Germany.utf8  LC_CTYPE=German_Germany.utf8    LC_MONETARY=German_Germany.utf8
+# [4] LC_NUMERIC=C                    LC_TIME=German_Germany.utf8    
+# 
+# time zone: Europe/Berlin
+# tzcode source: internal
+# 
+# attached base packages:
+# [1] stats     graphics  grDevices utils     datasets  methods   base     
+# 
+# other attached packages:
+# [1] ggpubr_0.6.1      ggh4x_0.3.1       scales_1.4.0      viridis_0.6.5     viridisLite_0.4.2 ggplot2_3.5.2    
+# 
+# loaded via a namespace (and not attached):
+#  [1] vctrs_0.6.5        cli_3.6.5          rlang_1.1.6        Formula_1.2-5      cowplot_1.2.0      purrr_1.1.0       
+#  [7] car_3.1-3          generics_0.1.4     glue_1.8.0         backports_1.5.0    gridExtra_2.3      grid_4.5.1        
+# [13] abind_1.4-8        carData_3.0-5      tibble_3.3.0       rstatix_0.7.2      lifecycle_1.0.4    ggsignif_0.6.4    
+# [19] compiler_4.5.1     dplyr_1.1.4        RColorBrewer_1.1-3 pkgconfig_2.0.3    tidyr_1.3.1        rstudioapi_0.17.1 
+# [25] farver_2.1.2       R6_2.6.1           tidyselect_1.2.1   pillar_1.11.0      magrittr_2.0.3     tools_4.5.1       
+# [31] withr_3.0.2        gtable_0.3.6       broom_1.0.9     
