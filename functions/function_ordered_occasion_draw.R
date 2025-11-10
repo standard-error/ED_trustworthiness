@@ -51,16 +51,3 @@ ordered_occasion_draw <- function(data, id.var, occ.running.var, nr.of.occasions
   return(drawn_data)
 }
 
-
-# # test function
-# # create some random data
-# df <- data.frame(ID = rep(LETTERS[1:5], each=10), # 5 participants with 10 occasions each
-#                  occ_running = rep(1:10, times=5),
-#                  val1 = rnorm(50, mean=0, sd=1), # two random variables
-#                  val2 = rnorm(50, mean=1, sd=2))
-# 
-# 
-# out <- ordered_occasion_draw(data=df, id.var="ID", occ.running.var = "occ_running", nr.of.occasions = 3)
-# out <- ordered_occasion_draw(data=df, id.var="ID", occ.running.var = "occ_running", nr.of.occasions = 9)
-# out <- ordered_occasion_draw(data=df, id.var="ID", occ.running.var = "occ_running", nr.of.occasions = 11)
-# rm(list=ls())

@@ -32,18 +32,6 @@ inverse_fisher_z <- function(z) {
   return(r)
 }
 
-# inverse_fisher_z(0.5)
-# 
-# inverse_fisher_z(fisher_z(0.5))
-
-
-# r <- c(0.3, 0.4, 0.5)
-# z <- fisher_z(r)
-# mean <- mean(z)
-# r_mean <- inverse_fisher_z(mean)
-# r_mean
-# 
-# inverse_fisher_z(mean(fisher_z(r)))
 
 
 
@@ -148,59 +136,4 @@ aggregate_results <- function(data, outcomes, rel_outcomes, abs_outcomes,
 }
 
 
-
-
-# 
-# # Load Simulation Results -------------------------------------------------
-# load("results/sim_results_whole_data_set.rda")
-# load("results/sim_results_subgroups.rda")
-# 
-# 
-# 
-# # Check Missings ----------------------------------------------------------
-# any(is.na(res))
-# any(is.na(res_group))
-# 
-# 
-# out <-aggregate_results(res, outcomes = c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC',
-#                                                 'N_valid_ICC.z',
-#                                                 'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z',
-#                                                 'cor_ICC', 'cor_ICC.z',
-#                                                 'RMSE_ICC', 'RMSE_ICC.z',
-#                                                 'rel', 'N_rel',
-#                                                 'sd_ICC', 'sd_ICC.z',
-#                                                 'negICC', 'estimationProbNeg', 'estimationProbPos'),
-#                   rel_outcomes = c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC',
-#                                                'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z',
-#                                                'cor_ICC', 'cor_ICC.z',
-#                                                'RMSE_ICC', 'RMSE_ICC.z'),
-#                   abs_outcomes = c('N_valid_ICC.z',
-#                                    'rel', 'N_rel',
-#                                    'sd_ICC', 'sd_ICC.z',
-#                                    'negICC', 'estimationProbNeg', 'estimationProbPos'),
-#                   groupwise = FALSE, group_var = NULL)
-# 
-# 
-# 
-# 
-# 
-# out2 <-aggregate_results(res_group, outcomes = c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC',
-#                                                       'N_valid_ICC.z',
-#                                                       'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z',
-#                                                       'cor_ICC', 'cor_ICC.z',
-#                                                       'RMSE_ICC', 'RMSE_ICC.z',
-#                                                       'rel', 'N_rel',
-#                                                       'sd_ICC', 'sd_ICC.z',
-#                                                       'negICC', 'estimationProbNeg', 'estimationProbPos'),
-#                         rel_outcomes = c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC',
-#                                                      'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z',
-#                                                      'cor_ICC', 'cor_ICC.z',
-#                                                      'RMSE_ICC', 'RMSE_ICC.z'),
-#                         abs_outcomes = c('N_valid_ICC.z',
-#                                          'rel', 'N_rel',
-#                                          'sd_ICC', 'sd_ICC.z',
-#                                          'negICC', 'estimationProbNeg', 'estimationProbPos'),
-#                         groupwise = TRUE, group_var = "group")
-# 
-# 
 
