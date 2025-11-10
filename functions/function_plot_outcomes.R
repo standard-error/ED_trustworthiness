@@ -45,7 +45,7 @@ plot_outcome <- function(data, ylims=NULL, ylabel=NULL, x_breaks = seq(0, 70, 10
   # theme_custom : ggplot theme
   # scale_color: define color theme
   # dodge_width: argument indicating how much to jitter points from different grouping variables
-  # groupwise: logical indicating whether or not the data contains high/medium/low NED group 
+  # groupwise: logical indicating whether or not the data contains groups (e.g., high, medium, low NED)
           # and if it should be plotted groupwise
   # split_facets: logical indicating whether the two facets (occasions_drawn) should be
           # plotted in one plot or in separate plots
