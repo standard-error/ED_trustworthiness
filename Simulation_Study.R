@@ -5,7 +5,7 @@
 ###################################################################
 
 ###################################################################
-#####              Simulation: Whole Data Set                 #####
+#####                   Simulation Study                      #####
 ###################################################################
 
 
@@ -34,9 +34,9 @@ source("functions/function_simulation_study.R")
 # Global Seed Item Set ----------------------------------------------------
 
 ##### IMPORTANT: USE THE SAME SEED SO THAT THE SAME ITEM SETS
-##### ARE DRAWN FOR THE THREE GROUPS AND OVERALL SIMULATION
+##### ARE DRAWN FOR OVERALL SIMULATION IF RUN TWICE 
 
-## -> same seed as for the overall analysis (same item subset)
+
 source("Global_Seed_Item_Sets.R")
 
 
@@ -66,7 +66,7 @@ tictoc::toc()
 
 
 # Save Results ------------------------------------------------------------
-save(res, file="results/sim_results_whole_data_set.rda")
+save(res, file="results/sim_results.rda")
 
 
 
@@ -94,7 +94,7 @@ res2 <- simulation_study(data = bench, n_occasions = c(14, seq(20, 70, 10)),
 
 
 # save results
-save(res2, file="results/check nr of iterations/sim_results_whole_data_set.rda")
+save(res2, file="results/check nr of iterations/sim_results.rda")
 
 
 

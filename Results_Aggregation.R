@@ -11,7 +11,7 @@
 
 
 # Load Simulation Results -------------------------------------------------
-load("results/sim_results_whole_data_set.rda")
+load("results/sim_results.rda")
 
 
 # Check Missings ----------------------------------------------------------
@@ -276,7 +276,7 @@ agg$RMSE_ICC.z <- agg_res
 
 
 # Save Aggregated Results -------------------------------------------------
-save(agg, file = "results/aggregated_whole_data_set.rda")
+save(agg, file = "results/aggregated_results.rda")
 
 
 
@@ -541,7 +541,7 @@ MCSE <- MCSE[order(MCSE$n_occasions, MCSE$n_items), ]
 MCSE <- MCSE[ , c('n_occasions', 'n_items', 'diff_ICC_MCSE','diff_ICC.z_MCSE','cor_ICC_MCSE', 'cor_ICC.z_MCSE',
                   'rel_MCSE', 'sd_ICC_MCSE','sd_ICC.z_MCSE', 'percnegICC_MCSE', 'N_rel_MCSE', 'MCSE_RMSE_min',
                   'MCSE_RMSE_mean', 'MCSE_RMSE_max', 'MCSE_RMSE.z_min', 'MCSE_RMSE.z_mean', 'MCSE_RMSE.z_max')]
-write.csv(MCSE, "results/MCSE_table_whole_data_set.csv", row.names = F)
+write.csv(MCSE, "results/MCSE_table.csv", row.names = F)
 
 
 
@@ -553,7 +553,7 @@ rm(list=ls())
 # Check Sufficient Number of Iterations  ----------------------------------
 source("functions/function_aggregate_results.R")
 
-load("results/check nr of iterations/sim_results_whole_data_set.rda")
+load("results/check nr of iterations/sim_results.rda")
 
 
 
@@ -799,7 +799,7 @@ names(agg_res) <- "agg_res"
 agg2$RMSE_ICC.z <- agg_res
 
 
-save(agg2, file = "results/check nr of iterations/aggregated_whole_data_set.rda")
+save(agg2, file = "results/check nr of iterations/aggregated_results.rda")
 
 
 
