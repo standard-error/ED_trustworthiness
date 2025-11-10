@@ -53,7 +53,7 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
           # here: default is single measurements (but could be varied in principle in simulation)
   # occ.running.var: character that indicates the name of the occasion running variable
   # seed_item: seed for drawing item sets -> global seed so that item sets are equal across simulations
-              # i.e., for overall data set and subgroup analyses
+              # i.e., for check whether number of replications is sufficient
   # seed_sim: seed set for reproducibility of simulation
     # -> separate seeds to that item sets are constant across simulations, but occasions may differ
   # cores: number of cores to use for parallelized simulation

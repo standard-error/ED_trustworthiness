@@ -9,6 +9,11 @@
 ###################################################################
 
 
+# Note: Function could, in principle, handle if simulation study was run
+# for separate groups (e.g., high, medium, and low NED) -> groupwise argument.
+# However, this was not done here.
+
+
 
 # Load Packages -----------------------------------------------------------
 library(ggplot2)

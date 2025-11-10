@@ -9,6 +9,12 @@
 ###################################################################
 
 
+# Note: Function could, in principle, handle if simulation study was run
+# for separate groups (e.g., high, medium, and low NED) -> groupwise argument.
+# However, this was not done here.
+
+
+
 
 # Write Helper Function (Fisher's Z-transformation) -----------------------
 # For correlation with the benchmark as outcome, the correlations
@@ -62,7 +68,7 @@ aggregate_results <- function(data, outcomes, rel_outcomes, abs_outcomes,
           # already is relative)
   # abs_outcomes: chr vector indicating names of absolute outcomes (-> also use benchmark)
   # groupwise: logical indicating whether or not to apply the function to the overall simulation
-        # or the groupwise simulation (high, medium, low NED); default = FALSE
+        # or to a groupwise simulation; default = FALSE
   # group_var = chr indicating name of the grouping variable in the data frame, default = NULL
   
   # results with benchmark

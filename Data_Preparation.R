@@ -99,63 +99,6 @@ save(bench, file = "prepared data/benchmark_data.rda") # for sharing
 
 
 
-
-# PREPARE BENCHMARK DATA FOR GROUPS ---------------------------------------
-# subset the data frame based on quantiles -> high, medium, low NED
-source("functions/function_calculate_iccs.R")
-
-ICCdata <- calculate_icc(data=bench,id.var="SERIAL", items = c('aerger1', 'aerger2', 'aerger3',
-                                                               'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
-                                                               'angst1', 'angst2', 'angst3',
-                                                               'scham1', 'scham2', 'scham3',
-                                                               'schuld1', 'schuld2', 'schuld3'),
-                         type="consistency", unit="single")
-quantile(ICCdata[ ,"ICC"], probs=c(0.33, 0.66))
-# raw ICCs: 33% percentile  = 0.2002618, 66% percentile = 0.2882
-quantile(ICCdata[ ,"ICC.z"], probs=c(0.33, 0.66))
-# ICC.z: 33% percentile = 0.7797178, 66% percentile = 1.0186924
-
-# -> same participants in sub groups when using ICC vs. ICC.z?
-# CAVE: ICCs not reversed -> low ICC = high NED
-highNED.ID <- ICCdata[which(ICCdata[ , "ICC"] < quantile(ICCdata[ ,"ICC"], probs=c(0.33, 0.66))[1]), ]
-mediumNED.ID <- ICCdata[which(quantile(ICCdata[ ,"ICC"], probs=c(0.33, 0.66))[1] < ICCdata[ , "ICC"] &
-                                ICCdata[ , "ICC"] < quantile(ICCdata[ ,"ICC"], probs=c(0.33, 0.66))[2]), ]
-lowNED.ID <- ICCdata[which(ICCdata[ , "ICC"] > quantile(ICCdata[ , "ICC"], probs = c(0.33, 0.66))[2]), ]
-
-# highNED.ID.z <- ICCdata[which(ICCdata[ , "ICC.z"] < quantile(ICCdata[ ,"ICC.z"], probs=c(0.33, 0.66))[1]), ]
-# mediumNED.ID.z <- ICCdata[which(quantile(ICCdata[ ,"ICC.z"], probs=c(0.33, 0.66))[1] < ICCdata[ , "ICC.z"] &
-#                                 ICCdata[ , "ICC.z"] < quantile(ICCdata[ ,"ICC.z"], probs=c(0.33, 0.66))[2]), ]
-# lowNED.ID.z <- ICCdata[which(ICCdata[ , "ICC.z"] > quantile(ICCdata[ , "ICC.z"], probs = c(0.33, 0.66))[2]), ]
-# 
-# 
-# all(highNED.ID == highNED.ID.z)
-# all(mediumNED.ID == mediumNED.ID.z)
-# all(lowNED.ID == lowNED.ID.z)
-# # all participants are identically assigned for ICC and ICC.z
-# rm(highNED.ID.z, mediumNED.ID.z, lowNED.ID.z)
-
-# subset data
-bench_highNED <- bench[which(bench$SERIAL %in% highNED.ID), ]
-bench_mediumNED <- bench[which(bench$SERIAL %in% mediumNED.ID), ]
-bench_lowNED <- bench[which(bench$SERIAL %in% lowNED.ID), ]
-
-
-# length(unique(bench_highNED$SERIAL)) # 36 participants in high NED
-# length(unique(bench_mediumNED$SERIAL)) # 36 participants in medium NED
-# length(unique(bench_lowNED$SERIAL)) # 37 participants in low NED
-
-# save data
-save(bench_highNED, file="internal use/prepared data/benchmark_data_highNED.rda") # for internal use (just for consistency)
-save(bench_mediumNED, file="internal use/prepared data/benchmark_data_mediumNED.rda") # for internal use (just for consistency)
-save(bench_lowNED, file="internal use/prepared data/benchmark_data_lowNED.rda") # for internal use (just for consistency)
-
-
-save(bench_highNED, file="prepared data/benchmark_data_highNED.rda") # for sharing
-save(bench_mediumNED, file="prepared data/benchmark_data_mediumNED.rda") # for sharing
-save(bench_lowNED, file="prepared data/benchmark_data_lowNED.rda") # for sharing
-
-
-
 # Session Info ------------------------------------------------------------
 
 rm(list=ls())
