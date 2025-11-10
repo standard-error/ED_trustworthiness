@@ -59,8 +59,7 @@ rm(list=ls())
 load("internal use/prepared data/emolive_clean_all_participants.rda")
 
 L2 <- dplyr::distinct(AA.c, SERIAL, n_occ) 
-# table(L2$n_occ >= 100)
-# # 36 participants with at least 100 occasions
+
 table(L2$n_occ >= 70) 
 # 109 participants with at least 70 occasions
 # use these as benchmark
