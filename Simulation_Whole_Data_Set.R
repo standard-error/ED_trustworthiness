@@ -11,7 +11,7 @@
 
 
 # Preparation: Load Data --------------------------------------------------
-load("prepared data/benchmark_data_Study1.rda")
+load("prepared data/benchmark_data.rda")
 
 # Make sure that ID variable is numeric
 # (relevant for ICC calculation: matrix can only store one data type)
@@ -66,7 +66,7 @@ tictoc::toc()
 
 
 # Save Results ------------------------------------------------------------
-save(res, file="results/sim_results_whole_data_set_Study1.rda")
+save(res, file="results/sim_results_whole_data_set.rda")
 
 
 
@@ -94,7 +94,7 @@ res2 <- simulation_study(data = bench, n_occasions = c(14, seq(20, 70, 10)),
 
 
 # save results
-save(res2, file="results/check nr of iterations/sim_results_whole_data_set_Study1.rda")
+save(res2, file="results/check nr of iterations/sim_results_whole_data_set.rda")
 
 
 

@@ -94,8 +94,8 @@ bench <- bench[ , c("SERIAL", "occ_running", "occasion_total", "aerger1",
 
 
 # save benchmark data set
-save(bench, file = "internal use/prepared data/benchmark_data_Study1.rda") # for internal use (just for consistency)
-save(bench, file = "prepared data/benchmark_data_Study1.rda") # for sharing
+save(bench, file = "internal use/prepared data/benchmark_data.rda") # for internal use (just for consistency)
+save(bench, file = "prepared data/benchmark_data.rda") # for sharing
 
 
 
@@ -145,14 +145,14 @@ bench_lowNED <- bench[which(bench$SERIAL %in% lowNED.ID), ]
 # length(unique(bench_lowNED$SERIAL)) # 37 participants in low NED
 
 # save data
-save(bench_highNED, file="internal use/prepared data/benchmark_data_highNED_Study1.rda") # for internal use (just for consistency)
-save(bench_mediumNED, file="internal use/prepared data/benchmark_data_mediumNED_Study1.rda") # for internal use (just for consistency)
-save(bench_lowNED, file="internal use/prepared data/benchmark_data_lowNED_Study1.rda") # for internal use (just for consistency)
+save(bench_highNED, file="internal use/prepared data/benchmark_data_highNED.rda") # for internal use (just for consistency)
+save(bench_mediumNED, file="internal use/prepared data/benchmark_data_mediumNED.rda") # for internal use (just for consistency)
+save(bench_lowNED, file="internal use/prepared data/benchmark_data_lowNED.rda") # for internal use (just for consistency)
 
 
-save(bench_highNED, file="prepared data/benchmark_data_highNED_Study1.rda") # for sharing
-save(bench_mediumNED, file="prepared data/benchmark_data_mediumNED_Study1.rda") # for sharing
-save(bench_lowNED, file="prepared data/benchmark_data_lowNED_Study1.rda") # for sharing
+save(bench_highNED, file="prepared data/benchmark_data_highNED.rda") # for sharing
+save(bench_mediumNED, file="prepared data/benchmark_data_mediumNED.rda") # for sharing
+save(bench_lowNED, file="prepared data/benchmark_data_lowNED.rda") # for sharing
 
 
 

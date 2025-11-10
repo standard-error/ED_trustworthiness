@@ -20,10 +20,10 @@ library(ggpubr)
 
 
 
-##### STUDY 1: OVERALL DATA SET #####
+##### OVERALL DATA SET #####
 
 # Load Aggregated Results Data --------------------------------------------
-load("results/aggregated_whole_data_set_Study1.rda")
+load("results/aggregated_whole_data_set.rda")
 
 
 # Extract Data ------------------------------------------------------------
@@ -224,38 +224,38 @@ plot_list[["N_rel"]]
 
 
 # Save Single Plots -------------------------------------------------------
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/correlation.pdf",plot = plot_list[["cor"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/correlation.z.pdf",plot = plot_list[["cor.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/difference.pdf",plot = plot_list[["diff"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/difference.z.pdf",plot = plot_list[["diff.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/rmse.pdf",plot = plot_list[["rmse"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/rmse.z.pdf",plot = plot_list[["rmse.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/sd.pdf",plot = plot_list[["sd"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/sd.z.pdf",plot = plot_list[["sd.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/reliability.pdf",plot = plot_list[["rel"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/percnegICC.pdf",plot = plot_list[["percnegICC"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/EstimProbNeg.pdf",plot = plot_list[["estimProbNeg"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/EstimProbPos.pdf",plot = plot_list[["estimProbPos"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/N_ValidICC.z.pdf",plot = plot_list[["N_valid_ICC.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/N_rel.pdf",plot = plot_list[["N_Rel"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/correlation.pdf",plot = plot_list[["cor"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/correlation.z.pdf",plot = plot_list[["cor.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/difference.pdf",plot = plot_list[["diff"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/difference.z.pdf",plot = plot_list[["diff.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/rmse.pdf",plot = plot_list[["rmse"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/rmse.z.pdf",plot = plot_list[["rmse.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/sd.pdf",plot = plot_list[["sd"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/sd.z.pdf",plot = plot_list[["sd.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/reliability.pdf",plot = plot_list[["rel"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/percnegICC.pdf",plot = plot_list[["percnegICC"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/EstimProbNeg.pdf",plot = plot_list[["estimProbNeg"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/EstimProbPos.pdf",plot = plot_list[["estimProbPos"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/N_ValidICC.z.pdf",plot = plot_list[["N_valid_ICC.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/N_rel.pdf",plot = plot_list[["N_Rel"]], device="pdf", height = 148, width = 210, unit="mm")
 
 
 # as svg (for presentations)
 
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/correlation.svg",plot = plot_list[["cor"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/correlation.z.svg",plot = plot_list[["cor.z"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/difference.svg",plot = plot_list[["diff"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/difference.z.svg",plot = plot_list[["diff.z"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/rmse.svg",plot = plot_list[["rmse"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/rmse.z.svg",plot = plot_list[["rmse.z"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/sd.svg",plot = plot_list[["sd"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/sd.z.svg",plot = plot_list[["sd.z"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/reliability.svg",plot = plot_list[["rel"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/percnegICC.svg",plot = plot_list[["percnegICC"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/EstimProbNeg.svg",plot = plot_list[["estimProbNeg"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/EstimProbPos.svg",plot = plot_list[["estimProbPos"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/N_ValidICC.z.svg",plot = plot_list[["N_valid_ICC.z"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/single plots/facet per plot/N_rel.svg",plot = plot_list[["N_Rel"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/correlation.svg",plot = plot_list[["cor"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/correlation.z.svg",plot = plot_list[["cor.z"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/difference.svg",plot = plot_list[["diff"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/difference.z.svg",plot = plot_list[["diff.z"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/rmse.svg",plot = plot_list[["rmse"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/rmse.z.svg",plot = plot_list[["rmse.z"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/sd.svg",plot = plot_list[["sd"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/sd.z.svg",plot = plot_list[["sd.z"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/reliability.svg",plot = plot_list[["rel"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/percnegICC.svg",plot = plot_list[["percnegICC"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/EstimProbNeg.svg",plot = plot_list[["estimProbNeg"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/EstimProbPos.svg",plot = plot_list[["estimProbPos"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/N_ValidICC.z.svg",plot = plot_list[["N_valid_ICC.z"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/single plots/facet per plot/N_rel.svg",plot = plot_list[["N_Rel"]], device="svg", height = 148, width = 210, unit="mm")
 
 
 
@@ -331,13 +331,13 @@ combined
 
 
 
-ggsave("plots/Study 1/overall data set/plots_whole_data_set_Study1.pdf",plot = combined, device="pdf", height = 148, width = 220, unit="mm")
+ggsave("plots/overall data set/plots_whole_data_set.pdf",plot = combined, device="pdf", height = 148, width = 220, unit="mm")
 
-ggsave("plots/Study 1/overall data set/plots_whole_data_set_Study1.svg",plot = combined, device="svg", height = 148, width = 220, unit="mm")
+ggsave("plots/overall data set/plots_whole_data_set.svg",plot = combined, device="svg", height = 148, width = 220, unit="mm")
 
 
 # as tiff
-tiff("plots/Study 1/overall data set/plots_whole_data_set_Study1.tiff", units="mm", width=220, height=148, res=1200)
+tiff("plots/overall data set/plots_whole_data_set.tiff", units="mm", width=220, height=148, res=1200)
 combined
 dev.off()
 
@@ -385,15 +385,15 @@ combined
 
 
 
-ggsave("plots/Study 1/overall data set/plots_Z-transformed_whole_data_set_Study1.pdf",plot = combined, device="pdf", height = 148, width = 220, unit="mm")
+ggsave("plots/overall data set/plots_Z-transformed_whole_data_set.pdf",plot = combined, device="pdf", height = 148, width = 220, unit="mm")
 
 
 
-ggsave("plots/Study 1/overall data set/plots_Z-transformed_whole_data_set_Study1.svg",plot = combined, device="svg", height = 148, width = 220, unit="mm")
+ggsave("plots/overall data set/plots_Z-transformed_whole_data_set.svg",plot = combined, device="svg", height = 148, width = 220, unit="mm")
 
 
 # as tiff
-tiff("plots/Study 1/overall data set/plots_Z-transformed_whole_data_set_Study1.tiff", units="mm", width=220, height=148, res=1200)
+tiff("plots/overall data set/plots_Z-transformed_whole_data_set.tiff", units="mm", width=220, height=148, res=1200)
 combined
 dev.off()
 
@@ -546,23 +546,23 @@ combined
 
 
 # save panels
-ggsave("plots/Study 1/overall data set/single plots/split by facet/ICC_random_draws.pdf", plot = panel_random,
+ggsave("plots/overall data set/single plots/split by facet/ICC_random_draws.pdf", plot = panel_random,
        device="pdf", height=148, width=210, unit="mm")
 
-ggsave("plots/Study 1/overall data set/single plots/split by facet/ICC_random_draws.svg", plot = panel_random,
+ggsave("plots/overall data set/single plots/split by facet/ICC_random_draws.svg", plot = panel_random,
        device="svg", height=148, width=210, unit="mm")
 
-ggsave("plots/Study 1/overall data set/single plots/split by facet/ICC_ordered_draws.pdf", plot = panel_order,
+ggsave("plots/overall data set/single plots/split by facet/ICC_ordered_draws.pdf", plot = panel_order,
        device="pdf", height=148, width=210, unit="mm")
 
-ggsave("plots/Study 1/overall data set/single plots/split by facet/ICC_ordered_draws.svg", plot = panel_order,
+ggsave("plots/overall data set/single plots/split by facet/ICC_ordered_draws.svg", plot = panel_order,
        device="svg", height=148, width=210, unit="mm")
 
 
-ggsave("plots/Study 1/overall data set/single plots/split by facet/ICC_combined.pdf", plot = combined,
+ggsave("plots/overall data set/single plots/split by facet/ICC_combined.pdf", plot = combined,
        device="pdf", height=250, width=210, unit="mm")
 
-ggsave("plots/Study 1/overall data set/single plots/split by facet/ICC_combined.svg", plot = combined,
+ggsave("plots/overall data set/single plots/split by facet/ICC_combined.svg", plot = combined,
        device="svg", height=250, width=210, unit="mm")
 
 
@@ -665,23 +665,23 @@ combined
 
 
 # save panels
-ggsave("plots/Study 1/overall data set/single plots/split by facet/ICC.z_random_draws.pdf", plot = panel_random,
+ggsave("plots/overall data set/single plots/split by facet/ICC.z_random_draws.pdf", plot = panel_random,
        device="pdf", height=148, width=210, unit="mm")
 
-ggsave("plots/Study 1/overall data set/single plots/split by facet/ICC.z_random_draws.svg", plot = panel_random,
+ggsave("plots/overall data set/single plots/split by facet/ICC.z_random_draws.svg", plot = panel_random,
        device="svg", height=148, width=210, unit="mm")
 
-ggsave("plots/Study 1/overall data set/single plots/split by facet/ICC.z_ordered_draws.pdf", plot = panel_order,
+ggsave("plots/overall data set/single plots/split by facet/ICC.z_ordered_draws.pdf", plot = panel_order,
        device="pdf", height=148, width=210, unit="mm")
 
-ggsave("plots/Study 1/overall data set/single plots/split by facet/ICC.z_ordered_draws.svg", plot = panel_order,
+ggsave("plots/overall data set/single plots/split by facet/ICC.z_ordered_draws.svg", plot = panel_order,
        device="svg", height=148, width=210, unit="mm")
 
 
-ggsave("plots/Study 1/overall data set/single plots/split by facet/ICC.z_combined.pdf", plot = combined,
+ggsave("plots/overall data set/single plots/split by facet/ICC.z_combined.pdf", plot = combined,
        device="pdf", height=250, width=210, unit="mm")
 
-ggsave("plots/Study 1/overall data set/single plots/split by facet/ICC.z_combined.svg", plot = combined,
+ggsave("plots/overall data set/single plots/split by facet/ICC.z_combined.svg", plot = combined,
        device="svg", height=250, width=210, unit="mm")
 
 
@@ -832,23 +832,23 @@ combined
 
 
 # save panels
-ggsave("plots/Study 1/overall data set/single plots/split by facet/FGME/ICC_random_draws.pdf", plot = panel_random,
+ggsave("plots/overall data set/single plots/split by facet/FGME/ICC_random_draws.pdf", plot = panel_random,
        device="pdf", height=148, width=210, unit="mm")
 
-ggsave("plots/Study 1/overall data set/single plots/split by facet/FGME/ICC_random_draws.svg", plot = panel_random,
+ggsave("plots/overall data set/single plots/split by facet/FGME/ICC_random_draws.svg", plot = panel_random,
        device="svg", height=148, width=210, unit="mm")
 
-ggsave("plots/Study 1/overall data set/single plots/split by facet/FGME/ICC_ordered_draws.pdf", plot = panel_order,
+ggsave("plots/overall data set/single plots/split by facet/FGME/ICC_ordered_draws.pdf", plot = panel_order,
        device="pdf", height=148, width=210, unit="mm")
 
-ggsave("plots/Study 1/overall data set/single plots/split by facet/FGME/ICC_ordered_draws.svg", plot = panel_order,
+ggsave("plots/overall data set/single plots/split by facet/FGME/ICC_ordered_draws.svg", plot = panel_order,
        device="svg", height=148, width=210, unit="mm")
 
 
-ggsave("plots/Study 1/overall data set/single plots/split by facet/FGME/ICC_combined.pdf", plot = combined,
+ggsave("plots/overall data set/single plots/split by facet/FGME/ICC_combined.pdf", plot = combined,
        device="pdf", height=250, width=210, unit="mm")
 
-ggsave("plots/Study 1/overall data set/single plots/split by facet/FGME/ICC_combined.svg", plot = combined,
+ggsave("plots/overall data set/single plots/split by facet/FGME/ICC_combined.svg", plot = combined,
        device="svg", height=250, width=210, unit="mm")
 
 
@@ -876,7 +876,7 @@ all_agg_results <- all_agg_results[order(all_agg_results$occasions_drawn, all_ag
 # reset row names
 rownames(all_agg_results) <- NULL
 # save
-write.csv(all_agg_results, "results/results_table_whole_data_set_Study1.csv", row.names = F)
+write.csv(all_agg_results, "results/results_table_whole_data_set.csv", row.names = F)
 
 # for ICC.z
 # bind all results
@@ -896,18 +896,18 @@ all_agg_results <- all_agg_results[order(all_agg_results$occasions_drawn, all_ag
 # reset row names
 rownames(all_agg_results) <- NULL
 # save
-write.csv(all_agg_results, "results/results_table_Z-transformed_whole_data_set_Study1.csv", row.names = F)
+write.csv(all_agg_results, "results/results_table_Z-transformed_whole_data_set.csv", row.names = F)
 
 
 
-##### STUDY 1: GROUPWISE #####
+##### GROUPWISE #####
 
 rm(list=ls())
 source("functions/function_plot_outcomes.R")
 
 
 # Load Aggregated Results Data --------------------------------------------
-load("results/aggregated_subgroups_Study1.rda")
+load("results/aggregated_subgroups.rda")
 
 
 # Extract Data ------------------------------------------------------------
@@ -1099,37 +1099,37 @@ plot_list[["N_rel"]]
 
 
 # Save Single Plots -------------------------------------------------------
-ggsave("plots/Study 1/groupwise/single plots/correlation.pdf",plot = plot_list[["cor"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/correlation.z.pdf",plot = plot_list[["cor.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/difference.pdf",plot = plot_list[["diff"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/difference.z.pdf",plot = plot_list[["diff.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/rmse.pdf",plot = plot_list[["rmse"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/rmse.z.pdf",plot = plot_list[["rmse.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/sd.pdf",plot = plot_list[["sd"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/sd.z.pdf",plot = plot_list[["sd.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/reliability.pdf",plot = plot_list[["rel"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/NnegICC.pdf",plot = plot_list[["nnegICC"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/EstimProbNeg.pdf",plot = plot_list[["estimProbNeg"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/EstimProbPos.pdf",plot = plot_list[["estimProbPos"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/N_ValidICC.z.pdf",plot = plot_list[["N_valid_ICC.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/N_rel.pdf",plot = plot_list[["N_Rel"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/correlation.pdf",plot = plot_list[["cor"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/correlation.z.pdf",plot = plot_list[["cor.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/difference.pdf",plot = plot_list[["diff"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/difference.z.pdf",plot = plot_list[["diff.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/rmse.pdf",plot = plot_list[["rmse"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/rmse.z.pdf",plot = plot_list[["rmse.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/sd.pdf",plot = plot_list[["sd"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/sd.z.pdf",plot = plot_list[["sd.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/reliability.pdf",plot = plot_list[["rel"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/NnegICC.pdf",plot = plot_list[["nnegICC"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/EstimProbNeg.pdf",plot = plot_list[["estimProbNeg"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/EstimProbPos.pdf",plot = plot_list[["estimProbPos"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/N_ValidICC.z.pdf",plot = plot_list[["N_valid_ICC.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/N_rel.pdf",plot = plot_list[["N_Rel"]], device="pdf", height = 148, width = 210, unit="mm")
 
 
 # as svg (for presentations)
-ggsave("plots/Study 1/groupwise/single plots/correlation.svg",plot = plot_list[["cor"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/correlation.z.svg",plot = plot_list[["cor.z"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/difference.svg",plot = plot_list[["diff"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/difference.z.svg",plot = plot_list[["diff.z"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/rmse.svg",plot = plot_list[["rmse"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/rmse.z.svg",plot = plot_list[["rmse.z"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/sd.svg",plot = plot_list[["sd"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/sd.z.svg",plot = plot_list[["sd.z"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/reliability.svg",plot = plot_list[["rel"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/NnegICC.svg",plot = plot_list[["nnegICC"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/EstimProbNeg.svg",plot = plot_list[["estimProbNeg"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/EstimProbPos.svg",plot = plot_list[["estimProbPos"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/N_ValidICC.z.svg",plot = plot_list[["N_valid_ICC.z"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/N_rel.svg",plot = plot_list[["N_Rel"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/correlation.svg",plot = plot_list[["cor"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/correlation.z.svg",plot = plot_list[["cor.z"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/difference.svg",plot = plot_list[["diff"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/difference.z.svg",plot = plot_list[["diff.z"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/rmse.svg",plot = plot_list[["rmse"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/rmse.z.svg",plot = plot_list[["rmse.z"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/sd.svg",plot = plot_list[["sd"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/sd.z.svg",plot = plot_list[["sd.z"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/reliability.svg",plot = plot_list[["rel"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/NnegICC.svg",plot = plot_list[["nnegICC"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/EstimProbNeg.svg",plot = plot_list[["estimProbNeg"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/EstimProbPos.svg",plot = plot_list[["estimProbPos"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/N_ValidICC.z.svg",plot = plot_list[["N_valid_ICC.z"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/N_rel.svg",plot = plot_list[["N_Rel"]], device="svg", height = 148, width = 210, unit="mm")
 
 
 
@@ -1166,37 +1166,37 @@ plot_list_col[["N_rel"]]
 
 
 # Save Single Plots -------------------------------------------------------
-ggsave("plots/Study 1/groupwise/single plots/FGME/correlation.pdf",plot = plot_list_col[["cor"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/FGME/correlation.z.pdf",plot = plot_list_col[["cor.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/FGME/difference.pdf",plot = plot_list_col[["diff"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/FGME/difference.z.pdf",plot = plot_list_col[["diff.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/FGME/rmse.pdf",plot = plot_list_col[["rmse"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/FGME/rmse.z.pdf",plot = plot_list_col[["rmse.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/FGME/sd.pdf",plot = plot_list_col[["sd"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/FGME/sd.z.pdf",plot = plot_list_col[["sd.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/FGME/reliability.pdf",plot = plot_list_col[["rel"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/FGME/NnegICC.pdf",plot = plot_list_col[["nnegICC"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/FGME/EstimProbNeg.pdf",plot = plot_list_col[["estimProbNeg"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/FGME/EstimProbPos.pdf",plot = plot_list_col[["estimProbPos"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/FGME/N_ValidICC.z.pdf",plot = plot_list_col[["N_valid_ICC.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/FGME/N_rel.pdf",plot = plot_list_col[["N_Rel"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/correlation.pdf",plot = plot_list_col[["cor"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/correlation.z.pdf",plot = plot_list_col[["cor.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/difference.pdf",plot = plot_list_col[["diff"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/difference.z.pdf",plot = plot_list_col[["diff.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/rmse.pdf",plot = plot_list_col[["rmse"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/rmse.z.pdf",plot = plot_list_col[["rmse.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/sd.pdf",plot = plot_list_col[["sd"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/sd.z.pdf",plot = plot_list_col[["sd.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/reliability.pdf",plot = plot_list_col[["rel"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/NnegICC.pdf",plot = plot_list_col[["nnegICC"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/EstimProbNeg.pdf",plot = plot_list_col[["estimProbNeg"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/EstimProbPos.pdf",plot = plot_list_col[["estimProbPos"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/N_ValidICC.z.pdf",plot = plot_list_col[["N_valid_ICC.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/N_rel.pdf",plot = plot_list_col[["N_Rel"]], device="pdf", height = 148, width = 210, unit="mm")
 
 
 # as svg (for presentations)
-ggsave("plots/Study 1/groupwise/single plots/FGME/correlation.svg",plot = plot_list_col[["cor"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/FGME/correlation.z.svg",plot = plot_list_col[["cor.z"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/FGME/difference.svg",plot = plot_list_col[["diff"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/FGME/difference.z.svg",plot = plot_list_col[["diff.z"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/FGME/rmse.svg",plot = plot_list_col[["rmse"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/FGME/rmse.z.svg",plot = plot_list_col[["rmse.z"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/FGME/sd.svg",plot = plot_list_col[["sd"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/FGME/sd.z.svg",plot = plot_list_col[["sd.z"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/FGME/reliability.svg",plot = plot_list_col[["rel"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/FGME/NnegICC.svg",plot = plot_list_col[["nnegICC"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/FGME/EstimProbNeg.svg",plot = plot_list_col[["estimProbNeg"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/FGME/EstimProbPos.svg",plot = plot_list_col[["estimProbPos"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/FGME/N_ValidICC.z.svg",plot = plot_list_col[["N_valid_ICC.z"]], device="svg", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/single plots/FGME/N_rel.svg",plot = plot_list_col[["N_Rel"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/correlation.svg",plot = plot_list_col[["cor"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/correlation.z.svg",plot = plot_list_col[["cor.z"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/difference.svg",plot = plot_list_col[["diff"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/difference.z.svg",plot = plot_list_col[["diff.z"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/rmse.svg",plot = plot_list_col[["rmse"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/rmse.z.svg",plot = plot_list_col[["rmse.z"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/sd.svg",plot = plot_list_col[["sd"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/sd.z.svg",plot = plot_list_col[["sd.z"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/reliability.svg",plot = plot_list_col[["rel"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/NnegICC.svg",plot = plot_list_col[["nnegICC"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/EstimProbNeg.svg",plot = plot_list_col[["estimProbNeg"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/EstimProbPos.svg",plot = plot_list_col[["estimProbPos"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/N_ValidICC.z.svg",plot = plot_list_col[["N_valid_ICC.z"]], device="svg", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/single plots/FGME/N_rel.svg",plot = plot_list_col[["N_Rel"]], device="svg", height = 148, width = 210, unit="mm")
 
 
 
@@ -1224,7 +1224,7 @@ all_agg_results_grp <- all_agg_results_grp[order(all_agg_results_grp$group, all_
 # reset row names
 rownames(all_agg_results_grp) <- NULL
 # save
-write.csv(all_agg_results_grp, "results/results_table_subgroups_Study1.csv", row.names = F)
+write.csv(all_agg_results_grp, "results/results_table_subgroups.csv", row.names = F)
 
 
 
@@ -1247,7 +1247,7 @@ all_agg_results_grp <- all_agg_results_grp[order(all_agg_results_grp$group, all_
 # reset row names
 rownames(all_agg_results_grp) <- NULL
 # save
-write.csv(all_agg_results_grp, "results/results_table_Z-transformed_subgroups_Study1.csv", row.names = F)
+write.csv(all_agg_results_grp, "results/results_table_Z-transformed_subgroups.csv", row.names = F)
 
 
 
@@ -1260,7 +1260,7 @@ write.csv(all_agg_results_grp, "results/results_table_Z-transformed_subgroups_St
 
 
 # Load Aggregated Results Data 
-load("results/check nr of iterations/aggregated_whole_data_set_Study1.rda")
+load("results/check nr of iterations/aggregated_whole_data_set.rda")
 
 
 # Extract Data 
@@ -1462,20 +1462,20 @@ plot_list[["N_rel"]]
 
 
 # Save Single Plots 
-ggsave("plots/Study 1/overall data set/check nr of iterations/correlation.pdf",plot = plot_list[["cor"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/check nr of iterations/correlation.z.pdf",plot = plot_list[["cor.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/check nr of iterations/difference.pdf",plot = plot_list[["diff"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/check nr of iterations/difference.z.pdf",plot = plot_list[["diff.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/check nr of iterations/rmse.pdf",plot = plot_list[["rmse"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/check nr of iterations/rmse.z.pdf",plot = plot_list[["rmse.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/check nr of iterations/sd.pdf",plot = plot_list[["sd"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/check nr of iterations/sd.z.pdf",plot = plot_list[["sd.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/check nr of iterations/reliability.pdf",plot = plot_list[["rel"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/check nr of iterations/percnegICC.pdf",plot = plot_list[["percnegICC"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/check nr of iterations/EstimProbNeg.pdf",plot = plot_list[["estimProbNeg"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/check nr of iterations/EstimProbPos.pdf",plot = plot_list[["estimProbPos"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/check nr of iterations/N_ValidICC.z.pdf",plot = plot_list[["N_valid_ICC.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/overall data set/check nr of iterations/N_rel.pdf",plot = plot_list[["N_Rel"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/check nr of iterations/correlation.pdf",plot = plot_list[["cor"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/check nr of iterations/correlation.z.pdf",plot = plot_list[["cor.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/check nr of iterations/difference.pdf",plot = plot_list[["diff"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/check nr of iterations/difference.z.pdf",plot = plot_list[["diff.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/check nr of iterations/rmse.pdf",plot = plot_list[["rmse"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/check nr of iterations/rmse.z.pdf",plot = plot_list[["rmse.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/check nr of iterations/sd.pdf",plot = plot_list[["sd"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/check nr of iterations/sd.z.pdf",plot = plot_list[["sd.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/check nr of iterations/reliability.pdf",plot = plot_list[["rel"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/check nr of iterations/percnegICC.pdf",plot = plot_list[["percnegICC"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/check nr of iterations/EstimProbNeg.pdf",plot = plot_list[["estimProbNeg"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/check nr of iterations/EstimProbPos.pdf",plot = plot_list[["estimProbPos"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/check nr of iterations/N_ValidICC.z.pdf",plot = plot_list[["N_valid_ICC.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/overall data set/check nr of iterations/N_rel.pdf",plot = plot_list[["N_Rel"]], device="pdf", height = 148, width = 210, unit="mm")
 
 
 
@@ -1486,7 +1486,7 @@ ggsave("plots/Study 1/overall data set/check nr of iterations/N_rel.pdf",plot = 
 
 
 # Load Aggregated Results Data --------------------------------------------
-load("results/check nr of iterations/aggregated_subgroups_Study1.rda")
+load("results/check nr of iterations/aggregated_subgroups.rda")
 
 
 # Extract Data ------------------------------------------------------------
@@ -1678,17 +1678,17 @@ plot_list[["N_rel"]]
 
 
 # Save Single Plots 
-ggsave("plots/Study 1/groupwise/check nr of iterations/correlation.pdf",plot = plot_list[["cor"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/check nr of iterations/correlation.z.pdf",plot = plot_list[["cor.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/check nr of iterations/difference.pdf",plot = plot_list[["diff"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/check nr of iterations/difference.z.pdf",plot = plot_list[["diff.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/check nr of iterations/rmse.pdf",plot = plot_list[["rmse"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/check nr of iterations/rmse.z.pdf",plot = plot_list[["rmse.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/check nr of iterations/sd.pdf",plot = plot_list[["sd"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/check nr of iterations/reliability.pdf",plot = plot_list[["rel"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/check nr of iterations/NnegICC.pdf",plot = plot_list[["nnegICC"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/check nr of iterations/EstimProbNeg.pdf",plot = plot_list[["estimProbNeg"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/check nr of iterations/EstimProbPos.pdf",plot = plot_list[["estimProbPos"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/check nr of iterations/N_ValidICC.z.pdf",plot = plot_list[["N_valid_ICC.z"]], device="pdf", height = 148, width = 210, unit="mm")
-ggsave("plots/Study 1/groupwise/check nr of iterations/N_rel.pdf",plot = plot_list[["N_Rel"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/check nr of iterations/correlation.pdf",plot = plot_list[["cor"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/check nr of iterations/correlation.z.pdf",plot = plot_list[["cor.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/check nr of iterations/difference.pdf",plot = plot_list[["diff"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/check nr of iterations/difference.z.pdf",plot = plot_list[["diff.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/check nr of iterations/rmse.pdf",plot = plot_list[["rmse"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/check nr of iterations/rmse.z.pdf",plot = plot_list[["rmse.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/check nr of iterations/sd.pdf",plot = plot_list[["sd"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/check nr of iterations/reliability.pdf",plot = plot_list[["rel"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/check nr of iterations/NnegICC.pdf",plot = plot_list[["nnegICC"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/check nr of iterations/EstimProbNeg.pdf",plot = plot_list[["estimProbNeg"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/check nr of iterations/EstimProbPos.pdf",plot = plot_list[["estimProbPos"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/check nr of iterations/N_ValidICC.z.pdf",plot = plot_list[["N_valid_ICC.z"]], device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/groupwise/check nr of iterations/N_rel.pdf",plot = plot_list[["N_Rel"]], device="pdf", height = 148, width = 210, unit="mm")
 

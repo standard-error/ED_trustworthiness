@@ -208,7 +208,7 @@ random_occasion_draw <- function(data, id.var, occ.running.var, nr.of.occasions,
 # 
 # 
 # # Test whole function with real data
-# load("C:/Users/ecker/Seafile/Meine Bibliothek/Studien/2) ED Reliability/Data Analysis/data_analysis_git/prepared data/benchmark_data_Study1.rda")
+# load("prepared data/benchmark_data.rda")
 # 
 # 36*25 # 26 participants * 25 occasions -> should be 900
 # set.seed(123)

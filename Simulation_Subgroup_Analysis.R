@@ -17,9 +17,9 @@
 
 
 # Preparation: Load Data --------------------------------------------------
-load("prepared data/benchmark_data_highNED_Study1.rda")
-load("prepared data/benchmark_data_mediumNED_Study1.rda")
-load("prepared data/benchmark_data_lowNED_Study1.rda")
+load("prepared data/benchmark_data_highNED.rda")
+load("prepared data/benchmark_data_mediumNED.rda")
+load("prepared data/benchmark_data_lowNED.rda")
 
 
 # Make sure that ID variable is numeric
@@ -144,7 +144,7 @@ res_group <- res_group[ , c('group', 'condition', 'n_occasions', 'occasions_draw
 
 
 # Save Results ------------------------------------------------------------
-save(res_group, file="results/sim_results_subgroups_Study1.rda")
+save(res_group, file="results/sim_results_subgroups.rda")
 
 
 
@@ -247,7 +247,7 @@ res2_group <- res2_group[ , c('group', 'condition', 'n_occasions', 'occasions_dr
 
 
 # Save Results ------------------------------------------------------------
-save(res2_group, file="results/check nr of iterations/sim_results_subgroups_Study1.rda")
+save(res2_group, file="results/check nr of iterations/sim_results_subgroups.rda")
 
 
 

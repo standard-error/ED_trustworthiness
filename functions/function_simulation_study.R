@@ -255,7 +255,7 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
 
 
 # # Test function
-# load("prepared data/benchmark_data_Study1.rda")
+# load("prepared data/benchmark_data.rda")
 # 
 # # Make sure that ID variable is numeric
 # # (relevant for ICC calculation: matrix can only store one data type)

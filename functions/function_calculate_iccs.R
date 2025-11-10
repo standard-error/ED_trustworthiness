@@ -98,7 +98,7 @@ calculate_icc <- function(data,
 
 
 # # Test Function
-# load("prepared data/benchmark_data_Study1.rda")
+# load("prepared data/benchmark_data.rda")
 #
 # test <- calculate_icc(data=bench, id.var="SERIAL",
 #                       items = c("aerger1", "aerger2", "aerger3",

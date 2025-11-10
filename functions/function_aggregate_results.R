@@ -152,8 +152,8 @@ aggregate_results <- function(data, outcomes, rel_outcomes, abs_outcomes,
 
 # 
 # # Load Simulation Results -------------------------------------------------
-# load("results/sim_results_whole_data_set_Study1.rda")
-# load("results/sim_results_subgroups_Study1.rda")
+# load("results/sim_results_whole_data_set.rda")
+# load("results/sim_results_subgroups.rda")
 # 
 # 
 # 

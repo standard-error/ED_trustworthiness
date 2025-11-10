@@ -139,7 +139,7 @@ plot_outcome <- function(data, ylims=NULL, ylabel=NULL, x_breaks = seq(0, 70, 10
 
 
 # # test function
-# load("results/aggregated_whole_data_set_Study1.rda")
+# load("results/aggregated_whole_data_set.rda")
 # # extract examplary data
 # dat <- agg[["cor_ICC"]][["agg_res"]]
 # 
@@ -147,7 +147,7 @@ plot_outcome <- function(data, ylims=NULL, ylabel=NULL, x_breaks = seq(0, 70, 10
 #              groupwise = FALSE)
 # rm(dat, agg)
 # 
-# load("results/aggregated_subgroups_Study1.rda")
+# load("results/aggregated_subgroups.rda")
 # dat <- agg_grp[["cor_ICC"]][["agg_res"]]
 # plot_outcome(data=dat, ylims=c(-0.20, 1.0), ylabel=NULL, x_breaks = seq(0,100,10), theme_custom=my_theme,
 #              groupwise = TRUE)

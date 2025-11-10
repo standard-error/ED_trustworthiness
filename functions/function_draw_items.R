@@ -118,7 +118,7 @@ draw_items <- function(all_items, n_items, categories = NULL) {
 #
 #
 # # Test whether data frame can be subsetted based on the items drawn
-# load("prepared data/benchmark_data_Study1.rda")
+# load("prepared data/benchmark_data.rda")
 # 
 # output <- draw_items(all_items = c('aerger1', 'aerger2', 'aerger3',
 #                                   'traurigkeit1', 'traurigkeit2', 'traurigkeit3',

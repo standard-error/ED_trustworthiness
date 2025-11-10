@@ -395,7 +395,7 @@ one_simulation <- function(data, nr.of.occasions, occasions.drawn,
 # source("functions/function_calculate_iccs.R")
 # source("functions/function_ordered_occasion_draw.R")
 # source("functions/function_random_occasion_draw.R")
-# load("prepared data/benchmark_data_Study1.rda")
+# load("prepared data/benchmark_data.rda")
 # 
 # # create benchmark ICC data (needs to be defined once in overall simulation)
 # benchmark_data <- calculate_icc(bench, id.var="SERIAL", items = c("aerger1", "aerger2", "aerger3",
