@@ -74,20 +74,6 @@ one_sim_data_manipulation <- function(data, nr.of.occasions, occasions.drawn,
 }
 
 
-# dat <- one_sim_data_manipulation(data = bench,
-#                                  nr.of.occasions = 50,
-#                                  occasions.drawn = "by order",
-#                                  nr.of.items = 15,
-#                                  id.var = "SERIAL",
-#                                  occ.running.var = "occ_running")
-# ICC <- calculate_icc(dat, id.var="SERIAL", items = c('aerger1', 'aerger2', 'aerger3',
-#                                                      'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
-#                                                      'angst1', 'angst2', 'angst3',
-#                                                      'scham1', 'scham2', 'scham3',
-#                                                      'schuld1', 'schuld2', 'schuld3'),
-#                      type="consistency", unit="single")
-# rm(dat, ICC)
-
 
 ### PART 2: CALCULATE OUTCOMES MEASURES
 
@@ -294,39 +280,6 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
 }
 
 
-# # Test
-# benchmark_data <- calculate_icc(bench, id.var="SERIAL", items = c("aerger1", "aerger2", "aerger3",
-#                                                                   "traurigkeit1", "traurigkeit2", "traurigkeit3",
-#                                                                   "angst1", "angst2", "angst3",
-#                                                                   "scham1", "scham2", "scham3",
-#                                                                   "schuld1", "schuld2", "schuld3"),
-#                                 type = "consistency", unit = "single")
-# 
-# 
-# 
-# colnames(benchmark_data) <- c("SERIAL", "bench_ICC", "bench_ICC.z")
-# 
-# sim_data <- one_sim_data_manipulation(data = bench, nr.of.occasions = 10, occasions.drawn = "by order",
-#                                       nr.of.items = 15, id.var = "SERIAL", occ.running.var = "occ_running")
-# 
-# sim_data_ICC <- calculate_icc(sim_data, id.var = "SERIAL", items = c("aerger1", "aerger2", "aerger3",
-#                                                                      "traurigkeit1", "traurigkeit2", "traurigkeit3",
-#                                                                      "angst1", "angst2", "angst3",
-#                                                                      "scham1", "scham2", "scham3",
-#                                                                      "schuld1", "schuld2", "schuld3"),
-#                               type="consistency", unit="single")
-# colnames(sim_data_ICC) <- c("SERIAL", "comp_ICC", "comp_ICC.z")
-# 
-# 
-# out <- one_sim_outcome_measures(benchmark_ICCdata = benchmark_data, sim_ICCdata = sim_data_ICC,
-#                                 id.var = "SERIAL", nr.of.items = 15, nr.of.occasions = 50)
-# 
-# out
-# 
-# rm(out, benchmark_data, sim_data, sim_data_ICC)
-
-
-
 
 # COMBINE TO ONE FUNCTION
 one_simulation <- function(data, nr.of.occasions, occasions.drawn,
@@ -390,53 +343,3 @@ one_simulation <- function(data, nr.of.occasions, occasions.drawn,
 }
 
 
-
-# # Test:
-# source("functions/function_calculate_iccs.R")
-# source("functions/function_ordered_occasion_draw.R")
-# source("functions/function_random_occasion_draw.R")
-# load("prepared data/benchmark_data.rda")
-# 
-# # create benchmark ICC data (needs to be defined once in overall simulation)
-# benchmark_data <- calculate_icc(bench, id.var="SERIAL", items = c("aerger1", "aerger2", "aerger3",
-#                                                                   "traurigkeit1", "traurigkeit2", "traurigkeit3",
-#                                                                   "angst1", "angst2", "angst3",
-#                                                                   "scham1", "scham2", "scham3",
-#                                                                   "schuld1", "schuld2", "schuld3"),
-#                                 type = "consistency", unit = "single")
-# 
-# 
-# 
-# colnames(benchmark_data) <- c("SERIAL", "bench_ICC", "bench_ICC.z")
-# 
-# out <- one_simulation(data = bench,
-#                       nr.of.occasions = 10, nr.of.items = 6,
-#                       items = c("schuld1", "schuld2", "schuld3",
-#                                 "scham1", "scham2", "scham3"),
-#                       occasions.drawn = "by order",
-#                       id.var = "SERIAL",
-#                       occ.running.var = "occ_running",
-#                       type = "consistency", unit = "single",
-#                       benchmark_ICCdata = benchmark_data)
-# out
-# out$sq_diff_ICC
-# 
-# # Test one simulation with 100 replications
-# 
-# res <- as.data.frame(matrix(NA, ncol=18, nrow=100))
-# colnames(res) <- c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC', 'N_valid_ICC.z', 'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z', 'cor_ICC', 'cor_ICC.z', 'sq_diff_icc', 'sq_diff_icc.z', 'rel', 'N_rel', 'sd_ICC', 'sd_ICC.z', 'negICC', 'estimationProbNeg', 'estimationProbPos')
-# for (i in 1:100) {
-#   res[i, ] <- one_simulation(data = bench,
-#                              nr.of.occasions = 10, nr.of.items = 6,
-#                              items = c("schuld1", "schuld2", "schuld3",
-#                                        "scham1", "scham2", "scham3"),
-#                              occasions.drawn = "random",
-#                              id.var = "SERIAL",
-#                              occ.running.var = "occ_running",
-#                              type = "consistency", unit = "single",
-#                              benchmark_ICCdata = benchmark_data)
-# 
-# }
-# 
-# res[1:10, ]
-# rm(list=ls())
