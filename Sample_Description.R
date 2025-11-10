@@ -11,6 +11,9 @@
 
 # for description of data cleaning, see data preparation scripts
 
+# note: due to data privacy, no demographic variables are uploaded
+# to OSF -> sample description cannot be run
+
 
 
 # Packages ----------------------------------------------------------------
