@@ -363,26 +363,3 @@ one_simulation <- function(data, nr.of.occasions, occasions.drawn,
   return(outcomes)
 }
 
-
-# # test function
-# load("prepared data/benchmark_data.rda")
-# 
-# source("functions/function_calculate_iccs.R")
-# ICCdata <- calculate_icc(data=bench, id.var="SERIAL", items=c( 'aerger1', 'aerger2', 'aerger3',
-#                                                                'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
-#                                                                'angst1', 'angst2', 'angst3',
-#                                                                'scham1', 'scham2', 'scham3',
-#                                                                'schuld1', 'schuld2', 'schuld3'))
-# colnames(ICCdata) <- c("SERIAL", "bench_ICC", "bench_ICC.z")
-# 
-# 
-# source("functions/function_random_occasion_draw.R")
-# 
-# set.seed(011297)
-# test <- random_occasion_draw(data=bench, id.var="SERIAL",occ.running.var = "occ_running", nr.of.occasions = 3, items = c("aerger1", "aerger2"))
-# 
-# set.seed(011297)
-# test_out <- one_simulation(data=bench, nr.of.occasions=3, occasions.drawn="random", nr.of.items=2,
-#                            items = c("aerger1", "aerger2"), id.var="SERIAL", occ.running.var="occ_running",
-#                            type="consistency", unit="single", benchmark_ICCdata=ICCdata)
-# 

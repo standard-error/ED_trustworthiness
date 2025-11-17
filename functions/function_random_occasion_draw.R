@@ -123,13 +123,3 @@ random_occasion_draw <- function(data, id.var, occ.running.var, nr.of.occasions,
               total_redraws = total_redraws))
 
 }
-
-
-# # test function
-# sim <- data.frame(SERIAL = rep(c(1,2), each=6),
-#                   occ = rep(1:6, times=2),
-#                   aerger1 = rep(c(0,1), times=6),
-#                   aerger2 = rep(c(1,0), times=6),
-#                   aerger3 = rep(1, times=12))
-# 
-# test <- random_occasion_draw(data=sim, id.var="SERIAL",occ.running.var = "occ", nr.of.occasions = 2, items = c("aerger1", "aerger2"))
