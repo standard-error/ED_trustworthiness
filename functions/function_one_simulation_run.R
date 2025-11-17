@@ -245,10 +245,20 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
   min_diff_ICC <- min(merged[ , "difference_ICC"]) # minimum of difference (i.e., most negative deviation)
   max_diff_ICC <- max(merged[ , "difference_ICC"]) # maximum of difference (i.e., most positive deviation)
 
+  
   # transformed ICCs
   mean_diff_ICC.z <- mean(merged.c[ , "difference_ICC.z"])
   min_diff_ICC.z <- min(merged.c[ , "difference_ICC.z"]) # minimum of difference (i.e., most negative deviation)
   max_diff_ICC.z <- max(merged.c[ , "difference_ICC.z"]) # maximum of difference (i.e., most positive deviation)
+  
+  
+  # determine which participants show the most negative and most positive deviation:
+  id_min_diff_ICC <- merged[which.min(merged[ , "difference_ICC"]), id.var]
+  id_max_diff_ICC <- merged[which.max(merged[ , "difference_ICC"]), id.var]
+  
+  id_min_diff_ICC.z <- merged.c[which.min(merged.c[ , "difference_ICC.z"]), id.var]
+  id_max_diff_ICC.z <- merged.c[which.max(merged.c[ , "difference_ICC.z"]), id.var]
+  
   
   
   # RMSE
@@ -281,8 +291,10 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
   return(data.frame(
     # relative outcome measures
     min_diff_ICC, mean_diff_ICC, max_diff_ICC,
+    id_min_diff_ICC, id_max_diff_ICC,
     N_valid_ICC.z,
     min_diff_ICC.z, mean_diff_ICC.z, max_diff_ICC.z,
+    id_min_diff_ICC.z, id_max_diff_ICC.z,
     cor_ICC, cor_ICC.z,
     sq_diff_ICC = I(list(sq_diff_ICC)), sq_diff_ICC.z = I(list(sq_diff_ICC.z)), # store list of squared differences (with according name, else it will be changed to list.sq_diff_ICC.)
     # absolute outcome measures
@@ -363,3 +375,48 @@ one_simulation <- function(data, nr.of.occasions, occasions.drawn,
   return(outcomes)
 }
 
+
+
+# # test function
+# load("prepared data/benchmark_data.rda")
+# 
+# source("functions/function_calculate_iccs.R")
+# 
+# ICCdat <- calculate_icc(bench, "SERIAL", c('aerger1', 'aerger2', 'aerger3',
+#                                            'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
+#                                            'angst1', 'angst2', 'angst3',
+#                                            'scham1', 'scham2', 'scham3',
+#                                            'schuld1', 'schuld2', 'schuld3'))
+# colnames(ICCdat) <- c("SERIAL", "bench_ICC", "bench_ICC.z")
+# 
+# source("functions/function_random_occasion_draw.R")
+# source("functions/function_ordered_occasion_draw.R")
+# 
+# test <- one_simulation(data=bench, nr.of.occasions=5, occasions.drawn=c("by order"),
+#                        nr.of.items = 3, items = c("aerger1", "aerger2", "aerger3"),
+#                        id.var = "SERIAL", occ.running.var = "occ_running", benchmark_ICCdata = ICCdat,
+#                        type="consistency", unit="single")
+# 
+# man_calc <- bench[which(bench$occ_running <= 5), ]
+# compICCdat <- calculate_icc(man_calc, id.var="SERIAL", items= c("aerger1", "aerger2", "aerger3"),
+#                             type="consistency", unit="single")
+# merged <- merge(ICCdat, compICCdat, by ="SERIAL")
+# merged$diff_ICC <- merged$ICC - merged$bench_ICC
+# merged$diff_ICC.z <- merged$ICC.z - merged$bench_ICC.z
+# 
+# min(merged$diff_ICC)
+# which.min(merged$diff_ICC)
+# merged[which.min(merged$diff_ICC), "SERIAL"] # 104 has minimum difference (-0.72)
+# max(merged$diff_ICC)
+# which.max(merged$diff_ICC)
+# merged[which.max(merged$diff_ICC), "SERIAL"] # 77 has maximum difference (0.79)
+# 
+# 
+# min(merged$diff_ICC.z)
+# which.min(merged$diff_ICC.z)
+# merged[which.min(merged$diff_ICC.z), "SERIAL"] # 104 has minimum difference (-2.20)
+# max(merged$diff_ICC.z)
+# which.max(merged$diff_ICC.z)
+# merged[which.max(merged$diff_ICC.z), "SERIAL"] # 83 has maximum difference (1.95)
+# 
+# View(merged[merged$SERIAL %in% c(104,77,83), ])

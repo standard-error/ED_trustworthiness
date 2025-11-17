@@ -161,22 +161,26 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
   
   # CREATE RESULTS STORAGE
   # already determine columns that will contain lists of squared differences (of all persons)
-  # ncol = 18 -> we have 18 outcomes (6 outcome measures, but some for raw ICCs
-  # and also for Fisher's Z-transformed ICCs)
+  # ncol = 23 -> we have 23 outcomes (6 outcome measures, but some for raw ICCs
+  # and also for Fisher's Z-transformed ICCs, and some technical information [e.g., total nr. re-draws])
   # name columns; order as in the one_simulation_outcome_measures-function
   res <- data.frame(
     # relative outcome measures
     min_diff_ICC = rep(NA, nrow(design)),
     mean_diff_ICC = rep(NA, nrow(design)),
     max_diff_ICC = rep(NA, nrow(design)),
+    id_min_diff_ICC = rep(NA, nrow(design)),
+    id_max_diff_ICC = rep(NA, nrow(design)),
     N_valid_ICC.z = rep(NA, nrow(design)),
     min_diff_ICC.z = rep(NA, nrow(design)),
     mean_diff_ICC.z = rep(NA, nrow(design)),
     max_diff_ICC.z = rep(NA, nrow(design)),
+    id_min_diff_ICC.z = rep(NA, nrow(design)),
+    id_max_diff_ICC.z = rep(NA, nrow(design)),
     cor_ICC = rep(NA, nrow(design)),
     cor_ICC.z = rep(NA, nrow(design)),
     sq_diff_ICC = I(vector("list", nrow(design))),
-    sq_diff_ICC.z = I(vector("list", nrow(design))),
+    sq_diff_ICC.z = I(vector("list", nrow(design))), 
     # absolute outcome measures
     rel = rep(NA, nrow(design)),
     N_rel = rep(NA, nrow(design)),
@@ -187,7 +191,8 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
     estimationProbPos = rep(NA, nrow(design)),
     total_redraws = rep(NA, nrow(design))
   )
-
+  
+  
   
 
   # SET FUTURE PLAN FOR PARALLELIZATION
