@@ -184,7 +184,8 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
     sd_ICC.z = rep(NA, nrow(design)),
     negICC = rep(NA, nrow(design)),
     estimationProbNeg = rep(NA, nrow(design)),
-    estimationProbPos = rep(NA, nrow(design))
+    estimationProbPos = rep(NA, nrow(design)),
+    total_redraws = rep(NA, nrow(design))
   )
 
   

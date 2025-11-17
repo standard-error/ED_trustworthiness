@@ -37,19 +37,29 @@ draw_for_participant <- function(data, id.var, id.part, nr.of.occasions, items) 
                                         nr.of.occasions, replace = FALSE), ]
   # draw nr.of.occasions occasions randomly from all occasions of this participant without replacing (occasions can only be drawn once)
   
-  j <- 1
+  j <- 0 # so far, we have zero re-draws 
   # Repeat drawing as long as variance in emotion ratings is 0
   while (all(var(random_sub[, items])== 0)) {
     # draw again
     random_sub <- participant_data[sample(1:nrow(participant_data),
                                           nr.of.occasions, replace = FALSE), ]
-    j <- j+ 1
+    j <- j + 1
+    print(paste0("re-draw nr. ", j))
     
   }
-  return(random_sub)
+  return(list(drawn_data_sub = random_sub, # store randomly drawn data
+              redraws = j)) # and store number of re-draws for this participant in list
 
 }
 
+
+
+# # Test function
+# sim <- data.frame(SERIAL = rep(1, times=6),
+#                   aerger1 = rep(c(0,1), each=3),
+#                   aerger2 = rep(c(1,0), each=3))
+# 
+# test <- draw_for_participant(data=sim, id.var="SERIAL", id.part = 1,nr.of.occasions = 2, items = c("aerger1", "aerger2"))
 
 
 
@@ -73,7 +83,8 @@ random_occasion_draw <- function(data, id.var, occ.running.var, nr.of.occasions,
     print("Error in ordered_occasions_draw: nr.of.occasions is greater than the number of occasions per participant for at least one participant.")
     drawn_data <- data.frame(matrix(NA, ncol=ncol(data), nrow=nrow(data)))
     names(drawn_data) <- names(data)
-    return(drawn_data) # return an empty data frame (NA) of size of input df
+    return(list(drawn_data = drawn_data,
+                total_redraws = NA)) # return list of an empty data frame (NA) of size of input df and of number of re-draws (NA)
   }
   
   
@@ -85,14 +96,17 @@ random_occasion_draw <- function(data, id.var, occ.running.var, nr.of.occasions,
   # The ID list, the function is applied to, should be inserted in id.part -> the ID
   # per participant -> The draw_for_participant function is applied to every ID in the
   # ids vector, and each of these IDs is plugged into id.part
-  drawn_list <- lapply(ids, 
+  drawn_all <- lapply(ids, 
                        FUN = function(x) draw_for_participant(data = data,
                                                               id.var = id.var,
                                                               id.part = x,
                                                               nr.of.occasions = nr.of.occasions,
                                                               items = items))
-  # results are stored in a list
+  # results are stored in a list (both data and number of re-draws of occasions)
 
+  # extract drawn data
+  drawn_list <- lapply(drawn_all, `[[`, "drawn_data_sub") # extract drawn data per participant
+  
   # Combine results from list into a single data frame
   drawn_data <- do.call(rbind, drawn_list)
   # Order data frame
@@ -100,8 +114,22 @@ random_occasion_draw <- function(data, id.var, occ.running.var, nr.of.occasions,
   # Reset row values
   rownames(drawn_data) <- NULL
   
-  # Return drawn data
-  return(drawn_data)
+  
+  # sum of re-draws across all participants
+  total_redraws <- sum(sapply(drawn_all, `[[`, "redraws")) # extract redraws per participant and sum these
+  
+  # Return drawn data and re-draws as a list
+  return(list(drawn_data = drawn_data,
+              total_redraws = total_redraws))
 
 }
 
+
+# # test function
+# sim <- data.frame(SERIAL = rep(c(1,2), each=6),
+#                   occ = rep(1:6, times=2),
+#                   aerger1 = rep(c(0,1), times=6),
+#                   aerger2 = rep(c(1,0), times=6),
+#                   aerger3 = rep(1, times=12))
+# 
+# test <- random_occasion_draw(data=sim, id.var="SERIAL",occ.running.var = "occ", nr.of.occasions = 2, items = c("aerger1", "aerger2"))

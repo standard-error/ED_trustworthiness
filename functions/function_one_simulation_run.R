@@ -56,20 +56,34 @@ one_sim_data_manipulation <- function(data, nr.of.occasions, occasions.drawn,
   
   # DRAW OCCASIONS FOR EACH PARTICIPANT
   if (occasions.drawn == "random") {
-    drawn_data <- random_occasion_draw(data = data, # insert start data (full data set provided in argument)
+    # for random draws, we have a count variable that reflects how many re-draws we had across all participants
+    # -> drawn_data and total_redraws are stored in a list
+    # -> use temporary outcome list and extract the data and count variable separately
+    drawn_all <- random_occasion_draw(data = data, # insert start data (full data set provided in argument)
                                        id.var = id.var, # pass id.var 
                                        occ.running.var = occ.running.var, # pass occ.running.var
                                        nr.of.occasions = nr.of.occasions,  # pass nr.of.occasions
                                        items = items) # pass items 
+    
+    drawn_data <- drawn_all$drawn_data
+    total_redraws <- drawn_all$total_redraws
+    
+    
   } else if (occasions.drawn == "by order") {
+    # for ordered draws, we do not have cases with zero variance -> no re-draws
+    # -> was checked before running the simulation as a whole
     drawn_data <- ordered_occasion_draw(data = data, # insert start data (full data set provided in argument)
                                         id.var = id.var, # pass id.var 
                                         occ.running.var = occ.running.var, # pass occ.running.var
                                         nr.of.occasions = nr.of.occasions) # pass.nr.of.occasions
-    
+    total_redraws <- 0
   }
   
-  return(drawn_data)
+  # return list with drawn_data and total redraws
+  return(list(
+    drawn_data = drawn_data,
+    total_redraws = total_redraws
+  ))
 
 }
 
@@ -133,7 +147,7 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
   merged.c <- merged[!is.infinite(merged[ , "comp_ICC.z"]), ]
   # if ICC.z = NaN, remove participant from reliability analyses
   merged.c <- merged.c[!is.nan(merged.c[ , "comp_ICC.z"]), ]
-    # if all participants have valid ICC.z, then merged.c = merged
+  # if all participants have valid ICC.z, then merged.c = merged
   
   
   N_valid_ICC.z <- nrow(merged.c)
@@ -316,12 +330,16 @@ one_simulation <- function(data, nr.of.occasions, occasions.drawn,
   
   
   # Step 1: Manipulate data according to simulation design (and calculate ICCs)
-  drawn_data <- one_sim_data_manipulation(data = data, nr.of.occasions = nr.of.occasions,
+  # the output is a list of drawn_data and total_redraws
+  # -> store separately
+  drawn_all <- one_sim_data_manipulation(data = data, nr.of.occasions = nr.of.occasions,
                                           occasions.drawn = occasions.drawn, nr.of.items = nr.of.items,
                                           items = items,
                                           id.var = id.var, occ.running.var = occ.running.var) # pass arguments from outer function
 
-
+  # extract drawn_data and total_redraws
+  drawn_data <- drawn_all$drawn_data
+  total_redraws <- drawn_all$total_redraws
   
   # Step 2: Calculate ICCs with drawn data
   sim_ICCdata <- calculate_icc(data  = drawn_data, # insert drawn data: calculate ICCs on data subset (corresponding to design choice)
@@ -339,7 +357,32 @@ one_simulation <- function(data, nr.of.occasions, occasions.drawn,
   # Step 3: Calculate outcome measures based on the manipulated data (step 2) and benchmark data (passed to outer function)
   outcomes <- one_sim_outcome_measures(benchmark_ICCdata = benchmark_ICCdata, sim_ICCdata, id.var, nr.of.items, nr.of.occasions)
   
+  # add total number of re-draws to the outcomes
+  outcomes$total_redraws <- total_redraws
+  
   return(outcomes)
 }
 
 
+# # test function
+# load("prepared data/benchmark_data.rda")
+# 
+# source("functions/function_calculate_iccs.R")
+# ICCdata <- calculate_icc(data=bench, id.var="SERIAL", items=c( 'aerger1', 'aerger2', 'aerger3',
+#                                                                'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
+#                                                                'angst1', 'angst2', 'angst3',
+#                                                                'scham1', 'scham2', 'scham3',
+#                                                                'schuld1', 'schuld2', 'schuld3'))
+# colnames(ICCdata) <- c("SERIAL", "bench_ICC", "bench_ICC.z")
+# 
+# 
+# source("functions/function_random_occasion_draw.R")
+# 
+# set.seed(011297)
+# test <- random_occasion_draw(data=bench, id.var="SERIAL",occ.running.var = "occ_running", nr.of.occasions = 3, items = c("aerger1", "aerger2"))
+# 
+# set.seed(011297)
+# test_out <- one_simulation(data=bench, nr.of.occasions=3, occasions.drawn="random", nr.of.items=2,
+#                            items = c("aerger1", "aerger2"), id.var="SERIAL", occ.running.var="occ_running",
+#                            type="consistency", unit="single", benchmark_ICCdata=ICCdata)
+# 
