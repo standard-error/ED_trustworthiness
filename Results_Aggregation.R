@@ -24,6 +24,151 @@ source("functions/function_aggregate_results.R")
 
 
 
+# Determine Total Number of Redraws ---------------------------------------
+# not saved with other results because it is not treated as evaluation criterion
+# -> information for Method section
+sum(res$total_redraws)
+# zero
+table(res$total_redraws)
+# all are zero
+redraw <- aggregate(total_redraws ~ occasions_drawn + n_occasions + n_items,
+                    data=res, FUN = sum)
+# zero in all conditions
+
+rm(redraw)
+
+
+
+# Determine Which Participants Deviate Most from Benchmark ----------------
+
+## for ICC
+length(unique(res$id_min_diff_ICC)) # 98 different participants differed most (in negative direction)
+# in at least one replication
+
+length(unique(res$id_max_diff_ICC)) # 105 different participants differed most (in negative direction)
+# in at least one replication
+
+table(res$id_min_diff_ICC) # some differed most in only few replications, some differed most in >40,000 replications
+
+table(res$id_max_diff_ICC) # some differed most in only few replications, some differed most in >20,000 replications
+
+
+# find replication with maximum deviation for each condition -> determine corresponding person
+## i.e., find the participants who correspond to most extreme deviation across all replications per condition
+# negative deviations
+diff_min <- do.call(data.frame,
+                aggregate(min_diff_ICC ~ occasions_drawn + n_occasions + n_items,
+                  data=res,
+                  FUN = function(x) {
+                    min(x)
+                  })
+)
+
+# now merge minimum with corresponding replication and ID variable
+diff_min <- merge(diff_min, res[ , c("occasions_drawn", "n_occasions", "n_items", "min_diff_ICC", "n_iteration", "id_min_diff_ICC")], by=c("occasions_drawn", "n_occasions", "n_items", "min_diff_ICC"), all.y=FALSE)
+
+
+colnames(diff_min) <- c("occasions_drawn", "n_occasions", "n_items", "min_diff_ICC_across_repl", "n_iteration", "id_min_diff_ICC_across_repl")
+
+table(diff_min$id_min_diff_ICC_across_repl) # in most conditions, participant 210 has the most extreme negative deviation across replications 
+
+
+## positive deviations
+diff_max <- do.call(data.frame,
+                    aggregate(max_diff_ICC ~ occasions_drawn + n_occasions + n_items,
+                              data=res,
+                              FUN = function(x) {
+                                max(x)
+                              })
+)
+
+# now merge maximum with corresponding replication and ID variable
+diff_max <- merge(diff_max, res[ , c("occasions_drawn", "n_occasions", "n_items", "max_diff_ICC", "n_iteration", "id_max_diff_ICC")], by=c("occasions_drawn", "n_occasions", "n_items", "max_diff_ICC"), all.y=FALSE)
+
+
+colnames(diff_max) <- c("occasions_drawn", "n_occasions", "n_items", "max_diff_ICC_across_repl", "n_iteration", "id_max_diff_ICC_across_repl")
+
+table(diff_max$id_max_diff_ICC_across_repl) # in most conditions, participant 198 (random) and 114 (ordered) have the most extreme positive deviation across replications
+
+
+
+
+
+## for ICC.z
+length(unique(res$id_min_diff_ICC.z)) # 106 different participants differed most (in negative direction)
+# in at least one replication
+
+length(unique(res$id_max_diff_ICC.z)) # 109 different participants differed most (in negative direction)
+# in at least one replication
+
+# find replication with maximum deviation for each condition -> determine corresponding person
+## i.e., find the participants who correspond to most extreme deviation across all replications per condition
+# negative deviations
+diff_min.z <- do.call(data.frame,
+                    aggregate(min_diff_ICC.z ~ occasions_drawn + n_occasions + n_items,
+                              data=res,
+                              FUN = function(x) {
+                                min(x)
+                              })
+)
+
+# now merge minimum with corresponding replication and ID variable
+diff_min.z <- merge(diff_min.z, res[ , c("occasions_drawn", "n_occasions", "n_items", "min_diff_ICC.z", "n_iteration", "id_min_diff_ICC.z")], by=c("occasions_drawn", "n_occasions", "n_items", "min_diff_ICC.z"), all.y=FALSE)
+
+
+colnames(diff_min.z) <- c("occasions_drawn", "n_occasions", "n_items", "min_diff_ICC.z_across_repl", "n_iteration", "id_min_diff_ICC.z_across_repl")
+
+table(diff_min.z$id_min_diff_ICC.z_across_repl) # in most conditions, participant 210 has the most extreme negative deviation across replications 
+
+
+## positive deviations
+diff_max.z <- do.call(data.frame,
+                    aggregate(max_diff_ICC.z ~ occasions_drawn + n_occasions + n_items,
+                              data=res,
+                              FUN = function(x) {
+                                max(x)
+                              })
+)
+
+# now merge maximum with corresponding replication and ID variable
+diff_max.z <- merge(diff_max.z, res[ , c("occasions_drawn", "n_occasions", "n_items", "max_diff_ICC.z", "n_iteration", "id_max_diff_ICC.z")], by=c("occasions_drawn", "n_occasions", "n_items", "max_diff_ICC.z"), all.y=FALSE)
+
+
+colnames(diff_max.z) <- c("occasions_drawn", "n_occasions", "n_items", "max_diff_ICC.z_across_repl", "n_iteration", "id_max_diff_ICC.z_across_repl")
+
+table(diff_max.z$id_max_diff_ICC.z_across_repl) # in most conditions, participant 198 (random) and 114 (ordered) have the most extreme positive deviation across replications
+
+
+# drop n_iteration from each result data frame
+diff_min$n_iteration <- NULL
+diff_max$n_iteration <- NULL
+diff_min.z$n_iteration <- NULL
+diff_max.z$n_iteration <- NULL
+
+## merge all results
+diff_min_max_ids <- merge(diff_min, diff_max, by=c("occasions_drawn", "n_occasions", "n_items"))
+diff_min_max_ids <- merge(diff_min_max_ids, diff_min.z, by=c("occasions_drawn", "n_occasions", "n_items"))
+diff_min_max_ids <- merge(diff_min_max_ids, diff_max.z, by=c("occasions_drawn", "n_occasions", "n_items"))
+
+# save results
+save(diff_min_max_ids, file="results/min_max_person_level_difference_and_id_per_condition_across_replications.rda")
+
+
+table(diff_min_max_ids$id_min_diff_ICC_across_repl)
+table(diff_min_max_ids$id_max_diff_ICC_across_repl)
+
+table(diff_min_max_ids$id_min_diff_ICC.z_across_repl)
+table(diff_min_max_ids$id_max_diff_ICC.z_across_repl)
+
+# for random draws only
+sub <- diff_min_max_ids[diff_min_max_ids$occasions_drawn == "random", ]
+
+table(sub$id_min_diff_ICC_across_repl)
+table(sub$id_max_diff_ICC_across_repl)
+
+table(sub$id_min_diff_ICC.z_across_repl)
+table(sub$id_max_diff_ICC.z_across_repl)
+
 
 # Calculate %negICC -------------------------------------------------------
 # calculate proportion of negative ICCs
@@ -40,15 +185,12 @@ part_dat <- data.frame(matrix(nrow=90021, ncol=112))
 part_dat[ , 1:3] <- res[ , 2:4]
 names(part_dat) <- c("n_occasions", "occasions_drawn", "n_items", paste0("sq_diff_ICC_", 1:109))
 
-for (i in 1:109) {
-  
-  for (row in 1:90021) {
-    
-    part_dat[row, paste0("sq_diff_ICC_", i)] <- res[row , "sq_diff_ICC"][[1]][i]
-    
-  }
-  
-}
+sq_matrix <- do.call(rbind, res$sq_diff_ICC) # extract the 109 sq_diff_ICC values per row (replication) and bind them
+# -> matrix of 109 participants (columns) and their values in each replication (rows)
+
+# bind with part_dat
+part_dat[ , 4:112] <- sq_matrix
+
 
 # save
 save(part_dat, file="results/squared_errors_per_replication_and_participant.rda")
@@ -65,23 +207,16 @@ names(RMSE_random)[1:3] <- c("occasions_drawn", "n_occasions", "n_items")
 names(RMSE_random)[4:112] <- c(paste0("RMSE_", 1:109))
 
 
+# RMSE = sqrt(sum(sq_diff_ICC)/n_replication)
+sq_diff_cols <- paste0("sq_diff_ICC_", 1:109)
 
-for (i in 1:109) {
-  
-  part_res <- do.call(data.frame,
-                      aggregate(as.formula(paste0("sq_diff_ICC_", i, " ~ occasions_drawn + n_occasions + n_items")),
-                      data = rd,
+RMSE_random <- aggregate(rd[ , sq_diff_cols], # for each participant-specific sq_diff column
+                      by = rd[ , c("occasions_drawn", "n_occasions", "n_items")], # aggregate across conditions
                       FUN = function(x) {
-                        sqrt(sum(x)/5000) # sum the squared differences, divide by number of replications and take sqrt
-                      }))
-  names(part_res) <- c("occasions_drawn", "n_occasions", "n_items", "part_RMSE")
-  
-  if (i == 1) {
-    RMSE_random[, 1:4] <- part_res
-  } else {
-    RMSE_random[ , paste0("RMSE_", i)] <- part_res$part_RMSE
-  }
-}
+                        sqrt(sum(x)/5000) # by taking square root of the the summed sq_diff divided by number of replications
+                      })
+names(RMSE_random)[4:112] <- c(paste0("RMSE_", 1:109))
+
 
 
 # repeat for ordered draws -> different number of replications (i.e., 1)
@@ -95,31 +230,29 @@ names(RMSE_order)[4:112] <- c(paste0("RMSE_", 1:109))
 
 
 
-for (i in 1:109) {
-  
-  part_res <- do.call(data.frame,
-                      aggregate(as.formula(paste0("sq_diff_ICC_", i, " ~ occasions_drawn + n_occasions + n_items")),
-                                data = od,
-                                FUN = function(x) {
-                                  sqrt(sum(x)/1) # sum the squared differences, divide by number of replications and take sqrt
-                                }))
-  names(part_res) <- c("occasions_drawn", "n_occasions", "n_items", "part_RMSE")
-  
-  if (i == 1) {
-    RMSE_order[, 1:4] <- part_res
-  } else {
-    RMSE_order[ , paste0("RMSE_", i)] <- part_res$part_RMSE
-  }
-}
+# RMSE = sqrt(sum(sq_diff_ICC)/n_replication)
+sq_diff_cols <- paste0("sq_diff_ICC_", 1:109)
+
+RMSE_order <- aggregate(od[ , sq_diff_cols], # for each participant-specific sq_diff column
+                        by = od[ , c("occasions_drawn", "n_occasions", "n_items")], # aggregate across conditions
+                         FUN = function(x) {
+                           sqrt(sum(x)/1) # by taking square root of the the summed sq_diff divided by number of replications
+                         })
+names(RMSE_order)[4:112] <- c(paste0("RMSE_", 1:109))
+
 
 
 # combine RMSE data frames
 RMSE <- rbind(RMSE_random, RMSE_order)
 rm(RMSE_random, RMSE_order)
 
+
+
 # remove benchmark row
 # (values are correctly 0)
 RMSE <- RMSE[-(which(RMSE$occasions_drawn == "by order" & RMSE$n_occasions == 70 & RMSE$n_items == 15)), ]
+
+
 
 # save 
 save(RMSE, file="results/RMSE_values_per_participant.rda")
@@ -142,18 +275,17 @@ part_dat.z <- data.frame(matrix(nrow=90021, ncol=112))
 part_dat.z[ , 1:3] <- res[ , 2:4]
 names(part_dat.z) <- c("n_occasions", "occasions_drawn", "n_items", paste0("sq_diff_ICC.z_", 1:109))
 
-for (i in 1:109) {
-  
-  for (row in 1:90021) {
-    
-    part_dat.z[row, paste0("sq_diff_ICC.z_", i)] <- res[row , "sq_diff_ICC.z"][[1]][i]
-    
-  }
-  
-}
+
+sq_matrix.z <- do.call(rbind, res$sq_diff_ICC.z) # extract the 109 sq_diff_ICC.z values per row (replication) and bind them
+# -> matrix of 109 participants (columns) and their values in each replication (rows)
+
+# bind with part_dat
+part_dat.z[ , 4:112] <- sq_matrix.z
+
 
 # save
 save(part_dat.z, file="results/squared_errors.z_per_replication_and_participant.rda")
+
 
 
 ### aggregate
@@ -167,23 +299,17 @@ names(RMSE.z_random)[1:3] <- c("occasions_drawn", "n_occasions", "n_items")
 names(RMSE.z_random)[4:112] <- c(paste0("RMSE.z_", 1:109))
 
 
+# RMSE = sqrt(sum(sq_diff_ICC.z)/n_replication)
+sq_diff_cols <- paste0("sq_diff_ICC.z_", 1:109)
 
-for (i in 1:109) {
-  
-  part_res.z <- do.call(data.frame,
-                      aggregate(as.formula(paste0("sq_diff_ICC.z_", i, " ~ occasions_drawn + n_occasions + n_items")),
-                                data = rd.z,
-                                FUN = function(x) {
-                                  sqrt(sum(x)/5000) # sum the squared differences, divide by number of replications and take sqrt
-                                }))
-  names(part_res.z) <- c("occasions_drawn", "n_occasions", "n_items", "part_RMSE.z")
-  
-  if (i == 1) {
-    RMSE.z_random[, 1:4] <- part_res.z
-  } else {
-    RMSE.z_random[ , paste0("RMSE.z_", i)] <- part_res.z$part_RMSE.z
-  }
-}
+RMSE.z_random <- aggregate(rd.z[ , sq_diff_cols], # for each participant-specific sq_diff column
+                         by = rd.z[ , c("occasions_drawn", "n_occasions", "n_items")], # aggregate across conditions
+                         FUN = function(x) {
+                           sqrt(sum(x)/5000) # by taking square root of the the summed sq_diff divided by number of replications
+                         })
+names(RMSE.z_random)[4:112] <- c(paste0("RMSE.z_", 1:109))
+
+
 
 
 # repeat for ordered draws -> different number of replications (i.e., 1)
@@ -196,23 +322,16 @@ names(RMSE.z_order)[1:3] <- c("occasions_drawn", "n_occasions", "n_items")
 names(RMSE.z_order)[4:112] <- c(paste0("RMSE.z_", 1:109))
 
 
+# RMSE = sqrt(sum(sq_diff_ICC.z)/n_replication)
+sq_diff_cols <- paste0("sq_diff_ICC.z_", 1:109)
 
-for (i in 1:109) {
-  
-  part_res.z <- do.call(data.frame,
-                      aggregate(as.formula(paste0("sq_diff_ICC.z_", i, " ~ occasions_drawn + n_occasions + n_items")),
-                                data = od.z,
-                                FUN = function(x) {
-                                  sqrt(sum(x)/1) # sum the squared differences, divide by number of replications and take sqrt
-                                }))
-  names(part_res.z) <- c("occasions_drawn", "n_occasions", "n_items", "part_RMSE.z")
-  
-  if (i == 1) {
-    RMSE.z_order[, 1:4] <- part_res.z
-  } else {
-    RMSE.z_order[ , paste0("RMSE.z_", i)] <- part_res.z$part_RMSE.z
-  }
-}
+RMSE.z_order <- aggregate(od.z[ , sq_diff_cols], # for each participant-specific sq_diff column
+                           by = od.z[ , c("occasions_drawn", "n_occasions", "n_items")], # aggregate across conditions
+                           FUN = function(x) {
+                             sqrt(sum(x)/1) # by taking square root of the the summed sq_diff divided by number of replications
+                           })
+names(RMSE.z_order)[4:112] <- c(paste0("RMSE.z_", 1:109))
+
 
 
 # combine RMSE data frames
@@ -459,23 +578,13 @@ part_dat.rd <- part_dat[which(part_dat$occasions_drawn == "random"), ]
 MCSE_RMSE <- data.frame(matrix(ncol=111, nrow=18))
 names(MCSE_RMSE) <- c("n_occasions", "n_items", paste0("MCSE_RMSE_", 1:109))
 
-for (i in 1:109) {
-  
-  res_mcse <- do.call(data.frame,
-                 aggregate(as.formula(paste0("sq_diff_ICC_", i, " ~ n_occasions + n_items")),
-                           data = part_dat.rd,
-                           FUN = function(x) {
-                             MCSE = sqrt( ( (sum( ( x - (sum(x)/5000) )^2 )) / (5000 - 1) ) / (4*5000*mean(x)))
-                           }))
-  names(res_mcse) <- c("n_occasions", "n_items", "MCSE_RMSE_part")
-  
-  if (i == 1) {
-    MCSE_RMSE[ , 1:3] <- res_mcse
-  } else {
-    MCSE_RMSE[ , paste0("MCSE_RMSE_", i)] <- res_mcse$MCSE_RMSE_part
-  }
-}
+sq_diff_cols <- paste0("sq_diff_ICC_", 1:109)
 
+MCSE_RMSE[] <- aggregate(part_dat.rd[ , sq_diff_cols],
+                  by = part_dat.rd[ , c("n_occasions", "n_items")],
+                  FUN = function(x) {
+                    MCSE = sqrt( ( (sum( ( x - (sum(x)/5000) )^2 )) / (5000 - 1) ) / (4*5000*mean(x)))
+                  })
 
 # save
 save(MCSE_RMSE, file="results/MCSE_RMSE_per_participant.rda")
@@ -499,23 +608,13 @@ part_dat.z.rd <- part_dat.z[which(part_dat.z$occasions_drawn == "random"), ]
 MCSE_RMSE.z <- data.frame(matrix(ncol=111, nrow=18))
 names(MCSE_RMSE.z) <- c("n_occasions", "n_items", paste0("MCSE_RMSE.z_", 1:109))
 
-for (i in 1:109) {
-  
-  res_mcse <- do.call(data.frame,
-                      aggregate(as.formula(paste0("sq_diff_ICC.z_", i, " ~ n_occasions + n_items")),
-                                data = part_dat.z.rd,
-                                FUN = function(x) {
-                                  MCSE = sqrt( ( (sum( ( x - (sum(x)/5000) )^2 )) / (5000 - 1) ) / (4*5000*mean(x)))
-                                }))
-  names(res_mcse) <- c("n_occasions", "n_items", "MCSE_RMSE.z_part")
-  
-  if (i == 1) {
-    MCSE_RMSE.z[ , 1:3] <- res_mcse
-  } else {
-    MCSE_RMSE.z[ , paste0("MCSE_RMSE.z_", i)] <- res_mcse$MCSE_RMSE.z_part
-  }
-}
+sq_diff_cols <- paste0("sq_diff_ICC.z_", 1:109)
 
+MCSE_RMSE.z[] <- aggregate(part_dat.z.rd[ , sq_diff_cols],
+                           by = part_dat.z.rd[ , c("n_occasions", "n_items")],
+                           FUN = function(x) {
+                             MCSE = sqrt( ( (sum( ( x - (sum(x)/5000) )^2 )) / (5000 - 1) ) / (4*5000*mean(x)))
+                         })
 
 # save
 save(MCSE_RMSE.z, file="results/MCSE_RMSE.z_per_participant.rda")
@@ -570,15 +669,12 @@ part_dat2 <- data.frame(matrix(nrow=90021, ncol=112))
 part_dat2[ , 1:3] <- res2[ , 2:4]
 names(part_dat2) <- c("n_occasions", "occasions_drawn", "n_items", paste0("sq_diff_ICC_", 1:109))
 
-for (i in 1:109) {
-  
-  for (row in 1:90021) {
-    
-    part_dat2[row, paste0("sq_diff_ICC_", i)] <- res2[row , "sq_diff_ICC"][[1]][i]
-    
-  }
-  
-}
+sq_matrix2 <- do.call(rbind, res2$sq_diff_ICC) # extract the 109 sq_diff_ICC values per row (replication) and bind them
+# -> matrix of 109 participants (columns) and their values in each replication (rows)
+
+# bind with part_dat
+part_dat2[ , 4:112] <- sq_matrix2
+
 
 # save
 save(part_dat2, file="results/check nr of iterations/squared_errors_per_replication_and_participant.rda")
@@ -595,23 +691,17 @@ names(RMSE2_random)[1:3] <- c("occasions_drawn", "n_occasions", "n_items")
 names(RMSE2_random)[4:112] <- c(paste0("RMSE_", 1:109))
 
 
+# RMSE = sqrt(sum(sq_diff_ICC)/n_replication)
+sq_diff_cols <- paste0("sq_diff_ICC_", 1:109)
 
-for (i in 1:109) {
-  
-  part_res2 <- do.call(data.frame,
-                      aggregate(as.formula(paste0("sq_diff_ICC_", i, " ~ occasions_drawn + n_occasions + n_items")),
-                                data = rd2,
-                                FUN = function(x) {
-                                  sqrt(sum(x)/5000) # sum the squared differences, divide by number of replications and take sqrt
-                                }))
-  names(part_res2) <- c("occasions_drawn", "n_occasions", "n_items", "part_RMSE")
-  
-  if (i == 1) {
-    RMSE2_random[, 1:4] <- part_res2
-  } else {
-    RMSE2_random[ , paste0("RMSE_", i)] <- part_res2$part_RMSE
-  }
-}
+RMSE2_random <- aggregate(rd2[ , sq_diff_cols], # for each participant-specific sq_diff column
+                          by = rd2[ , c("occasions_drawn", "n_occasions", "n_items")], # aggregate across conditions
+                          FUN = function(x) {
+                            sqrt(sum(x)/5000) # by taking square root of the the summed sq_diff divided by number of replications
+                         })
+names(RMSE2_random)[4:112] <- c(paste0("RMSE_", 1:109))
+
+
 
 
 # repeat for ordered draws -> different number of replications (i.e., 1)
@@ -623,24 +713,16 @@ RMSE2_order <- as.data.frame(matrix(nrow=21, ncol=112))
 names(RMSE2_order)[1:3] <- c("occasions_drawn", "n_occasions", "n_items")
 names(RMSE2_order)[4:112] <- c(paste0("RMSE_", 1:109))
 
+# RMSE = sqrt(sum(sq_diff_ICC)/n_replication)
+sq_diff_cols <- paste0("sq_diff_ICC_", 1:109)
 
+RMSE2_order <- aggregate(od2[ , sq_diff_cols], # for each participant-specific sq_diff column
+                         by = od2[ , c("occasions_drawn", "n_occasions", "n_items")], # aggregate across conditions
+                         FUN = function(x) {
+                          sqrt(sum(x)/1) # by taking square root of the the summed sq_diff divided by number of replications
+                        })
+names(RMSE2_order)[4:112] <- c(paste0("RMSE_", 1:109))
 
-for (i in 1:109) {
-  
-  part_res2 <- do.call(data.frame,
-                      aggregate(as.formula(paste0("sq_diff_ICC_", i, " ~ occasions_drawn + n_occasions + n_items")),
-                                data = od2,
-                                FUN = function(x) {
-                                  sqrt(sum(x)/1) # sum the squared differences, divide by number of replications and take sqrt
-                                }))
-  names(part_res2) <- c("occasions_drawn", "n_occasions", "n_items", "part_RMSE")
-  
-  if (i == 1) {
-    RMSE2_order[, 1:4] <- part_res2
-  } else {
-    RMSE2_order[ , paste0("RMSE_", i)] <- part_res2$part_RMSE
-  }
-}
 
 
 # combine RMSE data frames
@@ -673,15 +755,13 @@ part_dat.z2 <- data.frame(matrix(nrow=90021, ncol=112))
 part_dat.z2[ , 1:3] <- res2[ , 2:4]
 names(part_dat.z2) <- c("n_occasions", "occasions_drawn", "n_items", paste0("sq_diff_ICC.z_", 1:109))
 
-for (i in 1:109) {
-  
-  for (row in 1:90021) {
-    
-    part_dat.z2[row, paste0("sq_diff_ICC.z_", i)] <- res2[row , "sq_diff_ICC.z"][[1]][i]
-    
-  }
-  
-}
+
+sq_matrix.z2 <- do.call(rbind, res2$sq_diff_ICC.z) # extract the 109 sq_diff_ICC.z values per row (replication) and bind them
+# -> matrix of 109 participants (columns) and their values in each replication (rows)
+
+# bind with part_dat
+part_dat.z2[ , 4:112] <- sq_matrix.z2
+
 
 # save
 save(part_dat.z2, file="results/check nr of iterations/squared_errors.z_per_replication_and_participant.rda")
@@ -698,23 +778,16 @@ names(RMSE.z_random2)[1:3] <- c("occasions_drawn", "n_occasions", "n_items")
 names(RMSE.z_random2)[4:112] <- c(paste0("RMSE.z_", 1:109))
 
 
+# RMSE = sqrt(sum(sq_diff_ICC)/n_replication)
+sq_diff_cols <- paste0("sq_diff_ICC.z_", 1:109)
 
-for (i in 1:109) {
-  
-  part_res2.z <- do.call(data.frame,
-                        aggregate(as.formula(paste0("sq_diff_ICC.z_", i, " ~ occasions_drawn + n_occasions + n_items")),
-                                  data = rd.z2,
-                                  FUN = function(x) {
-                                    sqrt(sum(x)/5000) # sum the squared differences, divide by number of replications and take sqrt
-                                  }))
-  names(part_res2.z) <- c("occasions_drawn", "n_occasions", "n_items", "part_RMSE.z")
-  
-  if (i == 1) {
-    RMSE.z_random2[, 1:4] <- part_res2.z
-  } else {
-    RMSE.z_random2[ , paste0("RMSE.z_", i)] <- part_res2.z$part_RMSE.z
-  }
-}
+RMSE.z_random2 <- aggregate(rd.z2[ , sq_diff_cols], # for each participant-specific sq_diff column
+                            by = rd.z2[ , c("occasions_drawn", "n_occasions", "n_items")], # aggregate across conditions
+                            FUN = function(x) {
+                              sqrt(sum(x)/5000) # by taking square root of the the summed sq_diff divided by number of replications
+                          })
+names(RMSE.z_random2)[4:112] <- c(paste0("RMSE.z_", 1:109))
+
 
 
 # repeat for ordered draws -> different number of replications (i.e., 1)
@@ -728,22 +801,15 @@ names(RMSE.z_order2)[4:112] <- c(paste0("RMSE.z_", 1:109))
 
 
 
-for (i in 1:109) {
-  
-  part_res2.z <- do.call(data.frame,
-                        aggregate(as.formula(paste0("sq_diff_ICC.z_", i, " ~ occasions_drawn + n_occasions + n_items")),
-                                  data = od.z2,
-                                  FUN = function(x) {
-                                    sqrt(sum(x)/1) # sum the squared differences, divide by number of replications and take sqrt
-                                  }))
-  names(part_res2.z) <- c("occasions_drawn", "n_occasions", "n_items", "part_RMSE.z")
-  
-  if (i == 1) {
-    RMSE.z_order2[, 1:4] <- part_res2.z
-  } else {
-    RMSE.z_order2[ , paste0("RMSE.z_", i)] <- part_res2.z$part_RMSE.z
-  }
-}
+# RMSE = sqrt(sum(sq_diff_ICC)/n_replication)
+sq_diff_cols <- paste0("sq_diff_ICC.z_", 1:109)
+
+RMSE.z_order2 <- aggregate(od.z2[ , sq_diff_cols], # for each participant-specific sq_diff column
+                         by = od.z2[ , c("occasions_drawn", "n_occasions", "n_items")], # aggregate across conditions
+                         FUN = function(x) {
+                           sqrt(sum(x)/1) # by taking square root of the the summed sq_diff divided by number of replications
+                         })
+names(RMSE.z_order2)[4:112] <- c(paste0("RMSE.z_", 1:109))
 
 
 # combine RMSE data frames
@@ -753,6 +819,7 @@ rm(RMSE.z_random2, RMSE.z_order2)
 # remove benchmark row
 # (values are correctly 0)
 RMSE.z2 <- RMSE.z2[-(which(RMSE.z2$occasions_drawn == "by order" & RMSE.z2$n_occasions == 70 & RMSE.z2$n_items == 15)), ]
+
 
 
 # save 
