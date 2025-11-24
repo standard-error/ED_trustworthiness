@@ -494,128 +494,100 @@ save(agg, file = "results/aggregated_results.rda")
 rd <- res[which(res$occasions_drawn == "random"),]
 
 
-## for average sample "bias" (i.e., average sample difference in ICCs)
-# -> "mean of generic statistic G"
-
-# calculate the overall across-replicate mean of the single-replicate mean difference
-# i.e., each iteration reports a mean difference (across) participants, and these
-# mean differences are averaged across iterations
-# also calculate variance of the mean difference across iterations
 
 max(rd$n_iteration) # 5000 iterations
 
-MCSE <- do.call(data.frame, aggregate(mean_diff_ICC ~ n_occasions + n_items, data = rd, FUN = function(x) {
-  c(mean = mean(x),
-    var = (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1), # equal to using var()
-    MCSE = sqrt( ( (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1) ) / 5000 )) 
-})
-)
-
-names(MCSE) <- c("n_occasions", "n_items", "diff_ICC_sim_mean", "diff_ICC_sim_var", "diff_ICC_MCSE")
-
-
-
-## for bias.z (i.e., difference in ICC.z)
-
-MCSE2 <- do.call(data.frame, aggregate(mean_diff_ICC.z ~ n_occasions + n_items, data = rd, FUN = function(x) {
-  c(mean = mean(x),
-    var = (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1), # equal to using var()
-    MCSE = sqrt( ( (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1) ) / 5000 )) 
-})
-)
-
-names(MCSE2) <- c("n_occasions", "n_items", "diff_ICC.z_sim_mean", "diff_ICC.z_sim_var", "diff_ICC.z_MCSE")
 
 
 ## for correlations (ICC)
 # mean of correlations as performance measure
 
-MCSE3 <- do.call(data.frame, aggregate(cor_ICC ~ n_occasions + n_items, data = rd, FUN = function(x) {
+MCSE1 <- do.call(data.frame, aggregate(cor_ICC ~ n_occasions + n_items, data = rd, FUN = function(x) {
   c(mean = mean(x),
     var = (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1), # equal to using var()
     MCSE = sqrt( ( (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1) ) / 5000 )) 
 })
 )
 
-names(MCSE3) <- c("n_occasions", "n_items", "cor_ICC_sim_mean", "cor_ICC_sim_var", "cor_ICC_MCSE")
+names(MCSE1) <- c("n_occasions", "n_items", "cor_ICC_sim_mean", "cor_ICC_sim_var", "cor_ICC_MCSE")
 
 
 ## for correlations (ICC.z)
 # mean of correlations as performance measure
 
-MCSE4 <- do.call(data.frame, aggregate(cor_ICC.z ~ n_occasions + n_items, data = rd, FUN = function(x) {
+MCSE2 <- do.call(data.frame, aggregate(cor_ICC.z ~ n_occasions + n_items, data = rd, FUN = function(x) {
   c(mean = mean(x),
     var = (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1), # equal to using var()
     MCSE = sqrt( ( (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1) ) / 5000 )) 
 })
 )
 
-names(MCSE4) <- c("n_occasions", "n_items", "cor_ICC.z_sim_mean", "cor_ICC.z_sim_var", "cor_ICC.z_MCSE")
+names(MCSE2) <- c("n_occasions", "n_items", "cor_ICC.z_sim_mean", "cor_ICC.z_sim_var", "cor_ICC.z_MCSE")
 
 
 
 ## for reliability
 # -> mean of generic statistic G
 
-MCSE5 <- do.call(data.frame, aggregate(rel ~ n_occasions + n_items, data = rd, FUN = function(x) {
+MCSE3 <- do.call(data.frame, aggregate(rel ~ n_occasions + n_items, data = rd, FUN = function(x) {
   c(mean = mean(x),
     var = (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1), # equal to using var()
     MCSE = sqrt( ( (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1) ) / 5000 )) 
 })
 )
 
-names(MCSE5) <- c("n_occasions", "n_items", "rel_sim_mean", "rel_sim_var", "rel_MCSE")
+names(MCSE3) <- c("n_occasions", "n_items", "rel_sim_mean", "rel_sim_var", "rel_MCSE")
 
 
 ## for SD (ICC)
 # we have one SD for each replicate -> performance measure = mean of SD across replicates
 # use formula for mean of generic statistic G
-MCSE6 <- do.call(data.frame, aggregate(sd_ICC ~ n_occasions + n_items, data = rd, FUN = function(x) {
+MCSE4 <- do.call(data.frame, aggregate(sd_ICC ~ n_occasions + n_items, data = rd, FUN = function(x) {
   c(mean = mean(x),
     var = (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1), # equal to using var()
     MCSE = sqrt( ( (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1) ) / 5000 )) 
 })
 )
 
-names(MCSE6) <- c("n_occasions", "n_items", "sd_ICC_sim_mean", "sd_ICC_sim_var", "sd_ICC_MCSE")
+names(MCSE4) <- c("n_occasions", "n_items", "sd_ICC_sim_mean", "sd_ICC_sim_var", "sd_ICC_MCSE")
 
 
 ## for SD (ICC.z)
 # we have one SD for each replicate -> performance measure = mean of SD across replicates
 # use formula for mean of generic statistic G
-MCSE7 <- do.call(data.frame, aggregate(sd_ICC.z ~ n_occasions + n_items, data = rd, FUN = function(x) {
+MCSE5 <- do.call(data.frame, aggregate(sd_ICC.z ~ n_occasions + n_items, data = rd, FUN = function(x) {
   c(mean = mean(x),
     var = (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1), # equal to using var()
     MCSE = sqrt( ( (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1) ) / 5000 )) 
 })
 )
 
-names(MCSE7) <- c("n_occasions", "n_items", "sd_ICC.z_sim_mean", "sd_ICC.z_sim_var", "sd_ICC.z_MCSE")
+names(MCSE5) <- c("n_occasions", "n_items", "sd_ICC.z_sim_mean", "sd_ICC.z_sim_var", "sd_ICC.z_MCSE")
 
 
 ## for % negICC
 # performance measure: mean of generic statistic G
-MCSE8 <- do.call(data.frame, aggregate(percnegICC ~ n_occasions + n_items, data = rd, FUN = function(x) {
+MCSE6 <- do.call(data.frame, aggregate(percnegICC ~ n_occasions + n_items, data = rd, FUN = function(x) {
   c(mean = mean(x),
     var = (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1), # equal to using var()
     MCSE = sqrt( ( (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1) ) / 5000 )) 
 })
 )
 
-names(MCSE8) <- c("n_occasions", "n_items", "percnegICC_sim_mean", "percnegICC_sim_var", "percnegICC_MCSE")
+names(MCSE6) <- c("n_occasions", "n_items", "percnegICC_sim_mean", "percnegICC_sim_var", "percnegICC_MCSE")
 
 
 ## for N_rel
 # performance measure: mean of generic statistic G
 
-MCSE9 <- do.call(data.frame, aggregate(N_rel ~ n_occasions + n_items, data = rd, FUN = function(x) {
+MCSE7 <- do.call(data.frame, aggregate(N_rel ~ n_occasions + n_items, data = rd, FUN = function(x) {
   c(mean = mean(x),
     var = (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1), # equal to using var()
     MCSE = sqrt( ( (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1) ) / 5000 )) 
 })
 )
 
-names(MCSE9) <- c("n_occasions", "n_items", "N_rel_sim_mean", "N_rel_sim_var", "N_rel_MCSE")
+names(MCSE7) <- c("n_occasions", "n_items", "N_rel_sim_mean", "N_rel_sim_var", "N_rel_MCSE")
 
 ## for estimation problems, no MCSE can be calculated because there is zero variance
 range(rd$estimationProbNeg)
@@ -623,14 +595,12 @@ range(rd$estimationProbPos)
 
 
 # combine
-MCSE <- merge(MCSE, MCSE2, by = c("n_occasions", "n_items"))
+MCSE <- merge(MCSE1, MCSE2, by = c("n_occasions", "n_items"))
 MCSE <- merge(MCSE, MCSE3, by = c("n_occasions", "n_items"))
 MCSE <- merge(MCSE, MCSE4, by = c("n_occasions", "n_items"))
 MCSE <- merge(MCSE, MCSE5, by = c("n_occasions", "n_items"))
 MCSE <- merge(MCSE, MCSE6, by = c("n_occasions", "n_items"))
 MCSE <- merge(MCSE, MCSE7, by = c("n_occasions", "n_items"))
-MCSE <- merge(MCSE, MCSE8, by = c("n_occasions", "n_items"))
-MCSE <- merge(MCSE, MCSE9, by = c("n_occasions", "n_items"))
 
 MCSE
 names(MCSE)
@@ -803,8 +773,11 @@ MCSE <- merge(MCSE, MCSE_RMSE.z[ , c("n_occasions", "n_items", "MCSE_RMSE.z_min"
 MCSE[3:35] <- round(MCSE[3:35], 3)
 MCSE <- MCSE[order(MCSE$n_occasions, MCSE$n_items), ]
 # use only MCSE (not mean or var)
-MCSE <- MCSE[ , c('n_occasions', 'n_items', 'diff_ICC_MCSE','diff_ICC.z_MCSE','cor_ICC_MCSE', 'cor_ICC.z_MCSE',
-                  'rel_MCSE', 'sd_ICC_MCSE','sd_ICC.z_MCSE', 'percnegICC_MCSE', 'N_rel_MCSE', 'MCSE_RMSE_min',
+MCSE <- MCSE[ , c('n_occasions', 'n_items', 'cor_ICC_MCSE', 'cor_ICC.z_MCSE',
+                  'rel_MCSE', 'sd_ICC_MCSE','sd_ICC.z_MCSE', 'percnegICC_MCSE', 'N_rel_MCSE', 
+                  'MCSE_difference_min', 'MCSE_difference_mean', 'MCSE_difference_max',
+                  'MCSE_difference.z_min', 'MCSE_difference.z_mean', 'MCSE_difference.z_max',
+                  'MCSE_RMSE_min',
                   'MCSE_RMSE_mean', 'MCSE_RMSE_max', 'MCSE_RMSE.z_min', 'MCSE_RMSE.z_mean', 'MCSE_RMSE.z_max')]
 write.csv(MCSE, "results/MCSE_table.csv", row.names = F)
 
