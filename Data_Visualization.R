@@ -20,7 +20,81 @@ source("functions/function_plot_outcomes.R")
 
 # Load Packages -----------------------------------------------------------
 library(ggpubr)
+library(tidyverse) # reshape data (for participant-level plots)
 # ggplot is loaded when sourcing the function
+
+
+
+# Person-Level Difference Plot --------------------------------------------
+
+## for ICC
+load("results/person_level_difference_aggregated_all_participants.rda")
+
+# plot
+# reshape data
+long <- person_diff_agg %>%
+  pivot_longer(
+    cols = starts_with("person_difference_"),   
+    names_to = "participant",
+    values_to = "person_difference"
+  )
+
+
+
+diff_plot <- ggplot(long, aes(x = n_occasions, y = person_difference, group = participant)) +
+  geom_line(alpha = 0.4, aes(col=participant), linewidth=0.6) +
+  facet_grid(rows=vars(n_items), cols=vars(occasions_drawn), labeller = labeller(n_items = function(x) paste0(x, " items"))) +
+  my_theme +
+  theme(legend.position = "none") +
+  ylab("Difference in ICC from Benchmark") +
+  xlab("Number of Measurement Occasions") +
+  expand_limits(x = 70) 
+
+diff_plot
+
+ggsave("plots/person_specific_diff_plot.pdf",plot = diff_plot, device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/person_specific_diff_plot.svg",plot = diff_plot, device="svg", height = 148, width = 210, unit="mm")
+
+tiff("plots/person_specific_diff_plot.tiff", units="mm", width=210, height=148, res=1200)
+diff_plot
+dev.off()
+
+rm(diff_plot, long, person_diff_agg)
+
+
+## for ICC.z
+load("results/person_level_difference.z_aggregated_all_participants.rda")
+
+# plot
+# reshape data
+long.z <- person_diff_agg.z %>%
+  pivot_longer(
+    cols = starts_with("person_difference.z_"),   
+    names_to = "participant",
+    values_to = "person_difference.z"
+  )
+
+
+
+diff_plot.z <- ggplot(long.z, aes(x = n_occasions, y = person_difference.z, group = participant)) +
+  geom_line(alpha = 0.4, aes(col=participant), linewidth=0.6) +
+  facet_grid(rows=vars(n_items), cols=vars(occasions_drawn), labeller = labeller(n_items = function(x) paste0(x, " items"))) +
+  my_theme +
+  theme(legend.position = "none") +
+  ylab("Difference in ICC.z from Benchmark") +
+  xlab("Number of Measurement Occasions") +
+  expand_limits(x = 70) 
+
+diff_plot.z
+
+ggsave("plots/person_specific_diff.z_plot.pdf",plot = diff_plot.z, device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/person_specific_diff.z_plot.svg",plot = diff_plot.z, device="svg", height = 148, width = 210, unit="mm")
+
+tiff("plots/person_specific_diff.z_plot.tiff", units="mm", width=210, height=148, res=1200)
+diff_plot.z
+dev.off()
+
+rm(diff_plot.z, long.z, person_diff_agg.z)
 
 
 
@@ -36,42 +110,11 @@ cor.z <- agg[["cor_ICC.z"]][["agg_res"]]
 
 
 ## DIFFERENCE IN ICC
-# for difference in ICC, do NOT report minimum of MEAN difference across replications
-# but the minimum difference on person level -> i.e., minimum of minimum difference, mean of
-# mean difference, and maximum of maximum difference
-# -> merge relevant data
-
-# read data
-sub1 <- agg[["min_diff_ICC"]][["agg_res"]]
-sub2 <- agg[["mean_diff_ICC"]][["agg_res"]]  
-sub3 <- agg[["max_diff_ICC"]][["agg_res"]]
-
-# subset
-sub1 <- sub1[ , c("occasions_drawn", "n_occasions", "n_items", "min_diff_ICC_min")]
-sub2 <- sub2[ , c("occasions_drawn", "n_occasions", "n_items", "mean_diff_ICC_mean")]
-sub3 <- sub3[ , c("occasions_drawn", "n_occasions", "n_items", "max_diff_ICC_max")]
-
-diff <- merge(sub1, sub2, by = c("occasions_drawn", "n_occasions", "n_items"))
-diff <- merge(diff, sub3, by = c("occasions_drawn", "n_occasions", "n_items"))
-
-rm(sub1,sub2,sub3)
-
+# for ICC
+diff <- agg[["person_diff"]][["agg_res"]]
 
 # for ICC.z
-# read data
-sub1 <- agg[["min_diff_ICC.z"]][["agg_res"]]
-sub2 <- agg[["mean_diff_ICC.z"]][["agg_res"]]  
-sub3 <- agg[["max_diff_ICC.z"]][["agg_res"]]
-
-# subset
-sub1 <- sub1[ , c("occasions_drawn", "n_occasions", "n_items", "min_diff_ICC.z_min")]
-sub2 <- sub2[ , c("occasions_drawn", "n_occasions", "n_items", "mean_diff_ICC.z_mean")]
-sub3 <- sub3[ , c("occasions_drawn", "n_occasions", "n_items", "max_diff_ICC.z_max")]
-
-diff.z <- merge(sub1, sub2, by = c("occasions_drawn", "n_occasions", "n_items"))
-diff.z <- merge(diff.z, sub3, by = c("occasions_drawn", "n_occasions", "n_items"))
-
-rm(sub1,sub2,sub3)
+diff.z <- agg[["person_diff.z"]][["agg_res"]]
 
 
 
@@ -130,8 +173,8 @@ data_list <- list(cor = cor,
 # define the y label for each outcome plot
 ylabels <- list("Correlation with Benchmark",
                 "Correlation with Benchmark (ICC.z)",
-             "Difference in ICCs to Benchmkark",
-             "Difference in ICCs to Benchmkark (ICC.z)",
+             "Difference in ICCs to Benchmark",
+             "Difference in ICCs to Benchmark (ICC.z)",
              "RMSE",
              "RMSE (ICC.z)",
              "SD of ICCs",
@@ -149,10 +192,10 @@ names(ylabels) <- names(data_list)
 # max(cor$cor_ICC_max)
 # min(cor.z$cor_ICC.z_min)
 # max(cor.z$cor_ICC.z_max)
-# min(diff$min_diff_ICC_min)
-# max(diff$max_diff_ICC_max)
-# min(diff.z$min_diff_ICC.z_min)
-# max(diff.z$max_diff_ICC.z_max)
+# min(diff$difference_min)
+# max(diff$difference_max)
+# min(diff.z$difference.z_min)
+# max(diff.z$difference.z_max)
 # min(rmse$RMSE_min)
 # max(rmse$RMSE_max)
 # min(rmse.z$RMSE.z_min)
@@ -180,7 +223,7 @@ ylim_list <- list(
   c(0, 1), # correlation with benchmark
   c(0, 1), # correlation with benchmark (ICC.z)
   c(-1, 1), # difference in ICCs (compared to benchmark)
-  c(-2.3, 1.7), # difference in ICCs (compared to benchmark) for ICC.z
+  c(-1.6, 0.8), # difference in ICCs (compared to benchmark) for ICC.z
   c(0, 0.6), # RMSE
   c(0, 1.5), # RMSE (ICC.z)
   c(0, 0.2), # SD of ICCs
@@ -281,7 +324,7 @@ a <- plot_list[["cor"]] + theme(axis.title.y = element_blank(), axis.title.x = e
 b <- plot_list[["diff"]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                  plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
                                  axis.text.y = element_text(hjust=1),
-                                 axis.text = element_text(size=10)) + ggtitle("(B) Difference to Benchmark") + force_panelsizes(rows=1, cols = c(1,1))
+                                 axis.text = element_text(size=10)) + ggtitle("(B) Difference from Benchmark") + force_panelsizes(rows=1, cols = c(1,1))
 # b
 c <- plot_list[["rmse"]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                  plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
@@ -308,25 +351,14 @@ f <- plot_list[["percnegICC"]] + theme(axis.title.y = element_blank(), axis.titl
                                     plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
                                     axis.text.y = element_text(hjust=1),
                                     axis.text = element_text(size=10)) + ggtitle("(F) Proportion of Negative ICCs")+ force_panelsizes(rows=1, cols = c(1,1))
-# 
-# legend <- ggpubr::get_legend(a)  # extract legend
-# plots <- list(a + theme(legend.position="none"),
-#               b + theme(legend.position="none"),
-#               c + theme(legend.position="none"),
-#               d + theme(legend.position="none"),
-#               e + theme(legend.position="none"),
-#               f + theme(legend.position="none"))
-# 
-# combined <- cowplot::plot_grid(plotlist = plots, ncol = 3)
-# final <- cowplot::plot_grid(legend, combined, ncol = 1, rel_heights = c(0.1, 1))
-# final
+
 
 combined <- ggpubr::ggarrange(a,b,c,d,e,f , ncol=3, nrow=2, common.legend = TRUE, legend="top",
                               align = "hv", widths = c(1,1,1), heights = c(1, 1)) # equal panel sizes
 
 
 combined <- annotate_figure(combined,
-                            bottom = text_grob("Number of Occasions", size = 12))
+                            bottom = text_grob("Number of Measurement Occasions", size = 12))
 
 combined
 
@@ -354,7 +386,7 @@ a <- plot_list[["cor.z"]] + theme(axis.title.y = element_blank(), axis.title.x =
 # a
 b <- plot_list[["diff.z"]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                  plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                 axis.text = element_text(size=10)) + ggtitle("(B) Difference to Benchmark")
+                                 axis.text = element_text(size=10)) + ggtitle("(B) Difference from Benchmark")
 # b
 c <- plot_list[["rmse.z"]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                  plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
@@ -381,7 +413,7 @@ combined <- ggpubr::ggarrange(a,b,c,d,e,f , ncol=3, nrow=2, common.legend = TRUE
 
 
 combined <- annotate_figure(combined,
-                            bottom = text_grob("Number of Occasions", size = 12))
+                            bottom = text_grob("Number of Measurement Occasions", size = 12))
 
 combined
 
@@ -460,7 +492,7 @@ a <- plot_list_split[["cor"]][[1]] + theme(axis.title.y = element_blank(), axis.
 # a
 b <- plot_list_split[["diff"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                    plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                   axis.text = element_text(size=10)) + ggtitle("Difference to Benchmark")
+                                   axis.text = element_text(size=10)) + ggtitle("Difference from Benchmark")
 # b
 c <- plot_list_split[["rmse"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                    plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
@@ -490,7 +522,7 @@ panel_random <- ggpubr::ggarrange(a,b,c,d,e,f , ncol=3, nrow=2, common.legend = 
 # 
 panel_random <- annotate_figure(panel_random,
                                 top = text_grob("Occasions drawn randomly", face="bold"),
-                                bottom = text_grob("Number of occasions"))
+                                bottom = text_grob("Number of measurement occasions"))
 
 panel_random
 
@@ -506,7 +538,7 @@ a <- plot_list_split[["cor"]][[2]] + theme(axis.title.y = element_blank(), axis.
 # a
 b <- plot_list_split[["diff"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                             plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                            axis.text = element_text(size=10)) + ggtitle("Difference to Benchmark")
+                                            axis.text = element_text(size=10)) + ggtitle("Difference from Benchmark")
 # b
 c <- plot_list_split[["rmse"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                             plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
@@ -536,7 +568,7 @@ panel_order <- ggpubr::ggarrange(a,b,c,d,e,f , ncol=3, nrow=2, common.legend=TRU
 
 panel_order <- annotate_figure(panel_order,
                                top = text_grob("Occasions drawn by order", face="bold"),
-                               bottom = text_grob("Number of occasions"))
+                               bottom = text_grob("Number of measurement occasions"))
 
 panel_order
 
@@ -579,7 +611,7 @@ a <- plot_list_split[["cor.z"]][[1]] + theme(axis.title.y = element_blank(), axi
 # a
 b <- plot_list_split[["diff.z"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                             plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                            axis.text = element_text(size=10)) + ggtitle("Difference to Benchmark")
+                                            axis.text = element_text(size=10)) + ggtitle("Difference from Benchmark")
 # b
 c <- plot_list_split[["rmse.z"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                             plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
@@ -609,7 +641,7 @@ panel_random <- ggpubr::ggarrange(a,b,c,d,e,f , ncol=3, nrow=2, common.legend = 
 # 
 panel_random <- annotate_figure(panel_random,
                                 top = text_grob("Occasions drawn randomly", face="bold"),
-                                bottom = text_grob("Number of occasions"))
+                                bottom = text_grob("Number of measurement occasions"))
 
 panel_random
 
@@ -625,7 +657,7 @@ a <- plot_list_split[["cor.z"]][[2]] + theme(axis.title.y = element_blank(), axi
 # a
 b <- plot_list_split[["diff.z"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                             plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                            axis.text = element_text(size=10)) + ggtitle("Difference to Benchmark")
+                                            axis.text = element_text(size=10)) + ggtitle("Difference from Benchmark")
 # b
 c <- plot_list_split[["rmse.z"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                             plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
@@ -655,7 +687,7 @@ panel_order <- ggpubr::ggarrange(a,b,c,d,e,f , ncol=3, nrow=2, common.legend=TRU
 
 panel_order <- annotate_figure(panel_order,
                                top = text_grob("Occasions drawn by order", face="bold"),
-                               bottom = text_grob("Number of occasions"))
+                               bottom = text_grob("Number of measurement occasions"))
 
 panel_order
 
@@ -746,7 +778,7 @@ a <- plot_list_split_col[["cor"]][[1]] + theme(axis.title.y = element_blank(), a
 # a
 b <- plot_list_split_col[["diff"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                             plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                            axis.text = element_text(size=10)) + ggtitle("Difference to Benchmark")
+                                            axis.text = element_text(size=10)) + ggtitle("Difference from Benchmark")
 # b
 c <- plot_list_split_col[["rmse"]][[1]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                             plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
@@ -776,7 +808,7 @@ panel_random <- ggpubr::ggarrange(a,b,c,d,e,f , ncol=3, nrow=2, common.legend = 
 # 
 panel_random <- annotate_figure(panel_random,
                                 top = text_grob("Occasions drawn randomly", face="bold"),
-                                bottom = text_grob("Number of occasions"))
+                                bottom = text_grob("Number of measurement occasions"))
 
 panel_random
 
@@ -792,7 +824,7 @@ a <- plot_list_split_col[["cor"]][[2]] + theme(axis.title.y = element_blank(), a
 # a
 b <- plot_list_split_col[["diff"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                             plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
-                                            axis.text = element_text(size=10)) + ggtitle("Difference to Benchmark")
+                                            axis.text = element_text(size=10)) + ggtitle("Difference from Benchmark")
 # b
 c <- plot_list_split_col[["rmse"]][[2]] + theme(axis.title.y = element_blank(), axis.title.x = element_blank(),
                                             plot.title = element_text(size=12), plot.margin=margin(t=5,r=5,b=10,l=5),
@@ -822,7 +854,7 @@ panel_order <- ggpubr::ggarrange(a,b,c,d,e,f , ncol=3, nrow=2, common.legend=TRU
 
 panel_order <- annotate_figure(panel_order,
                                top = text_grob("Occasions drawn by order", face="bold"),
-                               bottom = text_grob("Number of occasions"))
+                               bottom = text_grob("Number of measurement occasions"))
 
 panel_order
 
@@ -905,6 +937,85 @@ write.csv(all_agg_results, "results/results_table_Z-transformed.csv", row.names 
 
 # Check Sufficient Nr of Iterations ---------------------------------------
 
+rm(list=ls())
+
+source("functions/function_plot_outcomes.R")
+
+
+
+# Person-Level Difference Plot
+
+## for ICC
+load("results/check nr of iterations/person_level_difference_aggregated_all_participants.rda")
+
+# plot
+# reshape data
+long2 <- person_diff_agg2 %>%
+  pivot_longer(
+    cols = starts_with("person_difference_"),   
+    names_to = "participant",
+    values_to = "person_difference"
+  )
+
+
+
+diff_plot2 <- ggplot(long2, aes(x = n_occasions, y = person_difference, group = participant)) +
+  geom_line(alpha = 0.4, aes(col=participant), linewidth=0.6) +
+  facet_grid(rows=vars(n_items), cols=vars(occasions_drawn), labeller = labeller(n_items = function(x) paste0(x, " items"))) +
+  my_theme +
+  theme(legend.position = "none") +
+  ylab("Difference in ICC from Benchmark") +
+  xlab("Number of Measurement Occasions") +
+  expand_limits(x = 70) 
+
+diff_plot2
+
+ggsave("plots/check nr of iterations/person_specific_diff_plot.pdf",plot = diff_plot2, device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/check nr of iterations/person_specific_diff_plot.svg",plot = diff_plot2, device="svg", height = 148, width = 210, unit="mm")
+
+tiff("plots/check nr of iterations/person_specific_diff_plot.tiff", units="mm", width=210, height=148, res=1200)
+diff_plot2
+dev.off()
+
+rm(diff_plot2, long2, person_diff_agg2)
+
+
+## for ICC.z
+load("results/check nr of iterations/person_level_difference.z_aggregated_all_participants.rda")
+
+# plot
+# reshape data
+long.z2 <- person_diff_agg.z2 %>%
+  pivot_longer(
+    cols = starts_with("person_difference.z_"),   
+    names_to = "participant",
+    values_to = "person_difference.z"
+  )
+
+
+
+diff_plot.z2 <- ggplot(long.z2, aes(x = n_occasions, y = person_difference.z, group = participant)) +
+  geom_line(alpha = 0.4, aes(col=participant), linewidth=0.6) +
+  facet_grid(rows=vars(n_items), cols=vars(occasions_drawn), labeller = labeller(n_items = function(x) paste0(x, " items"))) +
+  my_theme +
+  theme(legend.position = "none") +
+  ylab("Difference in ICC.z from Benchmark") +
+  xlab("Number of Measurement Occasions") +
+  expand_limits(x = 70) 
+
+diff_plot.z2
+
+ggsave("plots/check nr of iterations/person_specific_diff.z_plot.pdf",plot = diff_plot.z2, device="pdf", height = 148, width = 210, unit="mm")
+ggsave("plots/check nr of iterations/person_specific_diff.z_plot.svg",plot = diff_plot.z2, device="svg", height = 148, width = 210, unit="mm")
+
+tiff("plots/check nr of iterations/person_specific_diff.z_plot.tiff", units="mm", width=210, height=148, res=1200)
+diff_plot.z2
+dev.off()
+
+rm(diff_plot.z2, long.z2, person_diff_agg.z2)
+
+
+
 
 
 # Load Aggregated Results Data 
@@ -919,42 +1030,11 @@ cor.z <- agg2[["cor_ICC.z"]][["agg_res"]]
 
 
 ## DIFFERENCE IN ICC
-# for difference in ICC, do NOT report minimum of MEAN difference across replications
-# but the minimum difference on person level -> i.e., minimum of minimum difference, mean of
-# mean difference, and maximum of maximum difference
-# -> merge relevant data
-
-# read data
-sub1 <- agg2[["min_diff_ICC"]][["agg_res"]]
-sub2 <- agg2[["mean_diff_ICC"]][["agg_res"]]  
-sub3 <- agg2[["max_diff_ICC"]][["agg_res"]]
-
-# subset
-sub1 <- sub1[ , c("occasions_drawn", "n_occasions", "n_items", "min_diff_ICC_min")]
-sub2 <- sub2[ , c("occasions_drawn", "n_occasions", "n_items", "mean_diff_ICC_mean")]
-sub3 <- sub3[ , c("occasions_drawn", "n_occasions", "n_items", "max_diff_ICC_max")]
-
-diff <- merge(sub1, sub2, by = c("occasions_drawn", "n_occasions", "n_items"))
-diff <- merge(diff, sub3, by = c("occasions_drawn", "n_occasions", "n_items"))
-
-rm(sub1,sub2,sub3)
-
+# for ICC
+diff <- agg2[["person_diff"]][["agg_res"]]
 
 # for ICC.z
-# read data
-sub1 <- agg2[["min_diff_ICC.z"]][["agg_res"]]
-sub2 <- agg2[["mean_diff_ICC.z"]][["agg_res"]]  
-sub3 <- agg2[["max_diff_ICC.z"]][["agg_res"]]
-
-# subset
-sub1 <- sub1[ , c("occasions_drawn", "n_occasions", "n_items", "min_diff_ICC.z_min")]
-sub2 <- sub2[ , c("occasions_drawn", "n_occasions", "n_items", "mean_diff_ICC.z_mean")]
-sub3 <- sub3[ , c("occasions_drawn", "n_occasions", "n_items", "max_diff_ICC.z_max")]
-
-diff.z <- merge(sub1, sub2, by = c("occasions_drawn", "n_occasions", "n_items"))
-diff.z <- merge(diff.z, sub3, by = c("occasions_drawn", "n_occasions", "n_items"))
-
-rm(sub1,sub2,sub3)
+diff.z <- agg2[["person_diff.z"]][["agg_res"]]
 
 
 
@@ -1013,8 +1093,8 @@ data_list <- list(cor = cor,
 # define the y label for each outcome plot
 ylabels <- list("Correlation with Benchmark",
                 "Correlation with Benchmark (ICC.z)",
-                "Difference in ICCs to Benchmkark",
-                "Difference in ICCs to Benchmkark (ICC.z)",
+                "Difference in ICCs to Benchmark",
+                "Difference in ICCs to Benchmark (ICC.z)",
                 "RMSE",
                 "RMSE (ICC.z)",
                 "SD of ICCs",
@@ -1032,10 +1112,10 @@ names(ylabels) <- names(data_list)
 # max(cor$cor_ICC_max)
 # min(cor.z$cor_ICC.z_min)
 # max(cor.z$cor_ICC.z_max)
-# min(diff$min_diff_ICC_min)
-# max(diff$max_diff_ICC_max)
-# min(diff.z$min_diff_ICC.z_min)
-# max(diff.z$max_diff_ICC.z_max)
+# min(diff$difference_min)
+# max(diff$difference_max)
+# min(diff.z$difference.z_min)
+# max(diff.z$difference.z_max)
 # min(rmse$RMSE_min)
 # max(rmse$RMSE_max)
 # min(rmse.z$RMSE.z_min)
@@ -1063,7 +1143,7 @@ ylim_list <- list(
   c(0, 1), # correlation with benchmark
   c(0, 1), # correlation with benchmark (ICC.z)
   c(-1, 1), # difference in ICCs (compared to benchmark)
-  c(-2.2, 1.7), # difference in ICCs (compared to benchmark) for ICC.z
+  c(-1.6, 0.8), # difference in ICCs (compared to benchmark) for ICC.z
   c(0, 0.6), # RMSE
   c(0, 1.5), # RMSE (ICC.z)
   c(0, 0.2), # SD of ICCs
@@ -1150,12 +1230,16 @@ sessionInfo()
 # [1] stats     graphics  grDevices utils     datasets  methods   base     
 # 
 # other attached packages:
-# [1] ggpubr_0.6.1      ggh4x_0.3.1       scales_1.4.0      viridis_0.6.5     viridisLite_0.4.2 ggplot2_3.5.2    
+#  [1] ggpubr_0.6.1      ggh4x_0.3.1       scales_1.4.0      viridis_0.6.5     viridisLite_0.4.2 lubridate_1.9.4  
+#  [7] forcats_1.0.0     stringr_1.5.1     dplyr_1.1.4       purrr_1.1.0       readr_2.1.5       tidyr_1.3.1      
+# [13] tibble_3.3.0      ggplot2_3.5.2     tidyverse_2.0.0  
 # 
 # loaded via a namespace (and not attached):
-#  [1] vctrs_0.6.5        cli_3.6.5          rlang_1.1.6        Formula_1.2-5      cowplot_1.2.0      purrr_1.1.0       
-#  [7] car_3.1-3          generics_0.1.4     glue_1.8.0         backports_1.5.0    gridExtra_2.3      grid_4.5.1        
-# [13] abind_1.4-8        carData_3.0-5      tibble_3.3.0       rstatix_0.7.2      lifecycle_1.0.4    ggsignif_0.6.4    
-# [19] compiler_4.5.1     dplyr_1.1.4        RColorBrewer_1.1-3 pkgconfig_2.0.3    tidyr_1.3.1        rstudioapi_0.17.1 
-# [25] farver_2.1.2       R6_2.6.1           tidyselect_1.2.1   pillar_1.11.0      magrittr_2.0.3     tools_4.5.1       
-# [31] withr_3.0.2        gtable_0.3.6       broom_1.0.9     
+#  [1] generics_0.1.4     rstatix_0.7.2      stringi_1.8.7      hms_1.1.3          magrittr_2.0.3    
+#  [6] grid_4.5.1         timechange_0.3.0   RColorBrewer_1.1-3 backports_1.5.0    Formula_1.2-5     
+# [11] gridExtra_2.3      textshaping_1.0.1  abind_1.4-8        cli_3.6.5          rlang_1.1.6       
+# [16] cowplot_1.2.0      withr_3.0.2        tools_4.5.1        tzdb_0.5.0         ggsignif_0.6.4    
+# [21] broom_1.0.9        vctrs_0.6.5        R6_2.6.1           lifecycle_1.0.4    car_3.1-3         
+# [26] ragg_1.4.0         pkgconfig_2.0.3    pillar_1.11.0      gtable_0.3.6       glue_1.8.0        
+# [31] systemfonts_1.2.3  tidyselect_1.2.1   rstudioapi_0.17.1  farver_2.1.2       carData_3.0-5     
+# [36] svglite_2.2.1      labeling_0.4.3     compiler_4.5.1   

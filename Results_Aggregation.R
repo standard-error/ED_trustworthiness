@@ -39,136 +39,6 @@ rm(redraw)
 
 
 
-# Determine Which Participants Deviate Most from Benchmark ----------------
-
-## for ICC
-length(unique(res$id_min_diff_ICC)) # 98 different participants differed most (in negative direction)
-# in at least one replication
-
-length(unique(res$id_max_diff_ICC)) # 105 different participants differed most (in negative direction)
-# in at least one replication
-
-table(res$id_min_diff_ICC) # some differed most in only few replications, some differed most in >40,000 replications
-
-table(res$id_max_diff_ICC) # some differed most in only few replications, some differed most in >20,000 replications
-
-
-# find replication with maximum deviation for each condition -> determine corresponding person
-## i.e., find the participants who correspond to most extreme deviation across all replications per condition
-# negative deviations
-diff_min <- do.call(data.frame,
-                aggregate(min_diff_ICC ~ occasions_drawn + n_occasions + n_items,
-                  data=res,
-                  FUN = function(x) {
-                    min(x)
-                  })
-)
-
-# now merge minimum with corresponding replication and ID variable
-diff_min <- merge(diff_min, res[ , c("occasions_drawn", "n_occasions", "n_items", "min_diff_ICC", "n_iteration", "id_min_diff_ICC")], by=c("occasions_drawn", "n_occasions", "n_items", "min_diff_ICC"), all.y=FALSE)
-
-
-colnames(diff_min) <- c("occasions_drawn", "n_occasions", "n_items", "min_diff_ICC_across_repl", "n_iteration", "id_min_diff_ICC_across_repl")
-
-table(diff_min$id_min_diff_ICC_across_repl) # in most conditions, participant 210 has the most extreme negative deviation across replications 
-
-
-## positive deviations
-diff_max <- do.call(data.frame,
-                    aggregate(max_diff_ICC ~ occasions_drawn + n_occasions + n_items,
-                              data=res,
-                              FUN = function(x) {
-                                max(x)
-                              })
-)
-
-# now merge maximum with corresponding replication and ID variable
-diff_max <- merge(diff_max, res[ , c("occasions_drawn", "n_occasions", "n_items", "max_diff_ICC", "n_iteration", "id_max_diff_ICC")], by=c("occasions_drawn", "n_occasions", "n_items", "max_diff_ICC"), all.y=FALSE)
-
-
-colnames(diff_max) <- c("occasions_drawn", "n_occasions", "n_items", "max_diff_ICC_across_repl", "n_iteration", "id_max_diff_ICC_across_repl")
-
-table(diff_max$id_max_diff_ICC_across_repl) # in most conditions, participant 198 (random) and 114 (ordered) have the most extreme positive deviation across replications
-
-
-
-
-
-## for ICC.z
-length(unique(res$id_min_diff_ICC.z)) # 106 different participants differed most (in negative direction)
-# in at least one replication
-
-length(unique(res$id_max_diff_ICC.z)) # 109 different participants differed most (in negative direction)
-# in at least one replication
-
-# find replication with maximum deviation for each condition -> determine corresponding person
-## i.e., find the participants who correspond to most extreme deviation across all replications per condition
-# negative deviations
-diff_min.z <- do.call(data.frame,
-                    aggregate(min_diff_ICC.z ~ occasions_drawn + n_occasions + n_items,
-                              data=res,
-                              FUN = function(x) {
-                                min(x)
-                              })
-)
-
-# now merge minimum with corresponding replication and ID variable
-diff_min.z <- merge(diff_min.z, res[ , c("occasions_drawn", "n_occasions", "n_items", "min_diff_ICC.z", "n_iteration", "id_min_diff_ICC.z")], by=c("occasions_drawn", "n_occasions", "n_items", "min_diff_ICC.z"), all.y=FALSE)
-
-
-colnames(diff_min.z) <- c("occasions_drawn", "n_occasions", "n_items", "min_diff_ICC.z_across_repl", "n_iteration", "id_min_diff_ICC.z_across_repl")
-
-table(diff_min.z$id_min_diff_ICC.z_across_repl) # in most conditions, participant 210 has the most extreme negative deviation across replications 
-
-
-## positive deviations
-diff_max.z <- do.call(data.frame,
-                    aggregate(max_diff_ICC.z ~ occasions_drawn + n_occasions + n_items,
-                              data=res,
-                              FUN = function(x) {
-                                max(x)
-                              })
-)
-
-# now merge maximum with corresponding replication and ID variable
-diff_max.z <- merge(diff_max.z, res[ , c("occasions_drawn", "n_occasions", "n_items", "max_diff_ICC.z", "n_iteration", "id_max_diff_ICC.z")], by=c("occasions_drawn", "n_occasions", "n_items", "max_diff_ICC.z"), all.y=FALSE)
-
-
-colnames(diff_max.z) <- c("occasions_drawn", "n_occasions", "n_items", "max_diff_ICC.z_across_repl", "n_iteration", "id_max_diff_ICC.z_across_repl")
-
-table(diff_max.z$id_max_diff_ICC.z_across_repl) # in most conditions, participant 198 (random) and 114 (ordered) have the most extreme positive deviation across replications
-
-
-# drop n_iteration from each result data frame
-diff_min$n_iteration <- NULL
-diff_max$n_iteration <- NULL
-diff_min.z$n_iteration <- NULL
-diff_max.z$n_iteration <- NULL
-
-## merge all results
-diff_min_max_ids <- merge(diff_min, diff_max, by=c("occasions_drawn", "n_occasions", "n_items"))
-diff_min_max_ids <- merge(diff_min_max_ids, diff_min.z, by=c("occasions_drawn", "n_occasions", "n_items"))
-diff_min_max_ids <- merge(diff_min_max_ids, diff_max.z, by=c("occasions_drawn", "n_occasions", "n_items"))
-
-# save results
-save(diff_min_max_ids, file="results/min_max_person_level_difference_and_id_per_condition_across_replications.rda")
-
-
-table(diff_min_max_ids$id_min_diff_ICC_across_repl)
-table(diff_min_max_ids$id_max_diff_ICC_across_repl)
-
-table(diff_min_max_ids$id_min_diff_ICC.z_across_repl)
-table(diff_min_max_ids$id_max_diff_ICC.z_across_repl)
-
-# for random draws only
-sub <- diff_min_max_ids[diff_min_max_ids$occasions_drawn == "random", ]
-
-table(sub$id_min_diff_ICC_across_repl)
-table(sub$id_max_diff_ICC_across_repl)
-
-table(sub$id_min_diff_ICC.z_across_repl)
-table(sub$id_max_diff_ICC.z_across_repl)
-
 
 # Calculate %negICC -------------------------------------------------------
 # calculate proportion of negative ICCs
@@ -176,30 +46,249 @@ res$percnegICC <- res$negICC / 109 # divide by total number of participants
 
 
 
+
+# Extract Person-Level ICC Estimates --------------------------------------
+# '' For ICCs -------------------------------------------------------------
+# extract person-level differences for each replication and each condition per participant
+person_level_ICC_estimates <- data.frame(matrix(nrow=90021, ncol=112))
+person_level_ICC_estimates [ , 1:3] <- res[ , 2:4]
+names(person_level_ICC_estimates ) <- c("n_occasions", "occasions_drawn", "n_items", paste0("person_ICC_", 1:109))
+
+ICC_matrix <- do.call(rbind, res$person_estimates_ICC) # extract the 109 person_estimates_ICC values per row (replication) and bind them
+# -> matrix of 109 participants (columns) and their values in each replication (rows)
+
+# bind with part_dat
+person_level_ICC_estimates [ , 4:112] <- ICC_matrix
+
+
+# save
+save(person_level_ICC_estimates , file="results/person_level_ICC_per_replication.rda")
+
+
+
+# '' For ICC.z ------------------------------------------------------------
+# extract person-level differences for each replication and each condition per participant
+person_level_ICC.z_estimates  <- data.frame(matrix(nrow=90021, ncol=112))
+person_level_ICC.z_estimates [ , 1:3] <- res[ , 2:4]
+names(person_level_ICC.z_estimates ) <- c("n_occasions", "occasions_drawn", "n_items", paste0("person_ICC.z_", 1:109))
+
+ICC.z_matrix <- do.call(rbind, res$person_estimates_ICC.z) # extract the 109 person_estimates_ICC.z values per row (replication) and bind them
+# -> matrix of 109 participants (columns) and their values in each replication (rows)
+
+# bind with part_dat
+person_level_ICC.z_estimates [ , 4:112] <- ICC.z_matrix
+
+
+# save
+save(person_level_ICC.z_estimates , file="results/person_level_ICC.z_per_replication.rda")
+
+
+
+
+
+
+
+
+# Calculate Person-Level Deviation ("Bias") Across Replications -----------
+
+
+# '' For ICCs -------------------------------------------------------------
+# extract person-level differences for each replication and each condition per participant
+person_level_diff <- data.frame(matrix(nrow=90021, ncol=112))
+person_level_diff[ , 1:3] <- res[ , 2:4]
+names(person_level_diff) <- c("n_occasions", "occasions_drawn", "n_items", paste0("person_diff_ICC_", 1:109))
+
+diff_matrix <- do.call(rbind, res$person_diff_ICC) # extract the 109 person_diff_ICC values per row (replication) and bind them
+# -> matrix of 109 participants (columns) and their values in each replication (rows)
+
+# bind with part_dat
+person_level_diff[ , 4:112] <- diff_matrix
+
+
+# save
+save(person_level_diff, file="results/person_level_difference_per_replication.rda")
+
+
+
+
+# '' For ICC.z ------------------------------------------------------------
+# extract person-level differences for each replication and each condition per participant
+person_level_diff.z <- data.frame(matrix(nrow=90021, ncol=112))
+person_level_diff.z[ , 1:3] <- res[ , 2:4]
+names(person_level_diff.z) <- c("n_occasions", "occasions_drawn", "n_items", paste0("person_diff_ICC.z_", 1:109))
+
+diff_matrix.z <- do.call(rbind, res$person_diff_ICC.z) # extract the 109 person_diff_ICC.z values per row (replication) and bind them
+# -> matrix of 109 participants (columns) and their values in each replication (rows)
+
+# bind with part_dat
+person_level_diff.z[ , 4:112] <- diff_matrix.z
+
+
+# save
+save(person_level_diff.z, file="results/person_level_difference.z_per_replication.rda")
+
+
+
+
+# '' Aggegrate Across Replications ----------------------------------------
+
+## for ICC
+vars <- paste0("person_diff_ICC_", 1:109)
+person_diff_agg <- aggregate(person_level_diff[ , vars],
+                             by = person_level_diff[ , c("occasions_drawn", "n_occasions", "n_items")],
+                             FUN = function(x) {
+                               mean(x)
+                             }) 
+
+names(person_diff_agg) <- c("occasions_drawn", "n_occasions", "n_items", paste0("person_difference_", 1:109))
+
+# save
+save(person_diff_agg, file="results/person_level_difference_aggregated_all_participants.rda")
+
+
+# plot
+# reshape data
+library(tidyverse)
+long <- person_diff_agg %>%
+  pivot_longer(
+    cols = starts_with("person_difference_"),   
+    names_to = "participant",
+    values_to = "person_difference"
+  )
+
+
+
+ggplot(long, aes(x = n_occasions, y = person_difference, group = participant)) +
+  geom_line(alpha = 0.3, aes(col=participant)) +
+  theme_minimal() + 
+  facet_grid(rows=vars(n_items), cols=vars(occasions_drawn)) +
+  theme(legend.position = "none")
+
+
+# calculate overall difference (mean difference across participants)
+person_diff_agg$difference_mean <- rowMeans(person_diff_agg[ , 4:112])
+person_diff_agg$difference_median <- apply(person_diff_agg[ ,4:112], 1, median, na.rm=T) 
+
+# View(person_diff_agg[ , c("occasions_drawn", "n_occasions", "n_items", "difference_mean")])
+
+ggplot(person_diff_agg, aes(x = n_occasions, y = difference_mean, group = n_items)) +
+  geom_line(aes(col=n_items)) +
+  theme_minimal() + 
+  facet_wrap(vars(occasions_drawn)) +
+  theme(legend.position = "none")
+
+ggplot(person_diff_agg, aes(x = n_occasions, y = difference_median, group = n_items)) +
+  geom_line(aes(col=n_items)) +
+  theme_minimal() + 
+  facet_wrap(vars(occasions_drawn)) +
+  theme(legend.position = "none")
+
+
+### for ICC.z
+vars <- paste0("person_diff_ICC.z_", 1:109)
+person_diff_agg.z <- aggregate(person_level_diff.z[ , vars],
+                             by = person_level_diff.z[ , c("occasions_drawn", "n_occasions", "n_items")],
+                             FUN = function(x) {
+                               mean(x)
+                             }) 
+
+names(person_diff_agg.z) <- c("occasions_drawn", "n_occasions", "n_items", paste0("person_difference.z_", 1:109))
+
+# save
+save(person_diff_agg.z, file="results/person_level_difference.z_aggregated_all_participants.rda")
+
+
+# plot
+# reshape data
+library(tidyverse)
+long <- person_diff_agg.z %>%
+  pivot_longer(
+    cols = starts_with("person_difference.z_"),   
+    names_to = "participant",
+    values_to = "person_difference.z"
+  )
+
+
+
+ggplot(long, aes(x = n_occasions, y = person_difference.z, group = participant)) +
+  geom_line(alpha = 0.3, aes(col=participant)) +
+  theme_minimal() + 
+  facet_grid(rows=vars(n_items), cols=vars(occasions_drawn)) +
+  theme(legend.position = "none")
+
+
+# calculate overall difference (mean difference across participants)
+person_diff_agg.z$difference.z_mean <- rowMeans(person_diff_agg.z[ , 4:112])
+person_diff_agg.z$difference.z_median <- apply(person_diff_agg.z[ ,4:112], 1, median, na.rm=T) 
+
+
+ggplot(person_diff_agg.z, aes(x = n_occasions, y = difference.z_mean, group = n_items)) +
+  geom_line(aes(col=n_items)) +
+  theme_minimal() + 
+  facet_wrap(vars(occasions_drawn)) +
+  theme(legend.position = "none")
+
+ggplot(person_diff_agg.z, aes(x = n_occasions, y = difference.z_median, group = n_items)) +
+  geom_line(aes(col=n_items)) +
+  theme_minimal() + 
+  facet_wrap(vars(occasions_drawn)) +
+  theme(legend.position = "none")
+
+
+
+
+
+
+# '' Aggregate Across Participants (for Plotting) -------------------------
+## for ICC
+# calculate overall difference (mean difference across participants)
+person_diff_agg$difference_mean <- rowMeans(person_diff_agg[ , 4:112])
+person_diff_agg$difference_median <- apply(person_diff_agg[ ,4:112], 1, median, na.rm=T) 
+
+# determine which participant deviates most
+person_diff_agg$difference_min_id <- apply(person_diff_agg[ ,4:112], 1, which.min)
+person_diff_agg$difference_max_id <- apply(person_diff_agg[ ,4:112], 1, which.max)
+
+# calculate min and max
+person_diff_agg$difference_min <- apply(person_diff_agg[ ,4:112], 1, min, na.rm=T)
+person_diff_agg$difference_max <- apply(person_diff_agg[ ,4:112], 1, max, na.rm=T)
+
+
+person_diff_agg <- person_diff_agg[ , c(1:3, 113:118)]
+
+
+## for ICC.z
+# calculate overall difference (mean difference across participants)
+person_diff_agg.z$difference.z_mean <- rowMeans(person_diff_agg.z[ , 4:112])
+person_diff_agg.z$difference.z_median <- apply(person_diff_agg.z[ ,4:112], 1, median, na.rm=T) 
+
+# determine which participant deviates most
+person_diff_agg.z$difference.z_min_id <- apply(person_diff_agg.z[ ,4:112], 1, which.min)
+person_diff_agg.z$difference.z_max_id <- apply(person_diff_agg.z[ ,4:112], 1, which.max)
+
+# calculate min and max
+person_diff_agg.z$difference.z_min <- apply(person_diff_agg.z[ ,4:112], 1, min, na.rm=T)
+person_diff_agg.z$difference.z_max <- apply(person_diff_agg.z[ ,4:112], 1, max, na.rm=T)
+
+
+
+person_diff_agg.z <- person_diff_agg.z[ , c(1:3, 113:118)]
+
+
+
 # Calcute RMSE for Each Participant Across Replications -------------------
 
 
 # '' For ICCs -------------------------------------------------------------
-# extract squared differences for each replication and each condition per participant
-part_dat <- data.frame(matrix(nrow=90021, ncol=112))
-part_dat[ , 1:3] <- res[ , 2:4]
-names(part_dat) <- c("n_occasions", "occasions_drawn", "n_items", paste0("sq_diff_ICC_", 1:109))
-
-sq_matrix <- do.call(rbind, res$sq_diff_ICC) # extract the 109 sq_diff_ICC values per row (replication) and bind them
-# -> matrix of 109 participants (columns) and their values in each replication (rows)
-
-# bind with part_dat
-part_dat[ , 4:112] <- sq_matrix
-
-
-# save
-save(part_dat, file="results/squared_errors_per_replication_and_participant.rda")
-
+# use person-level differences -> square
+person_level_diff_sq <- person_level_diff[ ,1:3]
+person_level_diff_sq[ , 4:112] <- (person_level_diff[ ,4:112])^2
+names(person_level_diff_sq)[4:112] <- paste0("sq_diff_ICC_", 1:109)
 
 ### aggregate
 
 # subset for random draws
-rd <- part_dat[part_dat$occasions_drawn == "random", ]
+rd <- person_level_diff_sq[person_level_diff_sq$occasions_drawn == "random", ]
 
 # storage
 RMSE_random <- as.data.frame(matrix(nrow=18, ncol=112))
@@ -221,7 +310,7 @@ names(RMSE_random)[4:112] <- c(paste0("RMSE_", 1:109))
 
 # repeat for ordered draws -> different number of replications (i.e., 1)
 # subset for ordered draws
-od <- part_dat[part_dat$occasions_drawn == "by order", ]
+od <- person_level_diff_sq[person_level_diff_sq$occasions_drawn == "by order", ]
 
 # storage
 RMSE_order <- as.data.frame(matrix(nrow=21, ncol=112))
@@ -270,28 +359,17 @@ RMSE <- RMSE[ , c(1:3, 113:115)]
 
 
 # '' For ICC.z ------------------------------------------------------------
-# extract squared differences for each replication and each condition per participant
-part_dat.z <- data.frame(matrix(nrow=90021, ncol=112))
-part_dat.z[ , 1:3] <- res[ , 2:4]
-names(part_dat.z) <- c("n_occasions", "occasions_drawn", "n_items", paste0("sq_diff_ICC.z_", 1:109))
-
-
-sq_matrix.z <- do.call(rbind, res$sq_diff_ICC.z) # extract the 109 sq_diff_ICC.z values per row (replication) and bind them
-# -> matrix of 109 participants (columns) and their values in each replication (rows)
-
-# bind with part_dat
-part_dat.z[ , 4:112] <- sq_matrix.z
-
-
-# save
-save(part_dat.z, file="results/squared_errors.z_per_replication_and_participant.rda")
+# use person-level differences -> square
+person_level_diff.z_sq <- person_level_diff.z[ ,1:3]
+person_level_diff.z_sq[ , 4:112] <- (person_level_diff.z[ ,4:112])^2
+names(person_level_diff.z_sq)[4:112] <- paste0("sq_diff_ICC.z_", 1:109)
 
 
 
 ### aggregate
 
 # subset for random draws
-rd.z <- part_dat.z[part_dat.z$occasions_drawn == "random", ]
+rd.z <- person_level_diff.z_sq[person_level_diff.z_sq$occasions_drawn == "random", ]
 
 # storage
 RMSE.z_random <- as.data.frame(matrix(nrow=18, ncol=112))
@@ -314,7 +392,7 @@ names(RMSE.z_random)[4:112] <- c(paste0("RMSE.z_", 1:109))
 
 # repeat for ordered draws -> different number of replications (i.e., 1)
 # subset for ordered draws
-od.z <- part_dat.z[part_dat.z$occasions_drawn == "by order", ]
+od.z <- person_level_diff.z_sq[person_level_diff.z_sq$occasions_drawn == "by order", ]
 
 # storage
 RMSE.z_order <- as.data.frame(matrix(nrow=21, ncol=112))
@@ -361,17 +439,13 @@ RMSE.z <- RMSE.z[ , c(1:3, 113:115)]
 
 # Aggregate Results -------------------------------------------------------
 agg <- aggregate_results(res,
-                         outcomes = c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC',
-                                      'N_valid_ICC.z',
-                                      'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z',
+                         outcomes = c('N_valid_ICC.z',
                                       'cor_ICC', 'cor_ICC.z',
                                       'rel', 'N_rel',
                                       'sd_ICC', 'sd_ICC.z',
                                       'negICC', 'percnegICC',
                                       'estimationProbNeg', 'estimationProbPos'),
-                         rel_outcomes = c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC',
-                                          'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z',
-                                          'cor_ICC', 'cor_ICC.z'),
+                         rel_outcomes = c('cor_ICC', 'cor_ICC.z'),
                          abs_outcomes = c('N_valid_ICC.z',
                                           'rel', 'N_rel',
                                           'sd_ICC', 'sd_ICC.z',
@@ -379,6 +453,18 @@ agg <- aggregate_results(res,
                                           'estimationProbNeg', 'estimationProbPos'),
                          groupwise = FALSE,
                          group_var = NULL)
+
+
+# merge difference to agg
+agg_res <- list(person_diff_agg)
+names(agg_res) <- "agg_res"
+agg$person_diff <- agg_res
+
+agg_res <- list(person_diff_agg.z)
+names(agg_res) <- "agg_res"
+agg$person_diff.z <- agg_res
+
+
 
 # merge RMSE to agg
 agg_res <- list(RMSE) # should be nested as other outcomes so that function works
@@ -408,7 +494,7 @@ save(agg, file = "results/aggregated_results.rda")
 rd <- res[which(res$occasions_drawn == "random"),]
 
 
-## for "bias" (i.e., difference in ICCs)
+## for average sample "bias" (i.e., average sample difference in ICCs)
 # -> "mean of generic statistic G"
 
 # calculate the overall across-replicate mean of the single-replicate mean difference
@@ -551,6 +637,84 @@ names(MCSE)
 
 
 
+# for person-level differences (person-level "bias")
+# for each participant, calculate sampling variance of differences ("bias") and mean of differences ("bias") (across replications per condition)
+# -> calculate MCSE per participant and condition
+# for formula, see Siepe et al. (2024), Table 3, formula for bias
+
+# MCSE = sqrt( s^2(estimates) / nsim )
+# sampling variance -> sampling variance of estimates (not difference!)
+
+## for ICCs
+# use data from random draws only
+person_level_ICC_estimates.rd <- person_level_ICC_estimates[which(person_level_ICC_estimates$occasions_drawn == "random"), ]
+
+
+# automize over participants
+MCSE_difference <- data.frame(matrix(ncol=111, nrow=18))
+names(MCSE_difference) <- c("n_occasions", "n_items", paste0("MCSE_difference_", 1:109))
+
+ICC_cols <- paste0("person_ICC_", 1:109)
+
+MCSE_difference[] <- aggregate(person_level_ICC_estimates.rd[ , ICC_cols],
+                         by = person_level_ICC_estimates.rd[ , c("n_occasions", "n_items")],
+                         FUN = function(x) {
+                           MCSE = sqrt( ( (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1) ) / 5000 )
+                         })
+
+
+
+# save
+save(MCSE_difference, file="results/MCSE_difference_per_participant.rda")
+
+
+# calculate mean, min, max per condition
+MCSE_difference$MCSE_difference_mean <- rowMeans(MCSE_difference[ , c(3:111)], na.rm=T)
+MCSE_difference$MCSE_difference_min <- apply(MCSE_difference[ , 3:111], 1, FUN = min, na.rm = TRUE)
+MCSE_difference$MCSE_difference_max <- apply(MCSE_difference[ , 3:111], 1, FUN = max, na.rm = TRUE)
+
+# add to MCSE object
+MCSE <- merge(MCSE, MCSE_difference[ , c("n_occasions", "n_items", "MCSE_difference_min", "MCSE_difference_mean", "MCSE_difference_max")],
+              by = c("n_occasions", "n_items"))
+
+
+
+
+## for ICC.z
+# use data from random draws only
+person_level_ICC.z_estimates.rd <- person_level_ICC.z_estimates[which(person_level_ICC.z_estimates$occasions_drawn == "random"), ]
+
+
+# automize over participants
+MCSE_difference.z <- data.frame(matrix(ncol=111, nrow=18))
+names(MCSE_difference.z) <- c("n_occasions", "n_items", paste0("MCSE_difference.z_", 1:109))
+
+ICC_cols <- paste0("person_ICC.z_", 1:109)
+
+MCSE_difference.z[] <- aggregate(person_level_ICC.z_estimates.rd[ , ICC_cols],
+                               by = person_level_ICC.z_estimates.rd[ , c("n_occasions", "n_items")],
+                               FUN = function(x) {
+                                 MCSE = sqrt( ( (sum( ( x - (sum(x)/5000 ) )^2 )) / (5000 - 1) ) / 5000 )
+                               })
+
+
+# save
+save(MCSE_difference.z, file="results/MCSE_difference.z_per_participant.rda")
+
+
+# calculate mean, min, max per condition
+MCSE_difference.z$MCSE_difference.z_mean <- rowMeans(MCSE_difference.z[ , c(3:111)], na.rm=T)
+MCSE_difference.z$MCSE_difference.z_min <- apply(MCSE_difference.z[ , 3:111], 1, FUN = min, na.rm = TRUE)
+MCSE_difference.z$MCSE_difference.z_max <- apply(MCSE_difference.z[ , 3:111], 1, FUN = max, na.rm = TRUE)
+
+# add to MCSE object
+MCSE <- merge(MCSE, MCSE_difference.z[ , c("n_occasions", "n_items", "MCSE_difference.z_min", "MCSE_difference.z_mean", "MCSE_difference.z_max")],
+              by = c("n_occasions", "n_items"))
+
+
+
+
+
 # for RMSE per participant
 # for each participant, calculate sampling variance of squared errors
 # and mean of squared errors (across replications per condition)
@@ -560,7 +724,8 @@ names(MCSE)
 # MSE hat = expected value for squared errors = mean of squared errors across replications
 
 # use data from random draws only
-part_dat.rd <- part_dat[which(part_dat$occasions_drawn == "random"), ]
+person_level_diff_sq.rd <- person_level_diff_sq[which(person_level_diff_sq$occasions_drawn == "random"), ]
+
 
 # # for one participant
 # MCSE_RMSE_part1 <- data.frame(matrix(ncol=3, nrow=18))
@@ -580,11 +745,12 @@ names(MCSE_RMSE) <- c("n_occasions", "n_items", paste0("MCSE_RMSE_", 1:109))
 
 sq_diff_cols <- paste0("sq_diff_ICC_", 1:109)
 
-MCSE_RMSE[] <- aggregate(part_dat.rd[ , sq_diff_cols],
-                  by = part_dat.rd[ , c("n_occasions", "n_items")],
+MCSE_RMSE[] <- aggregate(person_level_diff_sq.rd[ , sq_diff_cols],
+                  by = person_level_diff_sq.rd[ , c("n_occasions", "n_items")],
                   FUN = function(x) {
                     MCSE = sqrt( ( (sum( ( x - (sum(x)/5000) )^2 )) / (5000 - 1) ) / (4*5000*mean(x)))
                   })
+
 
 # save
 save(MCSE_RMSE, file="results/MCSE_RMSE_per_participant.rda")
@@ -603,15 +769,15 @@ MCSE <- merge(MCSE, MCSE_RMSE[ , c("n_occasions", "n_items", "MCSE_RMSE_min", "M
 
 
 ## for ICC.z
-part_dat.z.rd <- part_dat.z[which(part_dat.z$occasions_drawn == "random"), ]
+person_level_diff.z_sq.rd <- person_level_diff.z_sq[which(person_level_diff.z_sq$occasions_drawn == "random"), ]
 
 MCSE_RMSE.z <- data.frame(matrix(ncol=111, nrow=18))
 names(MCSE_RMSE.z) <- c("n_occasions", "n_items", paste0("MCSE_RMSE.z_", 1:109))
 
 sq_diff_cols <- paste0("sq_diff_ICC.z_", 1:109)
 
-MCSE_RMSE.z[] <- aggregate(part_dat.z.rd[ , sq_diff_cols],
-                           by = part_dat.z.rd[ , c("n_occasions", "n_items")],
+MCSE_RMSE.z[] <- aggregate(person_level_diff.z_sq.rd[ , sq_diff_cols],
+                           by = person_level_diff.z_sq.rd[ , c("n_occasions", "n_items")],
                            FUN = function(x) {
                              MCSE = sqrt( ( (sum( ( x - (sum(x)/5000) )^2 )) / (5000 - 1) ) / (4*5000*mean(x)))
                          })
@@ -661,77 +827,303 @@ load("results/check nr of iterations/sim_results.rda")
 res2$percnegICC <- res2$negICC / 109 # divide by total number of participants
 
 
-# Calcute RMSE for Each Participant Across Replications 
+# '' Determine Total Number of Redraws ------------------------------------
+# not saved with other results because it is not treated as evaluation criterion
+# -> information for Method section
+sum(res2$total_redraws)
+# zero
+table(res2$total_redraws)
+# all are zero
+redraw2 <- aggregate(total_redraws ~ occasions_drawn + n_occasions + n_items,
+                    data=res2, FUN = sum)
+# 1 in random draws, 14 occasions, 5 items
 
-# '' For ICCs 
-# extract squared differences for each replication and each condition per participant
-part_dat2 <- data.frame(matrix(nrow=90021, ncol=112))
-part_dat2[ , 1:3] <- res2[ , 2:4]
-names(part_dat2) <- c("n_occasions", "occasions_drawn", "n_items", paste0("sq_diff_ICC_", 1:109))
+rm(redraw2)
 
-sq_matrix2 <- do.call(rbind, res2$sq_diff_ICC) # extract the 109 sq_diff_ICC values per row (replication) and bind them
+# '' Extract Person-Level ICC Estimates -----------------------------------
+# '''' For ICCs -----------------------------------------------------------
+# extract person-level differences for each replication and each condition per participant
+person_level_ICC_estimates2 <- data.frame(matrix(nrow=90021, ncol=112))
+person_level_ICC_estimates2[ , 1:3] <- res2[ , 2:4]
+names(person_level_ICC_estimates2) <- c("n_occasions", "occasions_drawn", "n_items", paste0("person_ICC_", 1:109))
+
+ICC_matrix <- do.call(rbind, res2$person_estimates_ICC) # extract the 109 person_estimates_ICC values per row (replication) and bind them
 # -> matrix of 109 participants (columns) and their values in each replication (rows)
 
 # bind with part_dat
-part_dat2[ , 4:112] <- sq_matrix2
+person_level_ICC_estimates2[ , 4:112] <- ICC_matrix
 
 
 # save
-save(part_dat2, file="results/check nr of iterations/squared_errors_per_replication_and_participant.rda")
+save(person_level_ICC_estimates2, file="results/check nr of iterations/person_level_ICC_per_replication.rda")
 
+
+# '''' For ICC.z ----------------------------------------------------------
+# extract person-level differences for each replication and each condition per participant
+person_level_ICC.z_estimates2  <- data.frame(matrix(nrow=90021, ncol=112))
+person_level_ICC.z_estimates2[ , 1:3] <- res2[ , 2:4]
+names(person_level_ICC.z_estimates2) <- c("n_occasions", "occasions_drawn", "n_items", paste0("person_ICC.z_", 1:109))
+
+ICC.z_matrix <- do.call(rbind, res2$person_estimates_ICC.z) # extract the 109 person_estimates_ICC.z values per row (replication) and bind them
+# -> matrix of 109 participants (columns) and their values in each replication (rows)
+
+# bind with part_dat
+person_level_ICC.z_estimates2[ , 4:112] <- ICC.z_matrix
+
+
+# save
+save(person_level_ICC.z_estimates2, file="results/check nr of iterations/person_level_ICC.z_per_replication.rda")
+
+
+
+# '' Calculate Person-Level Deviation ("Bias") Across Replications --------
+
+
+# '''' For ICCs -----------------------------------------------------------
+# extract person-level differences for each replication and each condition per participant
+person_level_diff2 <- data.frame(matrix(nrow=90021, ncol=112))
+person_level_diff2[ , 1:3] <- res2[ , 2:4]
+names(person_level_diff2) <- c("n_occasions", "occasions_drawn", "n_items", paste0("person_diff_ICC_", 1:109))
+
+diff_matrix <- do.call(rbind, res2$person_diff_ICC) # extract the 109 person_diff_ICC values per row (replication) and bind them
+# -> matrix of 109 participants (columns) and their values in each replication (rows)
+
+# bind with part_dat
+person_level_diff2[ , 4:112] <- diff_matrix
+
+
+# save
+save(person_level_diff2, file="results/check nr of iterations/person_level_difference_per_replication.rda")
+
+
+
+# '''' For ICC.z ----------------------------------------------------------
+# extract person-level differences for each replication and each condition per participant
+person_level_diff.z2 <- data.frame(matrix(nrow=90021, ncol=112))
+person_level_diff.z2[ , 1:3] <- res2[ , 2:4]
+names(person_level_diff.z2) <- c("n_occasions", "occasions_drawn", "n_items", paste0("person_diff_ICC.z_", 1:109))
+
+diff_matrix.z <- do.call(rbind, res2$person_diff_ICC.z) # extract the 109 person_diff_ICC.z values per row (replication) and bind them
+# -> matrix of 109 participants (columns) and their values in each replication (rows)
+
+# bind with part_dat
+person_level_diff.z2[ , 4:112] <- diff_matrix.z
+
+
+# save
+save(person_level_diff.z2, file="results/check nr of iterations/person_level_difference.z_per_replication.rda")
+
+
+
+# '''' Aggegrate Across Replications --------------------------------------
+
+## for ICC
+vars <- paste0("person_diff_ICC_", 1:109)
+person_diff_agg2 <- aggregate(person_level_diff2[ , vars],
+                             by = person_level_diff2[ , c("occasions_drawn", "n_occasions", "n_items")],
+                             FUN = function(x) {
+                               mean(x)
+                             }) 
+
+names(person_diff_agg2) <- c("occasions_drawn", "n_occasions", "n_items", paste0("person_difference_", 1:109))
+
+# save
+save(person_diff_agg2, file="results/check nr of iterations/person_level_difference_aggregated_all_participants.rda")
+
+
+
+# plot
+# reshape data
+library(tidyverse)
+long2 <- person_diff_agg2 %>%
+  pivot_longer(
+    cols = starts_with("person_difference_"),   
+    names_to = "participant",
+    values_to = "person_difference"
+  )
+
+
+
+ggplot(long2, aes(x = n_occasions, y = person_difference, group = participant)) +
+  geom_line(alpha = 0.3, aes(col=participant)) +
+  theme_minimal() + 
+  facet_grid(rows=vars(n_items), cols=vars(occasions_drawn)) +
+  theme(legend.position = "none")
+
+
+# calculate overall difference (mean difference across participants)
+person_diff_agg2$difference_mean <- rowMeans(person_diff_agg2[ , 4:112])
+person_diff_agg2$difference_median <- apply(person_diff_agg2[ ,4:112], 1, median, na.rm=T) 
+
+# View(person_diff_agg2[ , c("occasions_drawn", "n_occasions", "n_items", "difference_mean")])
+
+ggplot(person_diff_agg2, aes(x = n_occasions, y = difference_mean, group = n_items)) +
+  geom_line(aes(col=n_items)) +
+  theme_minimal() + 
+  facet_wrap(vars(occasions_drawn)) +
+  theme(legend.position = "none")
+
+ggplot(person_diff_agg2, aes(x = n_occasions, y = difference_median, group = n_items)) +
+  geom_line(aes(col=n_items)) +
+  theme_minimal() + 
+  facet_wrap(vars(occasions_drawn)) +
+  theme(legend.position = "none")
+
+
+### for ICC.z
+vars <- paste0("person_diff_ICC.z_", 1:109)
+person_diff_agg.z2 <- aggregate(person_level_diff.z2[ , vars],
+                               by = person_level_diff.z2[ , c("occasions_drawn", "n_occasions", "n_items")],
+                               FUN = function(x) {
+                                 mean(x)
+                               }) 
+
+names(person_diff_agg.z2) <- c("occasions_drawn", "n_occasions", "n_items", paste0("person_difference.z_", 1:109))
+
+# save
+save(person_diff_agg.z2, file="results/check nr of iterations/person_level_difference.z_aggregated_all_participants.rda")
+
+
+# plot
+# reshape data
+library(tidyverse)
+long2 <- person_diff_agg.z2 %>%
+  pivot_longer(
+    cols = starts_with("person_difference.z_"),   
+    names_to = "participant",
+    values_to = "person_difference.z"
+  )
+
+
+
+ggplot(long2, aes(x = n_occasions, y = person_difference.z, group = participant)) +
+  geom_line(alpha = 0.3, aes(col=participant)) +
+  theme_minimal() + 
+  facet_grid(rows=vars(n_items), cols=vars(occasions_drawn)) +
+  theme(legend.position = "none")
+
+
+# calculate overall difference (mean difference across participants)
+person_diff_agg.z2$difference.z_mean <- rowMeans(person_diff_agg.z2[ , 4:112])
+person_diff_agg.z2$difference.z_median <- apply(person_diff_agg.z2[ ,4:112], 1, median, na.rm=T) 
+
+
+ggplot(person_diff_agg.z2, aes(x = n_occasions, y = difference.z_mean, group = n_items)) +
+  geom_line(aes(col=n_items)) +
+  theme_minimal() + 
+  facet_wrap(vars(occasions_drawn)) +
+  theme(legend.position = "none")
+
+ggplot(person_diff_agg.z2, aes(x = n_occasions, y = difference.z_median, group = n_items)) +
+  geom_line(aes(col=n_items)) +
+  theme_minimal() + 
+  facet_wrap(vars(occasions_drawn)) +
+  theme(legend.position = "none")
+
+
+# '' Aggregate Across Participants (for Plotting) -------------------------
+## for ICC
+# calculate overall difference (mean difference across participants)
+person_diff_agg2$difference_mean <- rowMeans(person_diff_agg2[ , 4:112])
+person_diff_agg2$difference_median <- apply(person_diff_agg2[ ,4:112], 1, median, na.rm=T) 
+
+# determine which participant deviates most
+person_diff_agg2$difference_min_id <- apply(person_diff_agg2[ ,4:112], 1, which.min)
+person_diff_agg2$difference_max_id <- apply(person_diff_agg2[ ,4:112], 1, which.max)
+
+# calculate min and max
+person_diff_agg2$difference_min <- apply(person_diff_agg2[ ,4:112], 1, min, na.rm=T)
+person_diff_agg2$difference_max <- apply(person_diff_agg2[ ,4:112], 1, max, na.rm=T)
+
+
+person_diff_agg2 <- person_diff_agg2[ , c(1:3, 113:118)]
+
+
+## for ICC.z
+# calculate overall difference (mean difference across participants)
+person_diff_agg.z2$difference.z_mean <- rowMeans(person_diff_agg.z2[ , 4:112])
+person_diff_agg.z2$difference.z_median <- apply(person_diff_agg.z2[ ,4:112], 1, median, na.rm=T) 
+
+# determine which participant deviates most
+person_diff_agg.z2$difference.z_min_id <- apply(person_diff_agg.z2[ ,4:112], 1, which.min)
+person_diff_agg.z2$difference.z_max_id <- apply(person_diff_agg.z2[ ,4:112], 1, which.max)
+
+
+# calculate min and max
+person_diff_agg.z2$difference.z_min <- apply(person_diff_agg.z2[ ,4:112], 1, min, na.rm=T)
+person_diff_agg.z2$difference.z_max <- apply(person_diff_agg.z2[ ,4:112], 1, max, na.rm=T)
+
+person_diff_agg.z2 <- person_diff_agg.z2[ , c(1:3, 113:118)]
+
+
+
+
+
+# '' Calcute RMSE for Each Participant Across Replications ----------------
+
+
+# '''' For ICCs -----------------------------------------------------------
+# use person-level differences -> square
+person_level_diff_sq2 <- person_level_diff2[ ,1:3]
+person_level_diff_sq2[ , 4:112] <- (person_level_diff2[ ,4:112])^2
+names(person_level_diff_sq2)[4:112] <- paste0("sq_diff_ICC_", 1:109)
 
 ### aggregate
 
 # subset for random draws
-rd2 <- part_dat2[part_dat2$occasions_drawn == "random", ]
+rd2 <- person_level_diff_sq2[person_level_diff_sq2$occasions_drawn == "random", ]
 
 # storage
-RMSE2_random <- as.data.frame(matrix(nrow=18, ncol=112))
-names(RMSE2_random)[1:3] <- c("occasions_drawn", "n_occasions", "n_items")
-names(RMSE2_random)[4:112] <- c(paste0("RMSE_", 1:109))
+RMSE_random2 <- as.data.frame(matrix(nrow=18, ncol=112))
+names(RMSE_random2)[1:3] <- c("occasions_drawn", "n_occasions", "n_items")
+names(RMSE_random2)[4:112] <- c(paste0("RMSE_", 1:109))
 
 
 # RMSE = sqrt(sum(sq_diff_ICC)/n_replication)
 sq_diff_cols <- paste0("sq_diff_ICC_", 1:109)
 
-RMSE2_random <- aggregate(rd2[ , sq_diff_cols], # for each participant-specific sq_diff column
-                          by = rd2[ , c("occasions_drawn", "n_occasions", "n_items")], # aggregate across conditions
-                          FUN = function(x) {
-                            sqrt(sum(x)/5000) # by taking square root of the the summed sq_diff divided by number of replications
-                         })
-names(RMSE2_random)[4:112] <- c(paste0("RMSE_", 1:109))
-
+RMSE_random2 <- aggregate(rd2[ , sq_diff_cols], # for each participant-specific sq_diff column
+                      by = rd2[ , c("occasions_drawn", "n_occasions", "n_items")], # aggregate across conditions
+                      FUN = function(x) {
+                        sqrt(sum(x)/5000) # by taking square root of the the summed sq_diff divided by number of replications
+                      })
+names(RMSE_random2)[4:112] <- c(paste0("RMSE_", 1:109))
 
 
 
 # repeat for ordered draws -> different number of replications (i.e., 1)
 # subset for ordered draws
-od2 <- part_dat2[part_dat2$occasions_drawn == "by order", ]
+od2 <- person_level_diff_sq2[person_level_diff_sq2$occasions_drawn == "by order", ]
 
 # storage
-RMSE2_order <- as.data.frame(matrix(nrow=21, ncol=112))
-names(RMSE2_order)[1:3] <- c("occasions_drawn", "n_occasions", "n_items")
-names(RMSE2_order)[4:112] <- c(paste0("RMSE_", 1:109))
+RMSE_order2 <- as.data.frame(matrix(nrow=21, ncol=112))
+names(RMSE_order2)[1:3] <- c("occasions_drawn", "n_occasions", "n_items")
+names(RMSE_order2)[4:112] <- c(paste0("RMSE_", 1:109))
+
+
 
 # RMSE = sqrt(sum(sq_diff_ICC)/n_replication)
 sq_diff_cols <- paste0("sq_diff_ICC_", 1:109)
 
-RMSE2_order <- aggregate(od2[ , sq_diff_cols], # for each participant-specific sq_diff column
-                         by = od2[ , c("occasions_drawn", "n_occasions", "n_items")], # aggregate across conditions
+RMSE_order2 <- aggregate(od2[ , sq_diff_cols], # for each participant-specific sq_diff column
+                        by = od2[ , c("occasions_drawn", "n_occasions", "n_items")], # aggregate across conditions
                          FUN = function(x) {
-                          sqrt(sum(x)/1) # by taking square root of the the summed sq_diff divided by number of replications
-                        })
-names(RMSE2_order)[4:112] <- c(paste0("RMSE_", 1:109))
+                           sqrt(sum(x)/1) # by taking square root of the the summed sq_diff divided by number of replications
+                         })
+names(RMSE_order2)[4:112] <- c(paste0("RMSE_", 1:109))
 
 
 
 # combine RMSE data frames
-RMSE2 <- rbind(RMSE2_random, RMSE2_order)
-rm(RMSE2_random, RMSE2_order)
+RMSE2 <- rbind(RMSE_random2, RMSE_order2)
+rm(RMSE_random2, RMSE_order2)
+
+
 
 # remove benchmark row
 # (values are correctly 0)
 RMSE2 <- RMSE2[-(which(RMSE2$occasions_drawn == "by order" & RMSE2$n_occasions == 70 & RMSE2$n_items == 15)), ]
+
 
 
 # save 
@@ -739,8 +1131,8 @@ save(RMSE2, file="results/check nr of iterations/RMSE_values_per_participant.rda
 
 
 # Calculate min, mean, and max across participants
-RMSE2$RMSE_mean <- rowMeans(RMSE2[ ,4:112], na.rm=TRUE)
 RMSE2$RMSE_min <- apply(RMSE2[ , 4:112], 1, FUN = min, na.rm = TRUE)
+RMSE2$RMSE_mean <- rowMeans(RMSE2[ ,4:112], na.rm=TRUE)
 RMSE2$RMSE_max <- apply(RMSE2[ , 4:112], 1, FUN = max, na.rm = TRUE)
 # subset 
 RMSE2 <- RMSE2[ , c(1:3, 113:115)]
@@ -749,28 +1141,18 @@ RMSE2 <- RMSE2[ , c(1:3, 113:115)]
 
 
 
-# '' For ICC.z 
-# extract squared differences for each replication and each condition per participant
-part_dat.z2 <- data.frame(matrix(nrow=90021, ncol=112))
-part_dat.z2[ , 1:3] <- res2[ , 2:4]
-names(part_dat.z2) <- c("n_occasions", "occasions_drawn", "n_items", paste0("sq_diff_ICC.z_", 1:109))
+# '''' For ICC.z ----------------------------------------------------------
+# use person-level differences -> square
+person_level_diff.z_sq2 <- person_level_diff.z2[ ,1:3]
+person_level_diff.z_sq2[ , 4:112] <- (person_level_diff.z2[ ,4:112])^2
+names(person_level_diff.z_sq2)[4:112] <- paste0("sq_diff_ICC.z_", 1:109)
 
-
-sq_matrix.z2 <- do.call(rbind, res2$sq_diff_ICC.z) # extract the 109 sq_diff_ICC.z values per row (replication) and bind them
-# -> matrix of 109 participants (columns) and their values in each replication (rows)
-
-# bind with part_dat
-part_dat.z2[ , 4:112] <- sq_matrix.z2
-
-
-# save
-save(part_dat.z2, file="results/check nr of iterations/squared_errors.z_per_replication_and_participant.rda")
 
 
 ### aggregate
 
 # subset for random draws
-rd.z2 <- part_dat.z2[part_dat.z2$occasions_drawn == "random", ]
+rd.z2 <- person_level_diff.z_sq2[person_level_diff.z_sq2$occasions_drawn == "random", ]
 
 # storage
 RMSE.z_random2 <- as.data.frame(matrix(nrow=18, ncol=112))
@@ -778,21 +1160,22 @@ names(RMSE.z_random2)[1:3] <- c("occasions_drawn", "n_occasions", "n_items")
 names(RMSE.z_random2)[4:112] <- c(paste0("RMSE.z_", 1:109))
 
 
-# RMSE = sqrt(sum(sq_diff_ICC)/n_replication)
+# RMSE = sqrt(sum(sq_diff_ICC.z)/n_replication)
 sq_diff_cols <- paste0("sq_diff_ICC.z_", 1:109)
 
 RMSE.z_random2 <- aggregate(rd.z2[ , sq_diff_cols], # for each participant-specific sq_diff column
-                            by = rd.z2[ , c("occasions_drawn", "n_occasions", "n_items")], # aggregate across conditions
-                            FUN = function(x) {
-                              sqrt(sum(x)/5000) # by taking square root of the the summed sq_diff divided by number of replications
-                          })
+                         by = rd.z2[ , c("occasions_drawn", "n_occasions", "n_items")], # aggregate across conditions
+                         FUN = function(x) {
+                           sqrt(sum(x)/5000) # by taking square root of the the summed sq_diff divided by number of replications
+                         })
 names(RMSE.z_random2)[4:112] <- c(paste0("RMSE.z_", 1:109))
+
 
 
 
 # repeat for ordered draws -> different number of replications (i.e., 1)
 # subset for ordered draws
-od.z2 <- part_dat.z2[part_dat.z2$occasions_drawn == "by order", ]
+od.z2 <- person_level_diff.z_sq2[person_level_diff.z_sq2$occasions_drawn == "by order", ]
 
 # storage
 RMSE.z_order2 <- as.data.frame(matrix(nrow=21, ncol=112))
@@ -800,16 +1183,16 @@ names(RMSE.z_order2)[1:3] <- c("occasions_drawn", "n_occasions", "n_items")
 names(RMSE.z_order2)[4:112] <- c(paste0("RMSE.z_", 1:109))
 
 
-
-# RMSE = sqrt(sum(sq_diff_ICC)/n_replication)
+# RMSE = sqrt(sum(sq_diff_ICC.z)/n_replication)
 sq_diff_cols <- paste0("sq_diff_ICC.z_", 1:109)
 
 RMSE.z_order2 <- aggregate(od.z2[ , sq_diff_cols], # for each participant-specific sq_diff column
-                         by = od.z2[ , c("occasions_drawn", "n_occasions", "n_items")], # aggregate across conditions
-                         FUN = function(x) {
-                           sqrt(sum(x)/1) # by taking square root of the the summed sq_diff divided by number of replications
-                         })
+                           by = od.z2[ , c("occasions_drawn", "n_occasions", "n_items")], # aggregate across conditions
+                           FUN = function(x) {
+                             sqrt(sum(x)/1) # by taking square root of the the summed sq_diff divided by number of replications
+                           })
 names(RMSE.z_order2)[4:112] <- c(paste0("RMSE.z_", 1:109))
+
 
 
 # combine RMSE data frames
@@ -821,14 +1204,13 @@ rm(RMSE.z_random2, RMSE.z_order2)
 RMSE.z2 <- RMSE.z2[-(which(RMSE.z2$occasions_drawn == "by order" & RMSE.z2$n_occasions == 70 & RMSE.z2$n_items == 15)), ]
 
 
-
 # save 
 save(RMSE.z2, file="results/check nr of iterations/RMSE.z_values_per_participant.rda")
 
 
 # Calculate min, mean, and max across participants
-RMSE.z2$RMSE.z_mean <- rowMeans(RMSE.z2[ ,4:112], na.rm=TRUE)
 RMSE.z2$RMSE.z_min <- apply(RMSE.z2[ , 4:112], 1, FUN = min, na.rm = TRUE)
+RMSE.z2$RMSE.z_mean <- rowMeans(RMSE.z2[ ,4:112], na.rm=TRUE)
 RMSE.z2$RMSE.z_max <- apply(RMSE.z2[ , 4:112], 1, FUN = max, na.rm = TRUE)
 # subset 
 RMSE.z2 <- RMSE.z2[ , c(1:3, 113:115)]
@@ -836,17 +1218,13 @@ RMSE.z2 <- RMSE.z2[ , c(1:3, 113:115)]
 
 
 agg2 <- aggregate_results(res2,
-                         outcomes = c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC',
-                                      'N_valid_ICC.z',
-                                      'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z',
+                         outcomes = c('N_valid_ICC.z',
                                       'cor_ICC', 'cor_ICC.z',
                                       'rel', 'N_rel',
                                       'sd_ICC', 'sd_ICC.z',
                                       'negICC', 'percnegICC',
                                       'estimationProbNeg', 'estimationProbPos'),
-                         rel_outcomes = c('min_diff_ICC', 'mean_diff_ICC', 'max_diff_ICC',
-                                          'min_diff_ICC.z', 'mean_diff_ICC.z', 'max_diff_ICC.z',
-                                          'cor_ICC', 'cor_ICC.z'),
+                         rel_outcomes = c('cor_ICC', 'cor_ICC.z'),
                          abs_outcomes = c('N_valid_ICC.z',
                                           'rel', 'N_rel',
                                           'sd_ICC', 'sd_ICC.z',
@@ -854,6 +1232,18 @@ agg2 <- aggregate_results(res2,
                                           'estimationProbNeg', 'estimationProbPos'),
                          groupwise = FALSE,
                          group_var = NULL)
+
+
+# merge difference to agg
+agg_res <- list(person_diff_agg2)
+names(agg_res) <- "agg_res"
+agg2$person_diff <- agg_res
+
+agg_res <- list(person_diff_agg.z2)
+names(agg_res) <- "agg_res"
+agg2$person_diff.z <- agg_res
+
+
 
 # merge RMSE to agg
 agg_res <- list(RMSE2) # should be nested as other outcomes so that function works

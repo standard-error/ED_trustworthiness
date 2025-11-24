@@ -75,7 +75,7 @@ save(res, file="results/sim_results.rda")
 # different seed
 # -> check whether results are comparable
 # (but use the same seed for the item set)
-
+tictoc::tic()
 res2 <- simulation_study(data = bench, n_occasions = c(14, seq(20, 70, 10)),
                          occasions_drawn = c("random", "by order"), n_items = c(5, 10, 15),
                          n_iteration = 5000,
@@ -90,8 +90,8 @@ res2 <- simulation_study(data = bench, n_occasions = c(14, seq(20, 70, 10)),
                                         "scham", "scham", "scham",
                                         "schuld", "schuld", "schuld"),
                          type = "consistency", unit = "single", occ.running.var = "occ_running",
-                         seed_item = global.seed.item.set, seed_sim = 456, cores = 10)
-
+                         seed_item = global.seed.item.set, seed_sim = 456, cores = 11)
+tictoc::toc()
 
 # save results
 save(res2, file="results/check nr of iterations/sim_results.rda")

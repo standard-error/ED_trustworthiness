@@ -26,7 +26,8 @@ library(ggh4x) # for facet_manual
 my_theme <- theme_bw() +
   theme(panel.grid.minor = element_blank(),
         text = element_text(size=12),
-        legend.text = element_text(size = 12)) 
+        legend.text = element_text(size = 12),
+        axis.text.x = element_text(size = 10, angle = 0)) 
 
 
 
@@ -95,7 +96,7 @@ plot_outcome <- function(data, ylims=NULL, ylabel=NULL, x_breaks = seq(0, 70, 10
                   linewidth = 0.3) + # error bar: min and max outcome
     scale_x_continuous(breaks = x_breaks) +
     expand_limits(x = 70) + # make sure that 70 is always covered
-    xlab("Number of Occasions") +
+    xlab("Number of Measurement Occasions") +
     #  if y label is provided, use it; else, use the outcome name extracted from column names of data 
     ylab(ifelse(!is.null(ylabel), ylabel, outcome_name)) +
     scale_color +

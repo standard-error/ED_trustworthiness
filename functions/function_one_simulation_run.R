@@ -234,7 +234,7 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
   
   ## RELATIVE OUTCOMES ##
   
-  # DIFFERENCE OF ICCs TO BENCHMARK ICCs
+  # AVERAGE DIFFERENCE OF ICCs TO BENCHMARK ICCs
   # for both raw ICCs and transformed ICCs
   
   merged[ , "difference_ICC"] <- merged[ , "comp_ICC"] - merged[ , "bench_ICC"] # difference between raw ICCs
@@ -268,16 +268,19 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
   # -> calculate an RMSE for each participant across all replications of a condition
   # since we have a single simulation run (i.e., one replication) here, we cannot yet
   # calculate the person-wise RMSE.
-  # instead, calculated squared difference between replication ICC and benchmark ICC for each participant
+  # instead, calculate difference between replication ICC and benchmark ICC for each participant
   # and store this as a matrix for further calculations later
   # -> later on, for each participant, the squared differences will be summed, divided by number of replications
   # and square root taken (separately for each condition)
   # -> one RMSE per person
   
   # differences were already calculated
+  person_diff_ICC <- merged[ , "difference_ICC"] 
+  person_diff_ICC.z <- merged.c[ , "difference_ICC.z"]
   
-  sq_diff_ICC <- merged[ , "difference_ICC"]^2 
-  sq_diff_ICC.z <- merged.c[ , "difference_ICC.z"]^2
+  # also store estimate per person -> needed for MCSE of "bias" (i.e., person-level difference)
+  person_estimates_ICC <- merged[ , "comp_ICC"]
+  person_estimates_ICC.z <- merged.c[ , "comp_ICC.z"]
   
   
   # CORRELATION WITH BENCHMARK
@@ -296,7 +299,10 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
     min_diff_ICC.z, mean_diff_ICC.z, max_diff_ICC.z,
     id_min_diff_ICC.z, id_max_diff_ICC.z,
     cor_ICC, cor_ICC.z,
-    sq_diff_ICC = I(list(sq_diff_ICC)), sq_diff_ICC.z = I(list(sq_diff_ICC.z)), # store list of squared differences (with according name, else it will be changed to list.sq_diff_ICC.)
+    person_estimates_ICC = I(list(person_estimates_ICC)),
+    person_estimates_ICC.z = I(list(person_estimates_ICC.z)),
+    person_diff_ICC = I(list(person_diff_ICC)),
+    person_diff_ICC.z = I(list(person_diff_ICC.z)), # store list of differences (with according name, else it will be changed to list.person_diff_ICC.)
     # absolute outcome measures
     rel, N_rel,
     sd_ICC, sd_ICC.z,

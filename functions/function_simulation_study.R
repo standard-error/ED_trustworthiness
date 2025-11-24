@@ -179,8 +179,10 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
     id_max_diff_ICC.z = rep(NA, nrow(design)),
     cor_ICC = rep(NA, nrow(design)),
     cor_ICC.z = rep(NA, nrow(design)),
-    sq_diff_ICC = I(vector("list", nrow(design))),
-    sq_diff_ICC.z = I(vector("list", nrow(design))), 
+    person_estimates_ICC = I(vector("list", nrow(design))),
+    person_estimates_ICC.z = I(vector("list", nrow(design))),
+    person_diff_ICC = I(vector("list", nrow(design))),
+    person_diff_ICC.z = I(vector("list", nrow(design))), 
     # absolute outcome measures
     rel = rep(NA, nrow(design)),
     N_rel = rep(NA, nrow(design)),
