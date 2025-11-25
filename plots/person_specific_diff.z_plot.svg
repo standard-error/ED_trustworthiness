@@ -923,7 +923,7 @@
 <polyline points='38.04,307.82 40.78,307.82 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
 <polyline points='38.04,283.25 40.78,283.25 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
 <text x='306.46' y='411.53' text-anchor='middle' style='font-size: 12.00px; font-family: "Arial";' textLength='192.05px' lengthAdjust='spacingAndGlyphs'>Number of Measurement Occasions</text>
-<text transform='translate(14.08,204.56) rotate(-90)' text-anchor='middle' style='font-size: 12.00px; font-family: "Arial";' textLength='191.81px' lengthAdjust='spacingAndGlyphs'>Difference in ICC.z from Benchmark</text>
+<text transform='translate(14.08,204.56) rotate(-90)' text-anchor='middle' style='font-size: 12.00px; font-family: "Arial";' textLength='306.12px' lengthAdjust='spacingAndGlyphs'>Difference in Fisher's Z-transformed ICC from Benchmark</text>
 </g>
 </g>
 </svg>

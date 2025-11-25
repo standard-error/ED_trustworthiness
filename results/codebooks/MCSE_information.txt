@@ -1,0 +1,3 @@
+MCSE_difference_per_participant.rda and MCSE_difference.z_per_participant.rda contain the person-specific Monte Carlo standard errors for the person-level difference ("bias"; calculated for raw ICCs and Fisher's Z-transformed ICCs [indicated by .z], respectively). The person-level difference was calculated separately for each participant across replications, and so was the MCSE.
+
+MCSE_RMSE_per_participant.rda and MCSE_RMSE.z_per_participant.rda contain the person-specific Monte Carlo standard errors for the RMSE (calculated for raw ICCs and Fisher's Z-transformed ICCs [indicated by .z], respectively). The RMSE was calculated separately for each participant across replications, and so was the MCSE.

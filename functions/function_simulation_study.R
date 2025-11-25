@@ -166,17 +166,7 @@ simulation_study <- function(data, n_occasions, occasions_drawn, n_items, n_iter
   # name columns; order as in the one_simulation_outcome_measures-function
   res <- data.frame(
     # relative outcome measures
-    min_diff_ICC = rep(NA, nrow(design)),
-    mean_diff_ICC = rep(NA, nrow(design)),
-    max_diff_ICC = rep(NA, nrow(design)),
-    id_min_diff_ICC = rep(NA, nrow(design)),
-    id_max_diff_ICC = rep(NA, nrow(design)),
     N_valid_ICC.z = rep(NA, nrow(design)),
-    min_diff_ICC.z = rep(NA, nrow(design)),
-    mean_diff_ICC.z = rep(NA, nrow(design)),
-    max_diff_ICC.z = rep(NA, nrow(design)),
-    id_min_diff_ICC.z = rep(NA, nrow(design)),
-    id_max_diff_ICC.z = rep(NA, nrow(design)),
     cor_ICC = rep(NA, nrow(design)),
     cor_ICC.z = rep(NA, nrow(design)),
     person_estimates_ICC = I(vector("list", nrow(design))),

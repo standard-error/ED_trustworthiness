@@ -81,7 +81,7 @@ diff_plot.z <- ggplot(long.z, aes(x = n_occasions, y = person_difference.z, grou
   facet_grid(rows=vars(n_items), cols=vars(occasions_drawn), labeller = labeller(n_items = function(x) paste0(x, " items"))) +
   my_theme +
   theme(legend.position = "none") +
-  ylab("Difference in ICC.z from Benchmark") +
+  ylab("Difference in Fisher's Z-transformed ICC from Benchmark") +
   xlab("Number of Measurement Occasions") +
   expand_limits(x = 70) 
 
@@ -1220,8 +1220,9 @@ sessionInfo()
 #   LAPACK version 3.12.1
 # 
 # locale:
-# [1] LC_COLLATE=German_Germany.utf8  LC_CTYPE=German_Germany.utf8    LC_MONETARY=German_Germany.utf8
-# [4] LC_NUMERIC=C                    LC_TIME=German_Germany.utf8    
+# [1] LC_COLLATE=German_Germany.utf8  LC_CTYPE=German_Germany.utf8   
+# [3] LC_MONETARY=German_Germany.utf8 LC_NUMERIC=C                   
+# [5] LC_TIME=German_Germany.utf8    
 # 
 # time zone: Europe/Berlin
 # tzcode source: internal
@@ -1230,16 +1231,19 @@ sessionInfo()
 # [1] stats     graphics  grDevices utils     datasets  methods   base     
 # 
 # other attached packages:
-#  [1] ggpubr_0.6.1      ggh4x_0.3.1       scales_1.4.0      viridis_0.6.5     viridisLite_0.4.2 lubridate_1.9.4  
-#  [7] forcats_1.0.0     stringr_1.5.1     dplyr_1.1.4       purrr_1.1.0       readr_2.1.5       tidyr_1.3.1      
-# [13] tibble_3.3.0      ggplot2_3.5.2     tidyverse_2.0.0  
+#  [1] lubridate_1.9.4   forcats_1.0.0     stringr_1.5.1     dplyr_1.1.4      
+#  [5] purrr_1.1.0       readr_2.1.5       tidyr_1.3.1       tibble_3.3.0     
+#  [9] tidyverse_2.0.0   ggpubr_0.6.1      ggh4x_0.3.1       scales_1.4.0     
+# [13] viridis_0.6.5     viridisLite_0.4.2 ggplot2_3.5.2    
 # 
 # loaded via a namespace (and not attached):
-#  [1] generics_0.1.4     rstatix_0.7.2      stringi_1.8.7      hms_1.1.3          magrittr_2.0.3    
-#  [6] grid_4.5.1         timechange_0.3.0   RColorBrewer_1.1-3 backports_1.5.0    Formula_1.2-5     
-# [11] gridExtra_2.3      textshaping_1.0.1  abind_1.4-8        cli_3.6.5          rlang_1.1.6       
-# [16] cowplot_1.2.0      withr_3.0.2        tools_4.5.1        tzdb_0.5.0         ggsignif_0.6.4    
-# [21] broom_1.0.9        vctrs_0.6.5        R6_2.6.1           lifecycle_1.0.4    car_3.1-3         
-# [26] ragg_1.4.0         pkgconfig_2.0.3    pillar_1.11.0      gtable_0.3.6       glue_1.8.0        
-# [31] systemfonts_1.2.3  tidyselect_1.2.1   rstudioapi_0.17.1  farver_2.1.2       carData_3.0-5     
-# [36] svglite_2.2.1      labeling_0.4.3     compiler_4.5.1   
+#  [1] generics_0.1.4     rstatix_0.7.2      stringi_1.8.7      hms_1.1.3         
+#  [5] magrittr_2.0.3     grid_4.5.1         timechange_0.3.0   RColorBrewer_1.1-3
+#  [9] backports_1.5.0    Formula_1.2-5      gridExtra_2.3      textshaping_1.0.1 
+# [13] abind_1.4-8        cli_3.6.5          rlang_1.1.6        cowplot_1.2.0     
+# [17] withr_3.0.2        tools_4.5.1        tzdb_0.5.0         ggsignif_0.6.4    
+# [21] broom_1.0.9        vctrs_0.6.5        R6_2.6.1           lifecycle_1.0.4   
+# [25] car_3.1-3          ragg_1.4.0         pkgconfig_2.0.3    pillar_1.11.0     
+# [29] gtable_0.3.6       glue_1.8.0         systemfonts_1.2.3  tidyselect_1.2.1  
+# [33] rstudioapi_0.17.1  farver_2.1.2       carData_3.0-5      svglite_2.2.1     
+# [37] labeling_0.4.3     compiler_4.5.1    

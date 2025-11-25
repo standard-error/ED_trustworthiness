@@ -59,7 +59,7 @@ res <- simulation_study(data = bench, n_occasions = c(14, seq(20, 70, 10)),
                                        "scham", "scham", "scham",
                                        "schuld", "schuld", "schuld"),
                         type = "consistency", unit = "single", occ.running.var = "occ_running",
-                        seed_item = global.seed.item.set, seed_sim = 123, cores = 10)
+                        seed_item = global.seed.item.set, seed_sim = 123, cores = 11)
 tictoc::toc()
 
 
