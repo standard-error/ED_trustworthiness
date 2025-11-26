@@ -12,5 +12,5 @@ quantile(screened$nr_occasions_total)
 which.max(table(screened$nr_occasions_total))
 
 quantile(screened$nr_nemo_items)
-
-
+which.max(table(screened$nr_nemo_items))
+table(screened$nr_nemo_items)
