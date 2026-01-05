@@ -1,0 +1,2 @@
+We provide the prepared benchmark data and all scripts needed to reproduce the simulation study.
+However, due to data privacy reasons, demograhpic variables have been removed, such that the sample description script cannot be run. Furthermore, we provide the simulation results and the aggregated simulation results (aggregated across replications/participants), since these may require some computational resources to run. However, the results can also be reproduced using the benchmark data and the provided scripts.
