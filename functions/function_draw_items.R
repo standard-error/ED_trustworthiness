@@ -97,10 +97,53 @@ draw_items <- function(all_items, n_items, categories = NULL) {
                              
                              # checked for every nr.items (i.e., all elements in n_items)
                 
-                             
-                             # bind the number of items and the drawn items
-                             cbind(nr.items, paste(drawn, collapse = ", "))
+
+                             # bind the number of items and the drawn items (sorted alphabetically and by number)
+                             # trimws = trim white space
+                             cbind(nr.items, paste(sort(trimws(drawn)), collapse = ", "))
                            }))
   return(items_drawn)
 }
+
+
+# Test function so it can be correctly implemented
+# 
+# erg <- draw_items(all_items = c('aerger1', 'aerger2', 'aerger3',
+#                          'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
+#                          'angst1', 'angst2', 'angst3',
+#                          'scham1', 'scham2', 'scham3',
+#                          'schuld1', 'schuld2', 'schuld3'),
+#            n_items = 5,
+#            categories = c("aerger", "aerger", "aerger",
+#                           "traurigkeit", "traurigkeit", "traurigkeit",
+#                           "angst", "angst", "angst",
+#                           "scham", "scham", "scham",
+#                           "schuld", "schuld", "schuld"))
+# str(erg)
+# erg
+# 
+# all_items <- c('aerger1', 'aerger2', 'aerger3',
+#               'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
+#               'angst1', 'angst2', 'angst3',
+#               'scham1', 'scham2', 'scham3',
+#               'schuld1', 'schuld2', 'schuld3')
+# 
+# categories <- c("aerger", "aerger", "aerger",
+#               "traurigkeit", "traurigkeit", "traurigkeit",
+#               "angst", "angst", "angst",
+#               "scham", "scham", "scham",
+#               "schuld", "schuld", "schuld")
+# 
+# 
+# df <- data.frame(n.items =c(5,5,5,10,10,10,15,15,15),
+#                  items = NA)
+# 
+# set.seed(123)
+# df$items <- sapply(df$n.items, function(x) {
+#   draw_items(
+#     all_items = all_items,
+#     n_items = x,
+#     categories = categories
+#   )$items
+# })
 
