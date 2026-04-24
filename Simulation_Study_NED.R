@@ -69,7 +69,7 @@ tictoc::toc()
 
 
 # Save Results ------------------------------------------------------------
-save(res, file="results/02_revision1/sim_results_NED.rda")
+save(res, file="results/02_revision_1/sim_results_NED.rda")
 
 
 
@@ -107,7 +107,7 @@ save(res2, file="results/02_revision_1/check nr of iterations/sim_results_NED.rd
 # Session Info ------------------------------------------------------------
 sessionInfo()
 
-# R version 4.5.1 (2025-06-13 ucrt)
+# R version 4.5.3 (2026-03-11 ucrt)
 # Platform: x86_64-w64-mingw32/x64
 # Running under: Windows 11 x64 (build 26200)
 # 
@@ -115,8 +115,9 @@ sessionInfo()
 #   LAPACK version 3.12.1
 # 
 # locale:
-# [1] LC_COLLATE=German_Germany.utf8  LC_CTYPE=German_Germany.utf8    LC_MONETARY=German_Germany.utf8
-# [4] LC_NUMERIC=C                    LC_TIME=German_Germany.utf8    
+# [1] LC_COLLATE=German_Germany.utf8  LC_CTYPE=German_Germany.utf8   
+# [3] LC_MONETARY=German_Germany.utf8 LC_NUMERIC=C                   
+# [5] LC_TIME=German_Germany.utf8    
 # 
 # time zone: Europe/Berlin
 # tzcode source: internal
@@ -125,8 +126,9 @@ sessionInfo()
 # [1] stats     graphics  grDevices utils     datasets  methods   base     
 # 
 # other attached packages:
-# [1] future.apply_1.20.0 future_1.67.0      
+# [1] future.apply_1.20.2 future_1.70.0      
 # 
 # loaded via a namespace (and not attached):
-#  [1] compiler_4.5.1    tictoc_1.2.1      parallelly_1.45.1 parallel_4.5.1    tools_4.5.1       rstudioapi_0.17.1
-#  [7] listenv_0.9.1     codetools_0.2-20  irr_0.84.1        digest_0.6.37     globals_0.18.0    lpSolve_5.6.23  
+#  [1] compiler_4.5.3    tictoc_1.2.1      parallelly_1.46.1 parallel_4.5.3   
+#  [5] tools_4.5.3       rstudioapi_0.18.0 listenv_0.10.1    codetools_0.2-20 
+#  [9] irr_0.84.1        digest_0.6.39     globals_0.19.1    lpSolve_5.6.23
