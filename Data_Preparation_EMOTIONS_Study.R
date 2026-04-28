@@ -485,6 +485,158 @@ bench <- bench %>%
 bench <- bench[which(bench$occ_running <= 70), ]
 
 
+# check whether all participants have variance in their emotion ratings across the 70 occasions
+# check overall (total item set) and for all item sets
+
+
+neg_emo <- c("angry", "excluded", "envious", "resentful", "ashamed", "insecure", # negative emotions
+             "anxious", "sad", "lonely")
+pos_emo <- c("proud", "success", "superior", "enthusiastic", "relaxed")
+
+
+matrix_variance_check_neg <- bench %>% 
+  group_by(id) %>% 
+  summarise(
+    var_zero = all(var(as.matrix(across(all_of(neg_emo))),
+                       na.rm=TRUE) == 0),
+    .groups = "drop"
+  )
+
+matrix_variance_check_neg
+
+no_var_neg <- matrix_variance_check_neg %>% filter(var_zero == TRUE)
+# person id = 225
+
+sub <- bench[bench$id == 225, neg_emo]
+all(var(sub[ ,neg_emo]) == 0) # actually no variance
+
+# remove this participant --> no ICCs can be calculated (for negative emotions)
+
+
+matrix_variance_check_pos <- bench %>% 
+  group_by(id) %>% 
+  summarise(
+    var_zero = all(var(as.matrix(across(all_of(pos_emo))),
+                       na.rm=TRUE) == 0),
+    .groups = "drop"
+  )
+
+matrix_variance_check_pos
+
+no_var_pos <- matrix_variance_check_pos %>% filter(var_zero == TRUE)
+no_var_pos # no participants
+
+
+# Now check for all possible item sets across the 70 occasions -> if subsets of occasions are drawn,
+# the simulation will continue forever (while var == 0, repeat drawing of occasions...), as there will
+# never be variance in subsets of occasions if there is no variance in all occasions
+
+# negative emotions:
+itemsets_neg <- unlist(
+  lapply(3:9, function(k) combn(neg_emo, k, simplify = FALSE)),
+  recursive = FALSE
+) # 466 item sets in total -> correct
+
+
+itemset_info_neg <- tibble(
+  itemset_id = seq_along(itemsets_neg),
+  itemset_size = lengths(itemsets_neg),
+  itemset = map_chr(itemsets_neg, paste, collapse = ", ")
+)
+
+itemset_info_neg
+
+dat_split <- split(bench, bench$id)
+
+check_person_item_sets <- function(df_person, person_id) {
+  itemset_info_neg %>% 
+    mutate(id = person_id,
+           has_variance = map_lgl(itemset_id, function(i) {
+             
+             set <- itemsets_neg[[i]]
+             
+             v <- var(as.matrix(df_person[ , set]), na.rm=TRUE)
+             
+             !all(v == 0, na.rm=TRUE)
+             
+           }))
+}
+
+itemset_info_by_person_neg <- map2_dfr(
+  dat_split,
+  names(dat_split),
+  check_person_item_sets
+)
+
+itemset_info_by_person_neg
+all(itemset_info_by_person_neg$has_variance == TRUE)
+
+
+problems <- itemset_info_by_person_neg %>%
+  filter(has_variance == FALSE)
+
+unique(problems$id)
+length(unique(problems$id))
+# 75 participants are affected
+unique(problems$itemset_size)
+table(problems$itemset_size)
+
+# -> implement check in simulation study and mark these as no variance across ALL occasions and remove from analysis
+
+
+# positive emotions
+itemsets_pos <- unlist(
+  lapply(3:5, function(k) combn(pos_emo, k, simplify = FALSE)),
+  recursive = FALSE
+) # 16 item sets in total -> correct
+
+
+itemset_info_pos <- tibble(
+  itemset_id = seq_along(itemsets_pos),
+  itemset_size = lengths(itemsets_pos),
+  itemset = map_chr(itemsets_pos, paste, collapse = ", ")
+)
+
+itemset_info_pos
+
+dat_split <- split(bench, bench$id)
+
+check_person_item_sets <- function(df_person, person_id) {
+  itemset_info_pos %>% 
+    mutate(id = person_id,
+           has_variance = map_lgl(itemset_id, function(i) {
+             
+             set <- itemsets_pos[[i]]
+             
+             v <- var(as.matrix(df_person[ , set]), na.rm=TRUE)
+             
+             !all(v == 0, na.rm=TRUE)
+             
+           }))
+}
+
+itemset_info_by_person_pos <- map2_dfr(
+  dat_split,
+  names(dat_split),
+  check_person_item_sets
+)
+
+itemset_info_by_person_pos
+all(itemset_info_by_person_pos$has_variance == TRUE)
+
+
+problems <- itemset_info_by_person_pos %>%
+  filter(has_variance == FALSE)
+# zero problems with missing variance in positive emotion terms
+
+
+
+
+# Remove participant 225, who has no variance across all negative emotion items across all occasions
+bench <- bench[bench$id != 225, ]
+
+
+
 # select variables relevant for analyses (i.e. ID,
 # occasion running, emotion terms)
 bench <- bench[ , c("id", "occ_running",
