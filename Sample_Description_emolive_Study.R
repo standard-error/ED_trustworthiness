@@ -233,7 +233,7 @@ for (item in desc_stats$item) {
 
 
 # save table as .csv
-write.csv(desc_stats, "results/02_revision_1/descriptive_statistics_emotions.csv", row.names = F)
+write.csv(desc_stats, "results/02_revision_1/emolive_descriptive_statistics_emotions.csv", row.names = F)
 
 
 

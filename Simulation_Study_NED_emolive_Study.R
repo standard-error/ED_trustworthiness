@@ -10,13 +10,18 @@
 
 
 ###################################################################
-#####             Positive Emotion Differentiation            #####
+#####             Negative Emotion Differentiation            #####
+###################################################################
+
+
+###################################################################
+#####                     emolive Data                        #####
 ###################################################################
 
 
 
 # Preparation: Load Data --------------------------------------------------
-load("prepared data/benchmark_data.rda")
+load("prepared data/emolive_benchmark_data.rda")
 
 # Make sure that ID variable is numeric
 # (relevant for ICC calculation: matrix can only store one data type)
@@ -48,26 +53,28 @@ source("functions/function_simulation_study.R")
 tictoc::tic()
 # n_occasions: 14, 20, ..., 70 in steps of 10
 res <- simulation_study(data = bench, n_occasions = c(14, seq(20, 70, 10)),
-                        occasions_drawn = c("random", "by order"), n_items = c(4, 8, 12),
+                        occasions_drawn = c("random", "by order"), n_items = c(5, 10, 15),
                         n_iteration = 5000,
-                        id.var = "SERIAL", all_items = c('freude1', 'freude2', 'freude3',
-                                                         'interesse1', 'interesse2', 'interesse3',
-                                                         'liebe1', 'liebe2', 'liebe3',
-                                                         'stolz1', 'stolz2', 'stolz3'),
-                        categories = c('freude', 'freude', 'freude',
-                                       'interesse', 'interesse', 'interesse',
-                                       'liebe', 'liebe', 'liebe',
-                                       'stolz', 'stolz', 'stolz'),
+                        id.var = "SERIAL", all_items = c('aerger1', 'aerger2', 'aerger3',
+                                                         'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
+                                                         'angst1', 'angst2', 'angst3',
+                                                         'scham1', 'scham2', 'scham3',
+                                                         'schuld1', 'schuld2', 'schuld3'),
+                        categories = c("aerger", "aerger", "aerger",
+                                       "traurigkeit", "traurigkeit", "traurigkeit",
+                                       "angst", "angst", "angst",
+                                       "scham", "scham", "scham",
+                                       "schuld", "schuld", "schuld"),
                         type = "consistency", unit = "single", occ.running.var = "occ_running",
                         item_sets_across_replications = "balanced",
-                        seed_item = 260306, seed_sim = 666, cores = 11)
+                        seed_item = 140821, seed_sim = 123, cores = 11)
 tictoc::toc()
 
 
 
 
 # Save Results ------------------------------------------------------------
-save(res, file="results/02_revision_1/sim_results_PED.rda")
+save(res, file="results/02_revision_1/sim_results_NED_emolive_Study.rda")
 
 
 
@@ -77,23 +84,25 @@ save(res, file="results/02_revision_1/sim_results_PED.rda")
 # -> check whether results are comparable
 tictoc::tic()
 res2 <- simulation_study(data = bench, n_occasions = c(14, seq(20, 70, 10)),
-                         occasions_drawn = c("random", "by order"), n_items = c(4, 8, 12),
+                         occasions_drawn = c("random", "by order"), n_items = c(5, 10, 15),
                          n_iteration = 5000,
-                         id.var = "SERIAL", all_items = c('freude1', 'freude2', 'freude3',
-                                                          'interesse1', 'interesse2', 'interesse3',
-                                                          'liebe1', 'liebe2', 'liebe3',
-                                                          'stolz1', 'stolz2', 'stolz3'),
-                         categories = c('freude', 'freude', 'freude',
-                                        'interesse', 'interesse', 'interesse',
-                                        'liebe', 'liebe', 'liebe',
-                                        'stolz', 'stolz', 'stolz'),
+                         id.var = "SERIAL", all_items = c('aerger1', 'aerger2', 'aerger3',
+                                                          'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
+                                                          'angst1', 'angst2', 'angst3',
+                                                          'scham1', 'scham2', 'scham3',
+                                                          'schuld1', 'schuld2', 'schuld3'),
+                         categories = c("aerger", "aerger", "aerger",
+                                        "traurigkeit", "traurigkeit", "traurigkeit",
+                                        "angst", "angst", "angst",
+                                        "scham", "scham", "scham",
+                                        "schuld", "schuld", "schuld"),
                          type = "consistency", unit = "single", occ.running.var = "occ_running",
                          
-                         seed_item = 220224, seed_sim = 23, cores = 11)
+                         seed_item = 210807, seed_sim = 456, cores = 11)
 tictoc::toc()
 
 # save results
-save(res2, file="results/02_revision_1/check nr of iterations/sim_results_PED.rda")
+save(res2, file="results/02_revision_1/check nr of iterations/sim_results_NED_emolive_Study.rda")
 
 
 
@@ -102,7 +111,6 @@ save(res2, file="results/02_revision_1/check nr of iterations/sim_results_PED.rd
 
 # Session Info ------------------------------------------------------------
 sessionInfo()
-
 
 # R version 4.5.3 (2026-03-11 ucrt)
 # Platform: x86_64-w64-mingw32/x64

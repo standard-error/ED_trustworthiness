@@ -97,8 +97,8 @@ bench <- bench[ , c("SERIAL", "occ_running", "occasion_total",
 
 
 # save benchmark data set
-save(bench, file = "internal use/prepared data/benchmark_data.rda") # for internal use (just for consistency)
-save(bench, file = "prepared data/benchmark_data.rda") # for sharing
+save(bench, file = "internal use/prepared data/emolive_benchmark_data.rda") # for internal use (just for consistency)
+save(bench, file = "prepared data/emolive_benchmark_data.rda") # for sharing
 
 
 
