@@ -101,6 +101,180 @@ save(bench, file = "internal use/prepared data/emolive_benchmark_data.rda") # fo
 save(bench, file = "prepared data/emolive_benchmark_data.rda") # for sharing
 
 
+# check whether all participants have variance in their emotion ratings across the 70 occasions
+# check overall (total item set) and for all item sets
+source("functions/function_determine_all_possible_item_sets.R")
+
+
+
+neg_emo <- c('aerger1', 'aerger2', 'aerger3',
+             'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
+             'angst1', 'angst2', 'angst3',
+             'scham1', 'scham2', 'scham3',
+             'schuld1', 'schuld2', 'schuld3')
+pos_emo <- c('freude1', 'freude2', 'freude3',
+             'interesse1', 'interesse2', 'interesse3',
+             'liebe1', 'liebe2', 'liebe3',
+             'stolz1', 'stolz2', 'stolz3')
+
+
+matrix_variance_check_neg <- bench %>% 
+  group_by(SERIAL) %>% 
+  summarise(
+    var_zero = all(var(as.matrix(across(all_of(neg_emo))),
+                       na.rm=TRUE) == 0),
+    .groups = "drop"
+  )
+
+matrix_variance_check_neg
+
+no_var_neg <- matrix_variance_check_neg %>% filter(var_zero == TRUE)
+# no problems
+
+
+matrix_variance_check_pos <- bench %>% 
+  group_by(SERIAL) %>% 
+  summarise(
+    var_zero = all(var(as.matrix(across(all_of(pos_emo))),
+                       na.rm=TRUE) == 0),
+    .groups = "drop"
+  )
+
+matrix_variance_check_pos
+
+no_var_pos <- matrix_variance_check_pos %>% filter(var_zero == TRUE)
+no_var_pos # no participants
+
+
+
+# create all item sets (negative)
+itemsets_neg <- unlist(
+  lapply( # apply to each unique condition 
+  c(5,10,15),
+  function(condition) { # for each unique condition, do the following:
+    
+   all_item_sets <- generate_all_item_sets( # generate all possible item sets for this condition
+      all_items = c('aerger1', 'aerger2', 'aerger3',
+                                'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
+                                'angst1', 'angst2', 'angst3',
+                                'scham1', 'scham2', 'scham3',
+                                'schuld1', 'schuld2', 'schuld3'),
+      n_items = condition, # pass item number for this condition
+      categories = c("aerger", "aerger", "aerger",
+                     "traurigkeit", "traurigkeit", "traurigkeit",
+                     "angst", "angst", "angst",
+                     "scham", "scham", "scham",
+                     "schuld", "schuld", "schuld") # pass categories for items from simulation study
+    )
+   
+  }
+), recursive = FALSE
+)
+# 487 correct
+
+
+itemset_info_neg <- tibble(
+  itemset_id = seq_along(itemsets_neg),
+  itemset_size = lengths(itemsets_neg),
+  itemset = map_chr(itemsets_neg, paste, collapse = ", ")
+)
+
+itemset_info_neg
+
+dat_split <- split(bench, bench$SERIAL)
+
+check_person_item_sets <- function(df_person, person_id) {
+  itemset_info_neg %>% 
+    mutate(SERIAL = person_id,
+           has_variance = map_lgl(itemset_id, function(i) {
+             
+             set <- unlist(strsplit(itemsets_neg[[i]], split = ", "))
+             
+             v <- var(as.matrix(df_person[ , set]), na.rm=TRUE)
+             
+             !all(v == 0, na.rm=TRUE)
+             
+           }))
+}
+
+itemset_info_by_person_neg <- map2_dfr(
+  dat_split,
+  names(dat_split),
+  check_person_item_sets
+)
+
+itemset_info_by_person_neg
+all(itemset_info_by_person_neg$has_variance == TRUE)
+
+
+problems <- itemset_info_by_person_neg %>%
+  filter(has_variance == FALSE)
+# no problems
+
+
+# create all item sets (positive)
+itemsets_pos <- unlist(
+  lapply( # apply to each unique condition 
+    c(4,8,12),
+    function(condition) { # for each unique condition, do the following:
+      
+      all_item_sets <- generate_all_item_sets( # generate all possible item sets for this condition
+        all_items = c('freude1', 'freude2', 'freude3',
+                      'interesse1', 'interesse2', 'interesse3',
+                      'liebe1', 'liebe2', 'liebe3',
+                      'stolz1', 'stolz2', 'stolz3'),
+        n_items = condition, # pass item number for this condition
+        categories = c('freude', 'freude', 'freude',
+                       'interesse', 'interesse', 'interesse',
+                       'liebe', 'liebe', 'liebe',
+                       'stolz', 'stolz', 'stolz') # pass categories for items from simulation study
+      )
+      
+    }
+  ), recursive = FALSE
+)
+# 163 correct
+
+
+itemset_info_pos <- tibble(
+  itemset_id = seq_along(itemsets_pos),
+  itemset_size = lengths(itemsets_pos),
+  itemset = map_chr(itemsets_pos, paste, collapse = ", ")
+)
+
+itemset_info_pos
+
+dat_split <- split(bench, bench$SERIAL)
+
+check_person_item_sets <- function(df_person, person_id) {
+  itemset_info_pos %>% 
+    mutate(SERIAL = person_id,
+           has_variance = map_lgl(itemset_id, function(i) {
+             
+             set <- unlist(strsplit(itemsets_pos[[i]], split = ", "))
+             
+             v <- var(as.matrix(df_person[ , set]), na.rm=TRUE)
+             
+             !all(v == 0, na.rm=TRUE)
+             
+           }))
+}
+
+itemset_info_by_person_pos <- map2_dfr(
+  dat_split,
+  names(dat_split),
+  check_person_item_sets
+)
+
+itemset_info_by_person_pos
+all(itemset_info_by_person_pos$has_variance == TRUE)
+
+
+problems <- itemset_info_by_person_pos %>%
+  filter(has_variance == FALSE)
+# no problems
+
+
 
 # Session Info ------------------------------------------------------------
 
