@@ -478,13 +478,17 @@ simulation_study <- function(data, n_occasions, occasions_drawn = c("random", "b
   
   
   # CREATE RESULTS STORAGE
-  # already determine columns that will contain lists of squared differences (of all persons)
-  # ncol = 23 -> we have 23 outcomes (6 outcome measures, but some for raw ICCs
-  # and also for Fisher's Z-transformed ICCs, and some technical information [e.g., total nr. re-draws])
+  # already create columns that we will store the results in
   # name columns; order as in the one_simulation_outcome_measures-function
   res <- data.frame(
-    # relative outcome measures
+    # information on N
+    N_merged_total = rep(NA, nrow(design)),
+    N_merged_ICC = rep(NA, nrow(design)),
     N_valid_ICC.z = rep(NA, nrow(design)),
+    N_cor_ICC = rep(NA, nrow(design)),
+    N_cor_ICC.z = rep(NA, nrow(design)),
+    N_rel = rep(NA, nrow(design)),
+    # relative outcome measures
     cor_ICC = rep(NA, nrow(design)),
     cor_ICC.z = rep(NA, nrow(design)),
     person_estimates_ICC = I(vector("list", nrow(design))),
@@ -493,13 +497,17 @@ simulation_study <- function(data, n_occasions, occasions_drawn = c("random", "b
     person_diff_ICC.z = I(vector("list", nrow(design))), 
     # absolute outcome measures
     rel = rep(NA, nrow(design)),
-    N_rel = rep(NA, nrow(design)),
     sd_ICC = rep(NA, nrow(design)),
     sd_ICC.z = rep(NA, nrow(design)),
     negICC = rep(NA, nrow(design)),
     estimationProbNeg = rep(NA, nrow(design)),
     estimationProbPos = rep(NA, nrow(design)),
+    # information on total, valid, and skipped persons (we can change the order later)
     total_redraws = rep(NA, nrow(design)),
+    n_total_persons = rep(NA, nrow(design)),
+    n_valid_persons = rep(NA, nrow(design)),
+    n_skipped_persons = rep(NA, nrow(design)),
+    # add design row id
     design_row_id = rep(NA, nrow(design)) # add design_row_id to merge results and design later
   )
   
@@ -675,3 +683,73 @@ simulation_study <- function(data, n_occasions, occasions_drawn = c("random", "b
 #     sd = sd(freq)
 #   )
 # })
+
+
+
+# # Check for second data set
+# # e.g., 5-item condition:
+# choose(9, 5) # 126 unique 5-item sets
+# 5000 %/% 126  # each item set should appear 39 times
+# 5000 %% 126 # 86 item sets will appear 40 times (remainder of 5000 %/% 126 is 86 -> these rows will be filled
+# # with one item set each)
+# 
+# # create subset:
+# sub <- design_random[design_random$n_items == 5, ]
+# 
+# length(unique(sub$items)) # all unique item sets (= 126), correct
+# # look how they are distributed (all item sets almost equally frequent?)
+# # -> 39 to 40 times for each item set
+# by(sub, sub$n_occasions, function(df) {
+#   freq <- table(df$items)
+#   c(
+#     min = min(freq),
+#     max = max(freq),
+#     sd = sd(freq)
+#   )
+# })
+# # correct, each item set appears 39 to 40 times in each occasion-number condition
+# 
+# # check 7-item condition
+# choose(9, 7) # 36 unique 7-item sets
+# 5000 %/% 36  # each item set should appear 138 times
+# 5000 %% 36 # 32 item sets will appear 139 times (remainder of 5000 %/% 36 is 32 -> these rows will be filled
+# # with one item set each)
+# 
+# # create subset:
+# sub <- design_random[design_random$n_items == 7, ]
+# 
+# length(unique(sub$items)) # all unique item sets (= 36), correct
+# # look how they are distributed (all item sets almost equally frequent?)
+# # -> 138 to 139 times for each item set
+# by(sub, sub$n_occasions, function(df) {
+#   freq <- table(df$items)
+#   c(
+#     min = min(freq),
+#     max = max(freq),
+#     sd = sd(freq)
+#   )
+# })
+# # correct, all item sets appear 138 to 139 times
+# 
+# 
+# # check 3-item condition
+# choose(9, 3) # 84 unique 3-item sets
+# 5000 %/% 84  # each item set should appear 59 times
+# 5000 %% 84 # 44 item sets will appear 60 times (remainder of 5000 %/% 84 is 44 -> these rows will be filled
+# # with one item set each)
+# 
+# # create subset:
+# sub <- design_random[design_random$n_items == 3, ]
+# 
+# length(unique(sub$items)) # all unique item sets (= 84), correct
+# # look how they are distributed (all item sets almost equally frequent?)
+# # -> 59 to 60 times for each item set
+# by(sub, sub$n_occasions, function(df) {
+#   freq <- table(df$items)
+#   c(
+#     min = min(freq),
+#     max = max(freq),
+#     sd = sd(freq)
+#   )
+# })
+# # correct, all item sets appear 59 to 60 times

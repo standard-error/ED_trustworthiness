@@ -68,7 +68,16 @@ calculate_icc <- function(data,
           # relevant emotion items (indicated by items)
           iccsubdat <- data[which(data[ ,id.var] == id), items]
           
-          # calculate ICC using the participant's data and ICC(3, 1) measuring consistency
+          
+          # If person had zero variance in emotion ratings,
+          # their ratings are set to NA (in ordered_occasion_draw and random_occasion_draw function)
+          # -> do not calculate ICC for these participants (would not work anyway)
+          if (all(is.na(iccsubdat))) {
+            return(cbind(id, NA_real_, NA_real_))
+          }
+          
+          # In all other cases,
+          # calculate ICC using the participant's data and ICC(3, 1) measuring consistency (default)
           ICC <- irr::icc(iccsubdat, model="twoway", type=type,
                           unit = unit)$value 
           
@@ -84,7 +93,8 @@ calculate_icc <- function(data,
           # -> calculate from length of item vector 
           K_i <- length(items)
           
-          ICC.z <- 0.5 * log( (1 + (K_i - 1)*ICC) / (1 - ICC) )
+          ICC.z <- suppressWarnings(0.5 * log( (1 + (K_i - 1)*ICC) / (1 - ICC) ))
+          # suppress warnings here -> NaN will be handled in one_simulation function!
           
           cbind(id, ICC, ICC.z) # return ID, ICC and ICC.z for each participant
           # t() transposes output from apply() to a two-dimensional matrix (3 cols, N rows)
@@ -94,4 +104,81 @@ calculate_icc <- function(data,
 }
 
 
+# # test function
+# set.seed(123)
+# 
+# test_data <- data.frame(
+#   id = rep(1:4, each = 5),                 # 4 Personen, je 5 Messzeitpunkte
+#   occasion = rep(1:5, times = 4),
+# 
+#   # Person 1: normale Varianz
+#   item1 = c(rnorm(5, 3, 1), rep(2, 5), rnorm(5, 5, 1), rep(NA, 5)),
+#   item2 = c(rnorm(5, 4, 1), rep(2, 5), c(1,2,NA,3,4), rep(NA, 5)),
+#   item3 = c(rnorm(5, 5, 1), rep(2, 5), c(NA,2,3,4,5), rep(NA, 5))
+# )
+# 
+# test_data
+# 
+# calculate_icc(test_data, id.var = "id", items=c("item1", "item2", "item3"))
+# 
+# sub2 <- test_data[test_data$id == 2, c("item1", "item2")]
+# 
+# 
+# test <- data.frame(itemA = rep(1, 5),
+#                    itemB = rep(2, 5),
+#                    itemC = rep(3, 5))
+# 
+# all(var(test) == 0)
+# var(test)
+# 
+# irr::icc(test, model="twoway", type="consistency", unit="single")
+# 
+# 
+# item_vars <- sapply(test[, c("itemA", "itemB", "itemC"), drop = FALSE], function(x) {
+#   if (sum(!is.na(x)) < 2) return(NA_real_)
+#   var(x, na.rm = TRUE)
+# })
+# 
+# has_variance <- any(item_vars > 0, na.rm = TRUE)
+# has_variance
+# # wenn alle Itemvarianzen über die Zeit = 0 -> keine ICC berechenbar
+# 
+# 
+# test <- data.frame(itemA = rep(1, 5),
+#                    itemB = c(1,2,3,4,5),
+#                    itemC = rep(3, 5))
+# 
+# all(var(test) == 0) # there is variance
+# var(test)
+# 
+# irr::icc(test, model="twoway", type="consistency", unit="single")
+# 
+# 
+# item_vars <- sapply(test[, c("itemA", "itemB", "itemC"), drop = FALSE], function(x) {
+#   if (sum(!is.na(x)) < 2) return(NA_real_)
+#   var(x, na.rm = TRUE)
+# })
+# 
+# has_variance <- any(item_vars > 0, na.rm = TRUE)
+# has_variance
+# 
+# 
+# 
+# test <- data.frame(itemA = c(1,2,3,4,5),
+#                    itemB = c(1,2,3,4,5),
+#                    itemC = c(1,2,3,4,5))
+# 
+# all(var(test) == 0) # there is variance
+# var(test)
+# 
+# irr::icc(test, model="twoway", type="consistency", unit="single")
+# 
+# 
+# item_vars <- sapply(test[, c("itemA", "itemB", "itemC"), drop = FALSE], function(x) {
+#   if (sum(!is.na(x)) < 2) return(NA_real_)
+#   var(x, na.rm = TRUE)
+# })
+# 
+# has_variance <- any(item_vars > 0, na.rm = TRUE)
+# has_variance
 
