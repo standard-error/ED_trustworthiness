@@ -8,7 +8,8 @@
 #####            Function to Calculate ICC                    #####
 ###################################################################
 
-
+# two functions:
+# function to calculate ICC and function to handle negative ICCs
 
 
 # Create Function to Calculate ICC ----------------------------------------
@@ -104,13 +105,72 @@ calculate_icc <- function(data,
 }
 
 
+
+
+# Create Function to Handle Negative ICCs ---------------------------------
+handle_negative_iccs <- function(ICCdata,
+                                 icc_col,
+                                 icc.z_col,
+                                 negative_icc_handling = c("keep", "set to zero", "exclude")) {
+  # helper function to handle negative ICCs after calculation
+  # ICCdata: matrix of person IDs, ICCs and transformed ICCs (ICC.z)
+  # icc_col: character of the variable name of the ICC variable
+  # icc.z_col: character of the variable name of the ICC.z variable
+  # negative_icc_handling: argument specifying whether to keep negative ICCs, set them to 0 or to exclude them
+  
+  negative_icc_handling <- match.arg(negative_icc_handling, several.ok = FALSE)
+  
+  # sanity check:
+  if (!all(c(icc_col, icc.z_col) %in% colnames(ICCdata))) {
+    stop("icc_col or icc.z_col not found in ICCdata")
+  }
+  
+  # create index of negative ICCs (rows in ICCdata)
+  neg_icc_idx <- ICCdata[ , icc_col] < 0 & !is.na(ICCdata[ , icc_col])
+  # if ICC < 0 and is not missing -> TRUE
+  # neg_icc_idx with TRUE will be chosen to be manipulated
+  
+  
+  if (negative_icc_handling == "exclude") { # if negative ICCs shall be excluded, set them to NA
+    ICCdata[neg_icc_idx, icc_col] <- NA
+    ICCdata[neg_icc_idx, icc.z_col] <- NA # also set transformed values to NA
+    return(ICCdata) # return handled ICCdata set
+    
+  } else if (negative_icc_handling == "set to zero") {
+    # else, if the negative ICCs shall be set to zero:
+
+    # now set raw ICCs to 0 and determine Fisher's Z-transformed ICCs
+    ICCdata[neg_icc_idx, icc_col] <- 0 # set the negative ICCs to 0 (by their index)
+    ICCdata[neg_icc_idx, icc.z_col] <- 0
+    # Fisher's Z-transformed values are as well zero:
+    # formula for transformation: 0.5 * log( (1 + (K_i - 1)*ICC_i) / (1 - ICC_i) )
+    # use 0 for ICC_i:
+    # 0.5 * log( (1 + (K_i - 1)*0) / (1 - 0) ) # --> (K_i - 1)*0 = 0 
+    # = 0.5 * log( (1 + 0) / (1 - 0) )
+    # = 0.5 * log( 1 / 1 )
+    # = 0.5 * log(1)
+    # = 0.5 * 0 
+    # = 0
+    # regardless of K_i, the formula will result in zero if ICC_i = 0
+    
+    return(ICCdata) # return handled data set
+    
+  } else if (negative_icc_handling == "keep") {
+    # if negative ICCs shall be kept, just return ICCdata
+    return(ICCdata)
+  }
+  
+}
+
+
+
 # # test function
 # set.seed(123)
 # 
 # test_data <- data.frame(
 #   id = rep(1:4, each = 5),                 # 4 Personen, je 5 Messzeitpunkte
 #   occasion = rep(1:5, times = 4),
-# 
+#   
 #   # Person 1: normale Varianz
 #   item1 = c(rnorm(5, 3, 1), rep(2, 5), rnorm(5, 5, 1), rep(NA, 5)),
 #   item2 = c(rnorm(5, 4, 1), rep(2, 5), c(1,2,NA,3,4), rep(NA, 5)),
@@ -181,4 +241,91 @@ calculate_icc <- function(data,
 # 
 # has_variance <- any(item_vars > 0, na.rm = TRUE)
 # has_variance
-
+# 
+# 
+# 
+# test negative icc handling function:
+# set.seed(123)
+# 
+# test_data <- data.frame(
+#   id = rep(1:4, each = 5),                 # 4 Personen, je 5 Messzeitpunkte
+#   occasion = rep(1:5, times = 4),
+# 
+#   # Person 1: normale Varianz
+#   item1 = c(rnorm(5, 3, 1), rep(2, 5), rnorm(5, 5, 1), rep(NA, 5)),
+#   item2 = c(rnorm(5, 4, 1), rep(2, 5), c(1,2,NA,3,4), rep(NA, 5)),
+#   item3 = c(rnorm(5, 5, 1), rep(2, 5), c(NA,2,3,4,5), rep(NA, 5))
+# )
+# 
+# test_data
+# 
+# icc_test_data <- calculate_icc(test_data, id.var="id", items=c("item1", "item2", "item3"),
+#                                type = "consistency", unit="single")
+# icc_test_data
+# # person 1 has negative ICC
+# 
+# keep <- handle_negative_iccs(icc_test_data, icc_col = "ICC",
+#                              icc.z_col = "ICC.z",
+#                              negative_icc_handling="keep")
+# keep
+# all(icc_test_data == keep, na.rm=T)
+# 
+# 
+# setzero <- handle_negative_iccs(icc_test_data, icc_col = "ICC",
+#                                 icc.z_col = "ICC.z",
+#                                 negative_icc_handling="set to zero")
+# setzero
+# # first person's ICC is now zero, and ICC.z is as well
+# # calculate manually:
+# 0.5 * log( (1 + (3 - 1)*0) / (1 - 0) ) # correct
+# 
+# 
+# exclude <- handle_negative_iccs(icc_test_data, icc_col = "ICC",
+#                                 icc.z_col = "ICC.z",
+#                                 negative_icc_handling="exclude")
+# exclude # first person's ICC is now NA
+# # correct
+# icc_test_data
+#
+# load("prepared data/EMOTIONS_benchmark_data.rda")
+# iccs_orig <- calculate_icc(bench, id.var = "id",
+#                            items = c("angry", "excluded", "envious", "resentful"),
+#                            type = "consistency",
+#                            unit="single")
+# iccs_orig
+# table(iccs_orig[ , "ICC"] < 0)
+# # 60 negative ICCs
+# idx <- iccs_orig[ , "ICC"] < 0 & !is.na(iccs_orig[ , "ICC"])
+# which(idx == TRUE)
+# 
+# iccs_manag <- handle_negative_iccs(iccs_orig,
+#                                    icc_col = "ICC",
+#                                    icc.z_col = "ICC.z",
+#                                    negative_icc_handling = "keep")
+# table(iccs_manag[ , "ICC"] < 0)
+# # still correct
+# idx2 <- iccs_manag[ , "ICC"] < 0 & !is.na(iccs_manag[ , "ICC"])
+# which(idx2 == TRUE) == which(idx == TRUE)
+# # the same participants
+# 
+# iccs_zero <- handle_negative_iccs(iccs_orig,
+#                                   icc_col = "ICC",
+#                                   icc.z_col = "ICC.z",
+#                                   negative_icc_handling = "set to zero")
+# table(iccs_zero[ , "ICC"] < 0)
+# # no negative ICCs
+# idx3 <- iccs_zero[ , "ICC"] == 0 & !is.na(iccs_zero[ , "ICC"])
+# which(idx3 == TRUE) %in% which(idx == TRUE)
+# table(iccs_orig[ , "ICC"] == 0) # in original data, there were already 10 ICCs = 0
+# table(iccs_orig[ , "ICC"] == 0 | iccs_orig[, "ICC"] <0) # 70 <= 0
+# table(iccs_zero[ , "ICC"] == 0) # 70, correct
+# 
+# 
+# iccs_exc <- handle_negative_iccs(iccs_orig,
+#                                  icc_col = "ICC",
+#                                  icc.z_col = "ICC.z",
+#                                  negative_icc_handling = "exclude")
+# table(is.na(iccs_exc[ , "ICC"])) # 64 NA
+# table(is.na(iccs_orig[ , "ICC"])) # 4 missing
+# table(iccs_orig[ , "ICC"] < 0 ) # and 60 negative
+# # correct -> sums up to 64

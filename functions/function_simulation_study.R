@@ -31,7 +31,9 @@ library(future.apply)
 # Write Function for Simulation -------------------------------------------
 simulation_study <- function(data, n_occasions, occasions_drawn = c("random", "by order"), n_items, n_iteration,
                              id.var, all_items, categories = NULL,
-                             type = "consistency", unit = "single", occ.running.var,
+                             type = "consistency", unit = "single",
+                             negative_icc_handling = c("keep", "set to zero", "exclude"),
+                             occ.running.var,
                              seed_item = global.seed.item.set,
                              item_sets_across_replications = c("balanced", "fixed", "random"),
                              seed_sim = NULL, cores = 1) {
@@ -54,6 +56,7 @@ simulation_study <- function(data, n_occasions, occasions_drawn = c("random", "b
           # here: default is consistency (but could be varied in principle in simulation)
   # unit: unit for ICC calculation
           # here: default is single measurements (but could be varied in principle in simulation)
+  # negative_icc_handling: specifies whether negative ICCs shall be kept, set to zero or excluded (in benchmark and simulated data)
   # occ.running.var: character that indicates the name of the occasion running variable
   # seed_item: seed for drawing item sets -> global seed so that item sets are equal across simulations
               # i.e., for check whether number of replications is sufficient
@@ -69,6 +72,7 @@ simulation_study <- function(data, n_occasions, occasions_drawn = c("random", "b
   ## MATCH ARGUMENTS
   occasions_drawn <- match.arg(occasions_drawn, several.ok = TRUE)
   item_sets_across_replications <- match.arg(item_sets_across_replications, several.ok = FALSE)
+  negative_icc_handling <- match.arg(negative_icc_handling, several.ok = FALSE)
   
   
   
@@ -476,15 +480,29 @@ simulation_study <- function(data, n_occasions, occasions_drawn = c("random", "b
   # benchmark_ICCdata: data on ICCs (raw ICC and ICC.z) using benchmark data
   # -> conditions are compared to this
   
+  # HANDLING OF NEGATIVE ICC IN BENCHMARK DATA
+  benchmark_ICCdata <- handle_negative_iccs(
+    ICCdata = benchmark_ICCdata, # pass benchmark ICC data
+    icc_col = "bench_ICC",
+    icc.z_col = "bench_ICC.z",
+    negative_icc_handling = negative_icc_handling # pass negative ICC handling argument
+  )
+  # no need to determine number of negative ICCs here, because the benchmark will be
+  # an individual row in the design data frame
+  # and the benchmark can be easily reproduced outside the function
+  
+  #----------------------------------------------------
   
   # CREATE RESULTS STORAGE
   # already create columns that we will store the results in
   # name columns; order as in the one_simulation_outcome_measures-function
   res <- data.frame(
     # information on N
-    N_merged_total = rep(NA, nrow(design)),
-    N_merged_ICC = rep(NA, nrow(design)),
-    N_valid_ICC.z = rep(NA, nrow(design)),
+    N_merged_total_raw = rep(NA, nrow(design)),
+    N_merged_ICC_raw = rep(NA, nrow(design)),
+    N_merged_total_handled = rep(NA, nrow(design)),
+    N_merged_ICC_handled = rep(NA, nrow(design)),
+    N_valid_ICC.z_handled = rep(NA, nrow(design)),
     N_cor_ICC = rep(NA, nrow(design)),
     N_cor_ICC.z = rep(NA, nrow(design)),
     N_rel = rep(NA, nrow(design)),
@@ -499,19 +517,20 @@ simulation_study <- function(data, n_occasions, occasions_drawn = c("random", "b
     rel = rep(NA, nrow(design)),
     sd_ICC = rep(NA, nrow(design)),
     sd_ICC.z = rep(NA, nrow(design)),
-    negICC = rep(NA, nrow(design)),
-    estimationProbNeg = rep(NA, nrow(design)),
-    estimationProbPos = rep(NA, nrow(design)),
+    negICC_raw = rep(NA, nrow(design)),
+    negICC_handled = rep(NA, nrow(design)),
+    estimationProbNeg_raw = rep(NA, nrow(design)),
+    estimationProbPos_raw = rep(NA, nrow(design)),
     # information on total, valid, and skipped persons (we can change the order later)
     total_redraws = rep(NA, nrow(design)),
     n_total_persons = rep(NA, nrow(design)),
-    n_valid_persons = rep(NA, nrow(design)),
-    n_skipped_persons = rep(NA, nrow(design)),
+    n_valid_persons_var = rep(NA, nrow(design)),
+    n_skipped_persons_var = rep(NA, nrow(design)),
     # add design row id
     design_row_id = rep(NA, nrow(design)) # add design_row_id to merge results and design later
   )
   
-  
+  #----------------------------------------------------
   
 
   # SET FUTURE PLAN FOR PARALLELIZATION
@@ -530,6 +549,9 @@ simulation_study <- function(data, n_occasions, occasions_drawn = c("random", "b
   }
   
 
+  #----------------------------------------------------
+  
+  
   # RUN SIMULATION
   res_list <- future_lapply(seq_len(nrow(design)),# apply function to row dimension of design matrix (i.e.,
                            # "loop" over rows) and then transpose to the results matrix
@@ -548,7 +570,8 @@ simulation_study <- function(data, n_occasions, occasions_drawn = c("random", "b
                                occ.running.var = occ.running.var,
                                type = type,
                                unit = unit,
-                               benchmark_ICCdata = benchmark_ICCdata) # calculated before
+                               benchmark_ICCdata = benchmark_ICCdata, # calculated before (and negative ICCs handled!)
+                               negative_icc_handling = negative_icc_handling) 
                              
                              
                              # add design_row_id to merge with design later
@@ -581,6 +604,8 @@ simulation_study <- function(data, n_occasions, occasions_drawn = c("random", "b
   # combine design and results
   # merge by design_row_id
   output <- merge(design, res, by="design_row_id", sort=FALSE)
+  # add column specifying negative ICC handling in case that simulations shall be combined
+  output$negative_icc_handling <- negative_icc_handling 
   output <- output[order(output$design_row_id), ] # restore original order
   return(output)
 }
@@ -590,7 +615,7 @@ simulation_study <- function(data, n_occasions, occasions_drawn = c("random", "b
 
 ### Test function up to design
 # load("prepared data/benchmark_data.rda")
-# 
+#
 # data = bench
 # n_occasions = c(14, seq(20, 70, 10))
 # occasions_drawn = c("random", "by order")
@@ -620,8 +645,8 @@ simulation_study <- function(data, n_occasions, occasions_drawn = c("random", "b
 #   )
 # })
 # # relatively uneven
-# 
-# 
+#
+#
 # # look at subsets whether all unique item combinations are drawn (for 10 items)
 # sub <- design[design$n_items == 10, ]
 # # item sets in different order are still the same item set -> use only one order
@@ -629,15 +654,15 @@ simulation_study <- function(data, n_occasions, occasions_drawn = c("random", "b
 # #   items <- trimws(strsplit(x, ",")[[1]])
 # #   paste(sort(items), collapse = ", ")
 # # })
-# 
+#
 # sub$items_ordered <- sapply(sub$items, function(x) {
 #   items <- trimws(strsplit(x, ",")[[1]])
 #   paste(sort(items), collapse = ", ")
 # })
-# 
+#
 # length(unique(sub$items_ordered)) # 243, correct (all unique item sets)
-# 
-# 
+#
+#
 # # look how they are distributed (all item sets almost equally frequent?)
 # by(sub, sub$n_occasions, function(df) {
 #   freq <- table(df$items_ordered)
@@ -648,7 +673,7 @@ simulation_study <- function(data, n_occasions, occasions_drawn = c("random", "b
 #   )
 # })
 # # relatively uneven
-# 
+#
 # test <- simulation_study(data = bench, n_occasions = c(14, seq(50, 70, 10)),
 #                          occasions_drawn = c("random", "by order"), n_items = c(5, 10, 15),
 #                          n_iteration = 500,
@@ -673,8 +698,8 @@ simulation_study <- function(data, n_occasions, occasions_drawn = c("random", "b
 #     sd = sd(freq)
 #   )
 # })
-# 
-# 
+#
+#
 # by(test[test$n_items == 5 & test$occasions_drawn=="by order", ], test[test$n_items == 5 & test$occasions_drawn=="by order", ]$n_occasions, function(df) {
 #   freq <- table(df$items)
 #   c(
@@ -692,10 +717,10 @@ simulation_study <- function(data, n_occasions, occasions_drawn = c("random", "b
 # 5000 %/% 126  # each item set should appear 39 times
 # 5000 %% 126 # 86 item sets will appear 40 times (remainder of 5000 %/% 126 is 86 -> these rows will be filled
 # # with one item set each)
-# 
+#
 # # create subset:
 # sub <- design_random[design_random$n_items == 5, ]
-# 
+#
 # length(unique(sub$items)) # all unique item sets (= 126), correct
 # # look how they are distributed (all item sets almost equally frequent?)
 # # -> 39 to 40 times for each item set
@@ -708,16 +733,16 @@ simulation_study <- function(data, n_occasions, occasions_drawn = c("random", "b
 #   )
 # })
 # # correct, each item set appears 39 to 40 times in each occasion-number condition
-# 
+#
 # # check 7-item condition
 # choose(9, 7) # 36 unique 7-item sets
 # 5000 %/% 36  # each item set should appear 138 times
 # 5000 %% 36 # 32 item sets will appear 139 times (remainder of 5000 %/% 36 is 32 -> these rows will be filled
 # # with one item set each)
-# 
+#
 # # create subset:
 # sub <- design_random[design_random$n_items == 7, ]
-# 
+#
 # length(unique(sub$items)) # all unique item sets (= 36), correct
 # # look how they are distributed (all item sets almost equally frequent?)
 # # -> 138 to 139 times for each item set
@@ -730,17 +755,17 @@ simulation_study <- function(data, n_occasions, occasions_drawn = c("random", "b
 #   )
 # })
 # # correct, all item sets appear 138 to 139 times
-# 
-# 
+#
+#
 # # check 3-item condition
 # choose(9, 3) # 84 unique 3-item sets
 # 5000 %/% 84  # each item set should appear 59 times
 # 5000 %% 84 # 44 item sets will appear 60 times (remainder of 5000 %/% 84 is 44 -> these rows will be filled
 # # with one item set each)
-# 
+#
 # # create subset:
 # sub <- design_random[design_random$n_items == 3, ]
-# 
+#
 # length(unique(sub$items)) # all unique item sets (= 84), correct
 # # look how they are distributed (all item sets almost equally frequent?)
 # # -> 59 to 60 times for each item set
@@ -753,3 +778,162 @@ simulation_study <- function(data, n_occasions, occasions_drawn = c("random", "b
 #   )
 # })
 # # correct, all item sets appear 59 to 60 times
+
+
+
+
+# ## Test function with regard to negative_icc_handling
+# load("prepared data/EMOTIONS_benchmark_data.rda")
+# 
+# 
+# # check whether there are negative ICCs beforehand (in benchmark ICCdata)
+# bench_ICC <- calculate_icc(data = bench,
+#                            id.var = "id",
+#                            items = c("angry", "excluded", "envious", "resentful",
+#                                      "ashamed", "insecure", "anxious", "sad", "lonely"),
+#                            type = "consistency",
+#                            unit = "single")
+# table(bench_ICC[ , "ICC"] < 0)
+# # 5 negative ICCs beforehand
+# 
+# # set up small simulation to check negative_icc_handling argument
+# 
+# # keep negative ICCs
+# keep <- simulation_study(data = bench, n_occasions = c(14, 70),
+#                          occasions_drawn = c("random", "by order"), 
+#                          n_items = 9,
+#                          n_iteration = 1,
+#                          id.var = "id",
+#                          all_items = c("angry", "excluded", "envious", "resentful",
+#                                        "ashamed", "insecure", "anxious", "sad", "lonely"),
+#                          categories = NULL,
+#                          type = "consistency", 
+#                          unit = "single",
+#                          occ.running.var = "occ_running",
+#                          negative_icc_handling = "keep",
+#                          seed_item = 1,
+#                          item_sets_across_replications = "balanced",
+#                          seed_sim = 1, cores = 1)
+# View(keep)
+# # in 70 occasions and 9 items, there are 5 negative ICCs -> correct
+# # compare
+# sim_ICCkeep <- keep[3, "person_estimates_ICC"][[1]]
+# merged1 <- cbind(bench_ICC, sim_ICCkeep)
+# isTRUE(all.equal(merged1[ ,"ICC"], merged1[ , "sim_ICCkeep"], tolerance = 1e-10, check.attributed=FALSE)) # TRUE
+# # keep works correctly
+# 
+# # check whether numbers are plausible
+# # number of negative ICCs before and after handling is the same
+# # persons skipped due to missing variance in line with the persons for whom an ICC was calculated
+# # one positive estimation problem -> one valid ICC.z less than valid ICC
+# 
+# 
+# 
+# # set negative ICCs to zero
+# # keep negative ICCs
+# setzero <- simulation_study(data = bench, n_occasions = c(14, 70),
+#                          occasions_drawn = c("random", "by order"), 
+#                          n_items = 9,
+#                          n_iteration = 1,
+#                          id.var = "id",
+#                          all_items = c("angry", "excluded", "envious", "resentful",
+#                                        "ashamed", "insecure", "anxious", "sad", "lonely"),
+#                          categories = NULL,
+#                          type = "consistency", 
+#                          unit = "single",
+#                          occ.running.var = "occ_running",
+#                          negative_icc_handling = "set to zero",
+#                          seed_item = 1,
+#                          item_sets_across_replications = "balanced",
+#                          seed_sim = 1, cores = 1)
+# View(setzero)
+# # in 70 occasions and 9 items, there are 5 negative ICCs before handling -> correct
+# # and there are zero negative ICCs after handling
+# # number of ICCs that were calculated = number of ICCs after handling (not excluded but set to zero)
+# # compare ICCs
+# # -> those with negative ICCs in benchmark should now have an ICC of zero
+# sim_ICCzero <- setzero[3, "person_estimates_ICC"][[1]]
+# merged2 <- cbind(bench_ICC, sim_ICCzero)
+# isTRUE(all.equal(merged2[ ,"ICC"], merged2[ , "sim_ICCzero"], tolerance = 1e-10, check.attributed=FALSE)) 
+# # FALSE -> some are not equal (this is what we would expect)
+# 
+# merged2 <- cbind(merged2, diff = merged2[ , "ICC"] - merged2[ , "sim_ICCzero"])
+# View(merged2[merged2[ , "diff"] != 0, ])
+# # the 5 participants with negative ICCs and one with a difference really close to zero (5.551115e-17)
+# 
+# # matching über named vector
+# merged_test <- cbind(bench_ICC, sim_ICCzero = sim_ICCzero[as.character(bench_ICC[, "id"])])
+# merged_test <- cbind(merged_test, diff = merged_test[ , "ICC"] - merged_test[ , "sim_ICCzero"])
+# View(merged_test[merged_test[ , "diff"] != 0, ])
+# # exact same result
+# 
+# 
+# # now try excluding negative ICCs -> N_merged_ICC_handled should be lower
+# excl <- simulation_study(data = bench, n_occasions = c(14, 70),
+#                             occasions_drawn = c("random", "by order"), 
+#                             n_items = 9,
+#                             n_iteration = 1,
+#                             id.var = "id",
+#                             all_items = c("angry", "excluded", "envious", "resentful",
+#                                           "ashamed", "insecure", "anxious", "sad", "lonely"),
+#                             categories = NULL,
+#                             type = "consistency", 
+#                             unit = "single",
+#                             occ.running.var = "occ_running",
+#                             negative_icc_handling = "exclude",
+#                             seed_item = 1,
+#                             item_sets_across_replications = "balanced",
+#                             seed_sim = 1, cores = 1)
+# View(excl)
+# # 5 negative ICCs in benchmark before handling, zero after handling
+# # N_merged_total = 250, N_merged_ICC_handled = 245 -> correct
+# 
+# 
+# # -> check ICCs
+# sim_ICCexcl <- excl[3, "person_estimates_ICC"][[1]]
+# merged3 <- cbind(bench_ICC, sim_ICCexcl)
+# isTRUE(all.equal(merged3[ ,"ICC"], merged3[ , "sim_ICCexcl"], tolerance = 1e-10, check.attributed=FALSE)) 
+# # FALSE -> some are not equal (this is what we would expect)
+# 
+# merged3 <- cbind(merged3, diff = merged3[ , "ICC"] - merged3[ , "sim_ICCexcl"])
+# View(merged3[merged3[ , "diff"] != 0 | is.na(merged3[ , "diff"]), ])
+# # the 5 participants with negative ICCs in benchmark (now NAs) and one with a difference really close to zero (5.551115e-17)
+# # same participants for set to zero
+# 
+# # matching über named vector
+# merged_test2 <- cbind(bench_ICC, sim_ICCexcl = sim_ICCexcl[as.character(bench_ICC[, "id"])])
+# merged_test2 <- cbind(merged_test2, diff = merged_test2[ , "ICC"] - merged_test2[ , "sim_ICCexcl"])
+# View(merged_test2[merged_test2[ , "diff"] != 0, ])
+# # exact same result
+# 
+# # row 2:
+# # 216 valid ICCs after handling; one positive estim prob -> 215 valid ICC.z
+# # fewer ICCs for correlation --> possibly due to persons with negative ICCs not being identical with
+# # persons having negative ICCs in benchmark
+# row2 <- excl[2 , "person_estimates_ICC"][[1]]
+# merged4 <- cbind(bench_ICC, row2)
+# merged4 <- as.data.frame(merged4)
+# 
+# merged4$invalid_ICC <- ifelse(merged4[ , "ICC"] < 0, 1, 0)
+# merged4$invalid_row2_ICC <- ifelse(is.na(merged4[ , "row2"]), 1, 0)
+#                                    
+# merged4$invalid_sum <- rowSums(merged4[ ,c("invalid_ICC", "invalid_row2_ICC")])
+# table(merged4$invalid_sum)
+# # 33 participants have one invalid value, 3 have 2 invalid values
+# # -> 214 have no invalid values
+# # --> i.e., some participants have only ONE invalid value (either benchmark OR simulation ICC)
+# # -> therefore, the sample size used for ICC is 214
+# table(merged4$invalid_ICC == 1 & merged4$invalid_row2_ICC == 0) # 2 participants for whom the
+# # benchmark ICC is invalid (negative), but the simulated ICC is not
+# 
+# # 250 (all persons) - 9 (without variance) - 25 (negative simulation ICC)
+# # = 216
+# # - 2 (negative ICC in benchmark but not in simulation ICC)
+# # = 214
+# # -> correct, 214 used for correlation
+# # 213 for cor ICC.z -> due to one positive estimation problem (no transformed ICC estimable)
+# # for relaibility analysis again 215 (213 + the 2 who had negative benchmark ICC but no negative simulation ICC)
+# # -> plausible
+# 
+# 
+# # appears to work correctly
