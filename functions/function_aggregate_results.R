@@ -119,14 +119,21 @@ aggregate_results <- function(data, outcomes, rel_outcomes, abs_outcomes,
     tmp <- do.call(
       data.frame,
       aggregate(formula, data = use_data, FUN = function(x) {
-        if (outcome == "cor_ICC" | outcome == "cor_ICC.z") { # if outcome is correlation
-        c(min(x),
-          inverse_fisher_z(mean(fisher_z(x))), # apply Fisher's Z-transformation, average, backtransform
-          max(x))          
-        } else { # else just calculate mean
-        c(min(x), mean(x), max(x))
+        
+        # include check -> results may be NA if there was no valid ICC data at all
+        if (all(is.na(x))) {
+          return(c(NA_real_, NA_real_, NA_real_))
         }
-      })
+        
+        if (outcome == "cor_ICC" | outcome == "cor_ICC.z") { # if outcome is correlation
+        c(min(x, na.rm=TRUE),
+          inverse_fisher_z(mean(fisher_z(x), na.rm=TRUE)), # apply Fisher's Z-transformation, average, backtransform
+          max(x, na.rm=TRUE))          
+        } else { # else just calculate mean
+        c(min(x, na.rm=TRUE), mean(x, na.rm=TRUE), max(x, na.rm=TRUE))
+        }
+      },
+      na.action = na.pass),
     )
     
     
