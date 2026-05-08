@@ -379,8 +379,8 @@ RMSE_N <- RMSE_N[-(which(RMSE_N$occasions_drawn == "by order" & RMSE_N$n_occasio
 
 
 # save 
-save(RMSE, file="results/02_revisioN_1/RMSE_values_per_participant_PED_emolive_Study.rda")
-save(RMSE_N, file="results/02_revisioN_1/RMSE_replication_number_per_participant_PED_emolive_Study.rda")
+save(RMSE, file="results/02_revision_1/RMSE_values_per_participant_PED_emolive_Study.rda")
+save(RMSE_N, file="results/02_revision_1/RMSE_replication_number_per_participant_PED_emolive_Study.rda")
 
 
 
@@ -474,8 +474,8 @@ RMSE.z_N <- RMSE.z_N[-(which(RMSE.z_N$occasions_drawn == "by order" & RMSE.z_N$n
 
 
 # save 
-save(RMSE.z, file="results/02_revisioN_1/RMSE.z_values_per_participant_PED_emolive_Study.rda")
-save(RMSE.z_N, file="results/02_revisioN_1/RMSE.z_replication_number_per_participant_PED_emolive_Study.rda")
+save(RMSE.z, file="results/02_revision_1/RMSE.z_values_per_participant_PED_emolive_Study.rda")
+save(RMSE.z_N, file="results/02_revision_1/RMSE.z_replication_number_per_participant_PED_emolive_Study.rda")
 
 
 
