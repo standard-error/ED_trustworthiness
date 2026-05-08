@@ -545,6 +545,20 @@ itemset_info_neg <- tibble(
 )
 
 itemset_info_neg
+# check if number is correct
+nrow(itemset_info_neg[itemset_info_neg$itemset_size == 3, ]) == choose(9, 3)
+nrow(itemset_info_neg[itemset_info_neg$itemset_size == 4, ]) == choose(9, 4)
+nrow(itemset_info_neg[itemset_info_neg$itemset_size == 5, ]) == choose(9, 5)
+nrow(itemset_info_neg[itemset_info_neg$itemset_size == 6, ]) == choose(9, 6)
+nrow(itemset_info_neg[itemset_info_neg$itemset_size == 7, ]) == choose(9, 7)
+nrow(itemset_info_neg[itemset_info_neg$itemset_size == 8, ]) == choose(9, 8)
+nrow(itemset_info_neg[itemset_info_neg$itemset_size == 9, ]) == choose(9, 9)
+nrow(itemset_info_neg) == sum(choose(9,3), choose(9,4), choose(9,5), choose(9,6),
+                              choose(9,7), choose(9,8), choose(9,9))
+
+# all possible item sets
+
+
 
 dat_split <- split(bench, bench$id)
 
@@ -572,16 +586,73 @@ itemset_info_by_person_neg
 all(itemset_info_by_person_neg$has_variance == TRUE)
 
 
-problems <- itemset_info_by_person_neg %>%
+problems_neg <- itemset_info_by_person_neg %>%
   filter(has_variance == FALSE)
 
-unique(problems$id)
-length(unique(problems$id))
+unique(problems_neg$id)
+length(unique(problems_neg$id))
 # 75 participants are affected
-unique(problems$itemset_size)
-table(problems$itemset_size)
+unique(problems_neg$itemset_size)
+table(problems_neg$itemset_size)
 
-# -> implement check in simulation study and mark these as no variance across ALL occasions and remove from analysis
+length(unique(problems_neg$itemset)) # 466 item sets affects
+length(unique(itemset_info_by_person_neg$itemset)) # of a total of 466 possible item sets
+
+table(problems_neg$id)
+
+# -> implement check in simulation study and mark such cases as no variance across ALL occasions and remove from analysis
+# -> or remove globally beforehand
+
+# to report in manuscript:
+# possible numbers of item sets
+choose(9,3)
+choose(9,4)
+choose(9,5)
+choose(9,6)
+choose(9,7)
+choose(9,8)
+choose(9,9)
+
+# number of affected item set per condition
+itemset_summary <- problems_neg %>% 
+  group_by(itemset_size) %>% 
+  summarise(n_affected_itemsets = n_distinct(itemset_id))
+
+itemset_summary
+
+# number of affected participants
+affected_persons <- problems_neg %>%
+  distinct(itemset_size, id) %>%
+  count(itemset_size, name = "n_affected_persons")
+
+affected_persons
+# total number of persons in data set:
+length(unique(itemset_info_by_person_neg$id)) # 251
+affected_persons$perc_affected_persons <- affected_persons$n_affected_persons / 251 * 100
+
+affected_persons
+round(affected_persons)
+
+# affected item sets per participant (and condition)
+person_problem_counts <- problems_neg %>% 
+  distinct(id, itemset_size, itemset_id) %>% 
+  count(id, itemset_size, name="n_problematic_itemsets")
+person_problem_counts
+# number of problematic item sets for each person in each condition
+
+# summarize on condition level (itemset_size)
+person_problem_counts %>%
+  group_by(itemset_size) %>%
+  summarise(
+    min_problematic = min(n_problematic_itemsets),
+    median_problematic = median(n_problematic_itemsets),
+    mean_problematic = mean(n_problematic_itemsets),
+    max_problematic = max(n_problematic_itemsets)
+  )
+# extract IDs of participants who show zero variance in at least one item set
+ids_var_prob_neg <- unique(problems_neg$id)
+                           
+
 
 
 # positive emotions
@@ -625,16 +696,22 @@ itemset_info_by_person_pos
 all(itemset_info_by_person_pos$has_variance == TRUE)
 
 
-problems <- itemset_info_by_person_pos %>%
+problems_pos <- itemset_info_by_person_pos %>%
   filter(has_variance == FALSE)
 # zero problems with missing variance in positive emotion terms
 
 
 
 
-# Remove participant 225, who has no variance across all negative emotion items across all occasions
-bench <- bench[bench$id != 225, ]
+# Remove participants who have zero variance at least once
+# -> all conditions comparable with regard to the number and the exact participants
+# included in the simulation and analyses
+bench <- bench[!bench$id %in% ids_var_prob_neg, ]
 
+# check whether number of participants is correct
+251 - 75 # = 176
+length(unique(bench$id)) # 176
+# correct
 
 
 # select variables relevant for analyses (i.e. ID,
