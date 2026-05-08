@@ -27,6 +27,14 @@ load("prepared data/emolive_benchmark_data.rda")
 # (relevant for ICC calculation: matrix can only store one data type)
 is.numeric(bench$SERIAL)
 
+# only use negative emotions
+bench <- bench[ ,c("SERIAL", "occ_running", "occasion_total",
+                   "aerger1", "aerger2", "aerger3",
+                   "traurigkeit1", "traurigkeit2", "traurigkeit3",
+                   "angst1", "angst2", "angst3",
+                   "scham1", "scham2", "scham3",
+                   "schuld1", "schuld2", "schuld3")]
+
 
 # Source Functions --------------------------------------------------------
 source("functions/function_simulation_study.R")
@@ -65,7 +73,9 @@ res <- simulation_study(data = bench, n_occasions = c(14, seq(20, 70, 10)),
                                        "angst", "angst", "angst",
                                        "scham", "scham", "scham",
                                        "schuld", "schuld", "schuld"),
-                        type = "consistency", unit = "single", occ.running.var = "occ_running",
+                        type = "consistency", unit = "single",
+                        negative_icc_handling = "keep",
+                        occ.running.var = "occ_running",
                         item_sets_across_replications = "balanced",
                         seed_item = 140821, seed_sim = 123, cores = 11)
 tictoc::toc()
@@ -74,7 +84,7 @@ tictoc::toc()
 
 
 # Save Results ------------------------------------------------------------
-save(res, file="results/02_revision_1/sim_results_NED_emolive_Study.rda")
+save(res, file="results/02_revision_1/emolive study/NED/sim_results_NED_emolive_Study.rda")
 
 
 
@@ -96,13 +106,16 @@ res2 <- simulation_study(data = bench, n_occasions = c(14, seq(20, 70, 10)),
                                         "angst", "angst", "angst",
                                         "scham", "scham", "scham",
                                         "schuld", "schuld", "schuld"),
-                         type = "consistency", unit = "single", occ.running.var = "occ_running",
-                         
+                         type = "consistency", unit = "single",
+                         negative_icc_handling = "keep",
+                         occ.running.var = "occ_running",
+                         item_sets_across_replications = "balanced",
                          seed_item = 210807, seed_sim = 456, cores = 11)
 tictoc::toc()
 
+
 # save results
-save(res2, file="results/02_revision_1/check nr of iterations/sim_results_NED_emolive_Study.rda")
+save(res2, file="results/02_revision_1/emolive study/NED/check nr of iterations/sim_results_NED_emolive_Study.rda")
 
 
 

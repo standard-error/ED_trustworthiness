@@ -28,6 +28,15 @@ load("prepared data/emolive_benchmark_data.rda")
 is.numeric(bench$SERIAL)
 
 
+# only use positive emotions
+bench <- bench[ ,c("SERIAL", "occ_running", "occasion_total",
+                   "freude1", "freude2", "freude3",
+                   "interesse1", "interesse2", "interesse3",
+                   "liebe1", "liebe2", "liebe3",
+                   "stolz1", "stolz2", "stolz3")]
+
+
+
 # Source Functions --------------------------------------------------------
 source("functions/function_simulation_study.R")
 # simulation study function already sources the other functions needed
@@ -63,7 +72,9 @@ res <- simulation_study(data = bench, n_occasions = c(14, seq(20, 70, 10)),
                                        'interesse', 'interesse', 'interesse',
                                        'liebe', 'liebe', 'liebe',
                                        'stolz', 'stolz', 'stolz'),
-                        type = "consistency", unit = "single", occ.running.var = "occ_running",
+                        type = "consistency", unit = "single",
+                        negative_icc_handling = "keep",
+                        occ.running.var = "occ_running",
                         item_sets_across_replications = "balanced",
                         seed_item = 260306, seed_sim = 666, cores = 11)
 tictoc::toc()
@@ -72,7 +83,7 @@ tictoc::toc()
 
 
 # Save Results ------------------------------------------------------------
-save(res, file="results/02_revision_1/sim_results_PED_emolive_Study.rda")
+save(res, file="results/02_revision_1/emolive study/PED/sim_results_PED_emolive_Study.rda")
 
 
 
@@ -92,14 +103,17 @@ res2 <- simulation_study(data = bench, n_occasions = c(14, seq(20, 70, 10)),
                                         'interesse', 'interesse', 'interesse',
                                         'liebe', 'liebe', 'liebe',
                                         'stolz', 'stolz', 'stolz'),
-                         type = "consistency", unit = "single", occ.running.var = "occ_running",
-                         
+                         type = "consistency", unit = "single",
+                         negative_icc_handling = "keep", 
+                         occ.running.var = "occ_running",
+                         item_sets_across_replications = "balanced",
                          seed_item = 220224, seed_sim = 23, cores = 11)
+
 tictoc::toc()
 
 
 # save results
-save(res2, file="results/02_revision_1/check nr of iterations/sim_results_PED_emolive_Study.rda")
+save(res2, file="results/02_revision_1/emolive study/PED/check nr of iterations/sim_results_PED_emolive_Study.rda")
 
 
 
