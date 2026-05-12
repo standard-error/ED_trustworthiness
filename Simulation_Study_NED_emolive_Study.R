@@ -84,7 +84,7 @@ tictoc::toc()
 
 
 # Save Results ------------------------------------------------------------
-save(res, file="results/02_revision_1/emolive study/NED/sim_results_NED_emolive_Study.rda")
+save(res, file="results/02_revision_1/emolive study/NED/main/raw/sim_results_NED_emolive_Study.rda")
 
 
 
@@ -115,7 +115,7 @@ tictoc::toc()
 
 
 # save results
-save(res2, file="results/02_revision_1/emolive study/NED/check nr of iterations/sim_results_NED_emolive_Study.rda")
+save(res2, file="results/02_revision_1/emolive study/NED/check nr of iterations/raw/sim_results_NED_emolive_Study.rda")
 
 
 

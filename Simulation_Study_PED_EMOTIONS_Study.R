@@ -77,7 +77,7 @@ tictoc::toc()
 
 
 # Save Results ------------------------------------------------------------
-save(res, file="results/02_revision_1/EMOTIONS study/PED/sim_results_PED_EMOTIONS_Study.rda")
+save(res, file="results/02_revision_1/EMOTIONS study/PED/main/raw/sim_results_PED_EMOTIONS_Study.rda")
 
 
 
@@ -102,5 +102,5 @@ tictoc::toc()
 
 
 # Save Results ------------------------------------------------------------
-save(res2, file="results/02_revision_1/EMOTIONS study/PED/check nr of iterations/sim_results_PED_EMOTIONS_Study.rda")
+save(res2, file="results/02_revision_1/EMOTIONS study/PED/check nr of iterations/raw/sim_results_PED_EMOTIONS_Study.rda")
 
