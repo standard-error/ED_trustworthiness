@@ -57,6 +57,99 @@ process_simulation_results <- function(input_file,
   message("Running processing for ", sim_id, " with n_persons = ", n_persons,
           " and a total of ", nrow(res), " rows in simulation design.")
   
+  # determine participant IDs from named person-level variables
+  # (to merge participant-level data later)
+  person_ids <- as.numeric(names(res$person_estimates_ICC[[1]])) # numeric ids
+  if(any(is.na(person_ids))) { stop("At least one person ID could not be converted to numeric.")} # check
+  
+  person_ids_chr <- as.character(person_ids) # character ids
+  
+  # check:
+  if (length(person_ids) != n_persons) {
+    stop("Number of unique person IDs does not match n_persons.")
+  }
+  
+  # check whether all person-level estimates contain ALL participants IN THE SAME ORDER
+  # -> needed so that we can simply bind the data later without any matching by ID
+  # -> check whether names(outcome_vector_in_row) == person_ids_chr
+  # -> same number and order of IDs
+  
+  # for person_estimates_ICC
+  if (!all(unlist(
+    # unlist and check whether all checks are TRUE or not
+    lapply(
+      # apply to list (all rows in simulation data frame)
+      res$person_estimates_ICC,
+      FUN = function(x) {
+        # list of person_estimates_ICC
+        identical(names(x), person_ids_chr) # function to apply: check whether names (IDs) are identical
+      }
+    )
+  ))) { # if not all are TRUE (i.e., checks for all rows)
+    stop( # give error message
+      "Person IDs are not the same and/or not in the same order across all replications for person_estimates_ICC"
+    )
+  }
+  
+  
+  
+  # for person_estimates_ICC.z
+  if (!all(unlist(
+    # unlist and check whether all checks are TRUE or not
+    lapply(
+      # apply to list (all rows in simulation data frame)
+      res$person_estimates_ICC.z,
+      FUN = function(x) {
+        # list of person_estimates_ICC.z
+        identical(names(x), person_ids_chr) # function to apply: check whether names (IDs) are identical
+      }
+    )
+  ))) { # if not all are TRUE (i.e., checks for all rows)
+    stop( # give error message
+      "Person IDs are not the same and/or not in the same order across all replications for person_estimates_ICC.z"
+    )
+  }
+
+  
+  
+  # for person_diff_ICC
+  if (!all(unlist(
+    # unlist and check whether all checks are TRUE or not
+    lapply(
+      # apply to list (all rows in simulation data frame)
+      res$person_diff_ICC,
+      FUN = function(x) {
+        # list of person_diff_ICC
+        identical(names(x), person_ids_chr) # function to apply: check whether names (IDs) are identical
+      }
+    )
+  ))) { # if not all are TRUE (i.e., checks for all rows)
+    stop( # give error message
+      "Person IDs are not the same and/or not in the same order across all replications for person_diff_ICC"
+    )
+  }
+  
+
+  
+  # for person_diff_ICC.z
+  if (!all(unlist(
+    # unlist and check whether all checks are TRUE or not
+    lapply(
+      # apply to list (all rows in simulation data frame)
+      res$person_diff_ICC.z,
+      FUN = function(x) {
+        # list of person_diff_ICC.z
+        identical(names(x), person_ids_chr) # function to apply: check whether names (IDs) are identical
+      }
+    )
+  ))) { # if not all are TRUE (i.e., checks for all rows)
+    stop( # give error message
+      "Person IDs are not the same and/or not in the same order across all replications for person_diff_ICC.z"
+    )
+  }
+  
+
+  
   # Check missings
   if (any(is.na(res)) == TRUE) {
     message("Simulation results contain NAs.")
@@ -121,6 +214,8 @@ process_simulation_results <- function(input_file,
   
   ICC_matrix <- do.call(rbind, res$person_estimates_ICC) # extract the N person_estimates_ICC values per row (replication) and bind them
   # -> matrix of N participants (columns) and their values in each replication (rows)
+
+
   
   # check dimensions of matrix and stop if the nrow(matrix) != nrow(res) or
   # ncol(matrix) != n_persons
