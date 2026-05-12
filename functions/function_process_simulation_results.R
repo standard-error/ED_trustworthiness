@@ -9,6 +9,8 @@
 ###################################################################
 
 
+
+
 # Wrapper Function to Process All Simulation Results ----------------------
 
 process_simulation_results <- function(input_file,
@@ -319,7 +321,7 @@ process_simulation_results <- function(input_file,
   
   
   
-  # Calcute RMSE for Each Participant Across Replications -------------------
+  # Calculate RMSE for Each Participant Across Replications -------------------
   
   
   # '' For ICCs -------------------------------------------------------------
@@ -329,18 +331,28 @@ process_simulation_results <- function(input_file,
   names(person_level_diff_sq)[5:(n_persons+4)] <- paste0("sq_diff_ICC_", 1:n_persons)
   
   ### aggregate
+  
+  # do not calculate RMSE for ordered conditions
+  # -> not directly comparable to random draw conditions
+  # -> in random draws, we have variability across different drawn measurement occasions
+  # -> in ordered draws, the occasions are constant and we have variability across item sets
+  # however, we are interested in variability across occasions (replications)
+  # -> not comparable
+  # (see also Monte Carlo standard error)
+  
   # for random-draw conditions, we have replications across different drawn occasions
-  # for ordered-draw conditions, we have replications across different item sets
-  # -> automatically determine the number of replications
   # CAVE: Participants may have missing in given replications
   # -> use the number of valid occasions
   # -> automatically determine this
+  
+  person_level_diff_sq.rd <- person_level_diff_sq[person_level_diff_sq$occasions_drawn == "random", ]
+  # only select conditions with random draws of occasions
 
   # RMSE = sqrt(sum(sq_diff_ICC)/n_replication)
   sq_diff_cols <- paste0("sq_diff_ICC_", 1:n_persons)
   
-  RMSE <- aggregate(person_level_diff_sq[ , sq_diff_cols], # for each participant-specific sq_diff column
-                    by = person_level_diff_sq[ , c("occasions_drawn", "n_occasions", "n_items")], # aggregate across conditions
+  RMSE <- aggregate(person_level_diff_sq.rd[ , sq_diff_cols], # for each participant-specific sq_diff column
+                    by = person_level_diff_sq.rd[ , c("occasions_drawn", "n_occasions", "n_items")], # aggregate across conditions
                     FUN = function(x) {
                       
                       n_valid <- sum(!is.na(x)) # determine the number of valid replications in given condition for participant
@@ -359,8 +371,8 @@ process_simulation_results <- function(input_file,
   
   # also create data frame with information on how many replications per participant were used for RMSE calculation
   
-  RMSE_N <- aggregate(person_level_diff_sq[ , sq_diff_cols], # for each participant-specific sq_diff column
-                      by = person_level_diff_sq[ , c("occasions_drawn", "n_occasions", "n_items")], # aggregate across conditions
+  RMSE_N <- aggregate(person_level_diff_sq.rd[ , sq_diff_cols], # for each participant-specific sq_diff column
+                      by = person_level_diff_sq.rd[ , c("occasions_drawn", "n_occasions", "n_items")], # aggregate across conditions
                       FUN = function(x) {
                         
                         sum(!is.na(x)) # determine the number of valid replications in given condition for participant
@@ -371,12 +383,8 @@ process_simulation_results <- function(input_file,
   RMSE_N <- RMSE_N[order(RMSE_N$occasions_drawn, RMSE_N$n_items, RMSE_N$n_occasions), ]
   
   
-  # remove benchmark row
-  # (values are correctly 0)
-  # benchmark is "drawn by order" and maximum number of occasions and items
-  RMSE <- RMSE[-(which(RMSE$occasions_drawn == "by order" & RMSE$n_occasions == max(RMSE$n_occasions) & RMSE$n_items == max(RMSE$n_items))), ]
-  RMSE_N <- RMSE_N[-(which(RMSE_N$occasions_drawn == "by order" & RMSE_N$n_occasions == max(RMSE_N$n_occasions) & RMSE_N$n_items == max(RMSE_N$n_items))), ]
-  
+  # since we only calculate RMSE for random occasions, we do not need to exclude benchmark row here
+  # (would be correctly zero)
   
   
   # save 
@@ -421,19 +429,28 @@ process_simulation_results <- function(input_file,
   
   
   ### aggregate
+  # do not calculate RMSE for ordered conditions
+  # -> not directly comparable to random draw conditions
+  # -> in random draws, we have variability across different drawn measurement occasions
+  # -> in ordered draws, the occasions are constant and we have variability across item sets
+  # however, we are interested in variability across occasions (replications)
+  # -> not comparable
+  # (see also Monte Carlo standard error)
+  
   # for random-draw conditions, we have replications across different drawn occasions
-  # for ordered-draw conditions, we have replications across different item sets
-  # -> automatically determine the number of replications
   # CAVE: Participants may have missing in given replications
   # -> use the number of valid occasions
   # -> automatically determine this
+  
+  person_level_diff.z_sq.rd <- person_level_diff.z_sq[person_level_diff.z_sq$occasions_drawn == "random", ]
+  # only select conditions with random draws of occasions
   
   # RMSE.z = sqrt(sum(sq_diff_ICC)/n_replication)
   sq_diff_cols <- paste0("sq_diff_ICC.z_", 1:n_persons)
   
   
-  RMSE.z <- aggregate(person_level_diff.z_sq[ , sq_diff_cols], # for each participant-specific sq_diff column
-                      by = person_level_diff.z_sq[ , c("occasions_drawn", "n_occasions", "n_items")], # aggregate across conditions
+  RMSE.z <- aggregate(person_level_diff.z_sq.rd[ , sq_diff_cols], # for each participant-specific sq_diff column
+                      by = person_level_diff.z_sq.rd[ , c("occasions_drawn", "n_occasions", "n_items")], # aggregate across conditions
                       FUN = function(x) {
                         
                         n_valid <- sum(!is.na(x)) # determine the number of valid replications in given condition for participant
@@ -452,8 +469,8 @@ process_simulation_results <- function(input_file,
   
   # also create data frame with information on how many replications per participant were used for RMSE calculation
 
-  RMSE.z_N <- aggregate(person_level_diff.z_sq[ , sq_diff_cols], # for each participant-specific sq_diff column
-                        by = person_level_diff.z_sq[ , c("occasions_drawn", "n_occasions", "n_items")], # aggregate across conditions
+  RMSE.z_N <- aggregate(person_level_diff.z_sq.rd[ , sq_diff_cols], # for each participant-specific sq_diff column
+                        by = person_level_diff.z_sq.rd[ , c("occasions_drawn", "n_occasions", "n_items")], # aggregate across conditions
                         FUN = function(x) {
                           
                           sum(!is.na(x)) # determine the number of valid replications in given condition for participant
@@ -464,12 +481,8 @@ process_simulation_results <- function(input_file,
   RMSE.z_N <- RMSE.z_N[order(RMSE.z_N$occasions_drawn, RMSE.z_N$n_items, RMSE.z_N$n_occasions), ]
   
   
-  # remove benchmark row
-  # (values are correctly 0)
-  # benchmark is "drawn by order" and maximum number of occasions and items
-  RMSE.z <- RMSE.z[-(which(RMSE.z$occasions_drawn == "by order" & RMSE.z$n_occasions == max(RMSE.z$n_occasions) & RMSE.z$n_items == max(RMSE.z$n_items))), ]
-  RMSE.z_N <- RMSE.z_N[-(which(RMSE.z_N$occasions_drawn == "by order" & RMSE.z_N$n_occasions == max(RMSE.z_N$n_occasions) & RMSE.z_N$n_items == max(RMSE.z_N$n_items))), ]
-  
+  # since we only calculate RMSE for random occasions, we do not need to exclude benchmark row here
+  # (would be correctly zero)
   
   
   # save 
