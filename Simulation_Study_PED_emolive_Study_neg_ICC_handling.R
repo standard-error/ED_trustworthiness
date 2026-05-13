@@ -10,7 +10,7 @@
 
 
 ###################################################################
-#####             Negative Emotion Differentiation            #####
+#####             Positive Emotion Differentiation            #####
 ###################################################################
 
 
@@ -27,13 +27,14 @@ load("prepared data/emolive_benchmark_data.rda")
 # (relevant for ICC calculation: matrix can only store one data type)
 is.numeric(bench$SERIAL)
 
-# only use negative emotions
+
+# only use positive emotions
 bench <- bench[ ,c("SERIAL", "occ_running", "occasion_total",
-                   "aerger1", "aerger2", "aerger3",
-                   "traurigkeit1", "traurigkeit2", "traurigkeit3",
-                   "angst1", "angst2", "angst3",
-                   "scham1", "scham2", "scham3",
-                   "schuld1", "schuld2", "schuld3")]
+                   "freude1", "freude2", "freude3",
+                   "interesse1", "interesse2", "interesse3",
+                   "liebe1", "liebe2", "liebe3",
+                   "stolz1", "stolz2", "stolz3")]
+
 
 
 # Source Functions --------------------------------------------------------
@@ -62,35 +63,35 @@ source("functions/function_simulation_study.R")
 
 
 
+
 # '' Set negative ICCs to zero --------------------------------------------
+
 
 tictoc::tic()
 # n_occasions: 14, 20, ..., 70 in steps of 10
 setzero <- simulation_study(data = bench, n_occasions = c(14, seq(20, 70, 10)),
-                            occasions_drawn = c("random", "by order"), n_items = c(5, 10, 15),
+                            occasions_drawn = c("random", "by order"), n_items = c(4, 8, 12),
                             n_iteration = 5000,
-                            id.var = "SERIAL", all_items = c('aerger1', 'aerger2', 'aerger3',
-                                                             'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
-                                                             'angst1', 'angst2', 'angst3',
-                                                             'scham1', 'scham2', 'scham3',
-                                                             'schuld1', 'schuld2', 'schuld3'),
-                            categories = c("aerger", "aerger", "aerger",
-                                           "traurigkeit", "traurigkeit", "traurigkeit",
-                                           "angst", "angst", "angst",
-                                           "scham", "scham", "scham",
-                                           "schuld", "schuld", "schuld"),
+                            id.var = "SERIAL", all_items = c('freude1', 'freude2', 'freude3',
+                                                             'interesse1', 'interesse2', 'interesse3',
+                                                             'liebe1', 'liebe2', 'liebe3',
+                                                             'stolz1', 'stolz2', 'stolz3'),
+                            categories = c('freude', 'freude', 'freude',
+                                           'interesse', 'interesse', 'interesse',
+                                           'liebe', 'liebe', 'liebe',
+                                           'stolz', 'stolz', 'stolz'),
                             type = "consistency", unit = "single",
                             negative_icc_handling = "set to zero",
                             occ.running.var = "occ_running",
                             item_sets_across_replications = "balanced",
-                            seed_item = 886554, seed_sim = 65, cores = 11)
+                            seed_item = 1744, seed_sim = 80052, cores = 11)
 tictoc::toc()
 
 
 
 
-# '' Save Results ---------------------------------------------------------
-save(setzero, file="results/02_revision_1/emolive study/NED/robustness check negICC handling/setzero/raw/sim_results_NED_set_neg_ICC_zero_emolive_Study.rda")
+# Save Results ------------------------------------------------------------
+save(setzero, file="results/02_revision_1/emolive study/PED/neg ICC handling/setzero/raw/sim_results_PED_set_neg_ICC_zero_emolive_Study.rda")
 
 
 
@@ -99,28 +100,27 @@ save(setzero, file="results/02_revision_1/emolive study/NED/robustness check neg
 
 tictoc::tic()
 excl <- simulation_study(data = bench, n_occasions = c(14, seq(20, 70, 10)),
-                         occasions_drawn = c("random", "by order"), n_items = c(5, 10, 15),
+                         occasions_drawn = c("random", "by order"), n_items = c(4, 8, 12),
                          n_iteration = 5000,
-                         id.var = "SERIAL", all_items = c('aerger1', 'aerger2', 'aerger3',
-                                                          'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
-                                                          'angst1', 'angst2', 'angst3',
-                                                          'scham1', 'scham2', 'scham3',
-                                                          'schuld1', 'schuld2', 'schuld3'),
-                         categories = c("aerger", "aerger", "aerger",
-                                        "traurigkeit", "traurigkeit", "traurigkeit",
-                                        "angst", "angst", "angst",
-                                        "scham", "scham", "scham",
-                                        "schuld", "schuld", "schuld"),
+                         id.var = "SERIAL", all_items = c('freude1', 'freude2', 'freude3',
+                                                          'interesse1', 'interesse2', 'interesse3',
+                                                          'liebe1', 'liebe2', 'liebe3',
+                                                          'stolz1', 'stolz2', 'stolz3'),
+                         categories = c('freude', 'freude', 'freude',
+                                        'interesse', 'interesse', 'interesse',
+                                        'liebe', 'liebe', 'liebe',
+                                        'stolz', 'stolz', 'stolz'),
                          type = "consistency", unit = "single",
-                         negative_icc_handling = "exclude",
+                         negative_icc_handling = "exclude", 
                          occ.running.var = "occ_running",
                          item_sets_across_replications = "balanced",
-                         seed_item = 355, seed_sim = 297, cores = 11)
+                         seed_item = 726189, seed_sim = 31415, cores = 11)
+
 tictoc::toc()
 
 
 # save results
-save(excl, file="results/02_revision_1/emolive study/NED/robustness check negICC handling/exclude/raw/sim_results_NED_exclude_neg_ICC_emolive_Study.rda")
+save(excl, file="results/02_revision_1/emolive study/PED/neg ICC handling/exclude/raw/sim_results_PED_exclude_neg_ICC_emolive_Study.rda")
 
 
 
@@ -129,6 +129,7 @@ save(excl, file="results/02_revision_1/emolive study/NED/robustness check negICC
 
 # Session Info ------------------------------------------------------------
 sessionInfo()
+
 
 # R version 4.5.3 (2026-03-11 ucrt)
 # Platform: x86_64-w64-mingw32/x64

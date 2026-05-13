@@ -84,7 +84,7 @@ tictoc::toc()
 
 
 # Save Results ------------------------------------------------------------
-save(setzero, file="results/02_revision_1/EMOTIONS study/NED/robustness check negICC handling/setzero/raw/sim_results_NED_set_neg_ICC_zero_EMOTIONS_Study.rda")
+save(setzero, file="results/02_revision_1/EMOTIONS study/NED/neg ICC handling/setzero/raw/sim_results_NED_set_neg_ICC_zero_EMOTIONS_Study.rda")
 
 
 
@@ -112,5 +112,5 @@ tictoc::toc()
 
 
 # Save Results ------------------------------------------------------------
-save(excl, file="results/02_revision_1/EMOTIONS study/NED/robustness check negICC handling/exclude/raw/sim_results_NED_exclude_neg_ICC_EMOTIONS_Study.rda")
+save(excl, file="results/02_revision_1/EMOTIONS study/NED/neg ICC handling/exclude/raw/sim_results_NED_exclude_neg_ICC_EMOTIONS_Study.rda")
 
