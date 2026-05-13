@@ -186,6 +186,22 @@ process_simulation_results <- function(input_file,
                                               ".rda")))
 
   
+  # Determine Number and Reasons for Skipped Persons
+  skipped_summary <- list(
+    total = sum(res$n_skipped_persons_var, na.rm=TRUE),
+    frequency = as.data.frame(table(res$n_skipped_persons_var)),
+    sum_by_condition = aggregate(n_skipped_persons_var ~ occasions_drawn + n_occasions + n_items,
+                                 data = res, FUN = function(x) {
+                                   sum(x, na.rm=TRUE)
+                                 })
+  )
+  
+  save(skipped_summary, file= file.path(output_dir,
+                                        paste0("skipped_summary_",
+                                               sim_id,
+                                               ".rda")))
+  
+  
   
   # Calculate %negICC -----------------------------------------------------
   # calculate proportion of negative ICCs
@@ -291,7 +307,7 @@ process_simulation_results <- function(input_file,
   # save
   save(person_level_diff,
        file = file.path(output_dir,
-                        paste0("person_level_difference_per_replication_",
+                        paste0("person_level_diff_per_repl_",
                                sim_id,
                                ".rda")))
   
@@ -320,7 +336,7 @@ process_simulation_results <- function(input_file,
   # save
   save(person_level_diff.z,
        file = file.path(output_dir,
-                        paste0("person_level_difference.z_per_replication_",
+                        paste0("person_level_diff.z_per_repl_",
                                sim_id,
                                ".rda")))
   
@@ -346,7 +362,7 @@ process_simulation_results <- function(input_file,
   # save
   save(person_diff_agg,
        file = file.path(output_dir,
-                        paste0("person_level_difference_aggregated_all_participants_",
+                        paste0("person_level_diff_agg_all_part_",
                                sim_id,
                                ".rda")))
 
@@ -369,7 +385,7 @@ process_simulation_results <- function(input_file,
   # save
   save(person_diff_agg.z,
        file = file.path(output_dir,
-                        paste0("person_level_difference.z_aggregated_all_participants_",
+                        paste0("person_level_diff.z_agg_all_part_",
                                sim_id,
                                ".rda")))
 
@@ -491,7 +507,7 @@ process_simulation_results <- function(input_file,
   
   save(RMSE_N,
        file = file.path(output_dir,
-                        paste0("RMSE_replication_number_per_participant_",
+                        paste0("RMSE_repl_N_per_participant_",
                                sim_id,
                                ".rda")))
   
@@ -590,7 +606,7 @@ process_simulation_results <- function(input_file,
   
   save(RMSE.z_N,
        file = file.path(output_dir,
-                        paste0("RMSE.z_replication_number_per_participant_",
+                        paste0("RMSE.z_repl_N_per_participant_",
                                sim_id,
                                ".rda")))
   
