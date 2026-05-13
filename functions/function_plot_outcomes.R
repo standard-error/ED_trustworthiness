@@ -1,7 +1,7 @@
 ###################################################################
-#####    Estimating trait negative emotion differentiation:   #####
-#####        How many measurement occasions and               #####
-#####              emotion items are needed?                  #####
+#####      Estimating trait emotion differentiation:          #####
+#####         How many measurement occasions and              #####
+#####               emotion items are needed?                 #####
 ###################################################################
 
 ###################################################################
@@ -9,9 +9,6 @@
 ###################################################################
 
 
-# Note: Function could, in principle, handle if simulation study was run
-# for separate groups (e.g., high, medium, and low NED) -> groupwise argument.
-# However, this was not done here.
 
 
 
@@ -36,7 +33,7 @@ my_theme <- theme_bw() +
 plot_outcome <- function(data, ylims=NULL, ylabel=NULL, x_breaks = seq(0, 70, 10), theme_custom = my_theme,
                          dodge_width = 2,
                          scale_color = scale_color_grey(start = 0.45, end = 0.00),
-                         groupwise = FALSE, split_facets = FALSE,
+                         split_facets = FALSE,
                          facet_var = "occasions_drawn",
                          facet_order = c("random", "by order")) {
   # data : data frame with the results
@@ -46,9 +43,7 @@ plot_outcome <- function(data, ylims=NULL, ylabel=NULL, x_breaks = seq(0, 70, 10
   # theme_custom : ggplot theme
   # scale_color: define color theme
   # dodge_width: argument indicating how much to jitter points from different grouping variables
-  # groupwise: logical indicating whether or not the data contains groups (e.g., high, medium, low NED)
-          # and if it should be plotted groupwise
-  # split_facets: logical indicating whether the two facets (occasions_drawn) should be
+  # split_facets: logical indicating whether the two facets (e.g., occasions_drawn) should be
           # plotted in one plot or in separate plots
   # facet_var: chr indicating name of the facet variable to split by
   # facet_order: chr defining order of the facet levels so that order is the same across plots
@@ -59,26 +54,26 @@ plot_outcome <- function(data, ylims=NULL, ylabel=NULL, x_breaks = seq(0, 70, 10
   col_min  <- grep("_min$", names(data), value = TRUE)
   col_max  <- grep("_max$", names(data), value = TRUE)
   
+  if (length(col_mean) != 1 || length(col_min) != 1 || length(col_max) != 1) {
+    stop("Expected exactly one *_mean, *_min, and *_max column.")
+  }
+  
+  
   # read the outcome name from the last column in data (should be outcome_max)
   # last column = length(data)
   outcome_name <- sub("_max$", "", names(data)[length(data)])
   
-  
 
-  # Check if groupwise = TRUE
-  # adjust facets accordingly
-  # for groupwise = FALSE: facet only by occasions drawn
-  # for groupwise = TRUE: also facet by NED group (after ordering by high, medium, low NED)
-  if (groupwise == TRUE & !("group" %in% names(data))) {
-    stop(sprintf("There is no grouping variable for NED group in data."))
-  } else if (groupwise == TRUE & "group" %in% names(data)) {
-    data[ , "group"] <- factor(data[ , "group"], levels = c("high NED", "medium NED", "low NED"))
-    facet_formula <- facet_grid(rows = vars(group), cols = vars(occasions_drawn))
-  } else if (groupwise == FALSE ) {
-    facet_formula <- ggh4x::facet_manual(~factor(occasions_drawn), design=matrix(c(1,2), nrow=1, ncol=2, byrow=TRUE), drop=FALSE)
-      # do not drop unused factor levels
+  # Define facet variable (e.g., occasions_drawn or NED/PED...)
+  if (!(facet_var %in% names(data))) {
+    stop(sprintf("Facet variable '%s' not found in data.", facet_var))
   }
   
+  data[ , facet_var] <- factor(data[, facet_var], levels = facet_order) # order factor variable in order as specified
+  
+  facet_formula <- ggh4x::facet_manual(as.formula(paste0("~", facet_var)), design=matrix(seq_along(facet_order), nrow=1, byrow=TRUE), drop=FALSE)
+  
+
   # Build function for base plot
   base_plot <- function(data) {
   p <- ggplot(data, aes(
@@ -100,6 +95,7 @@ plot_outcome <- function(data, ylims=NULL, ylabel=NULL, x_breaks = seq(0, 70, 10
     #  if y label is provided, use it; else, use the outcome name extracted from column names of data 
     ylab(ifelse(!is.null(ylabel), ylabel, outcome_name)) +
     scale_color +
+    scale_shape_manual(values = c(16, 17, 15, 18, 1, 2, 0)) +
     labs(color = "Number of Items", shape = "Number of Items", linetype = "Number of Items") +
     guides(color = guide_legend(title = "Number of Items"),
            shape = guide_legend(title = "Number of Items"),
@@ -107,7 +103,13 @@ plot_outcome <- function(data, ylims=NULL, ylabel=NULL, x_breaks = seq(0, 70, 10
     theme_custom
   
   if (!is.null(ylims)) {
-    p <- p + scale_y_continuous(limits = ylims, breaks = scales::breaks_pretty(n = 5), labels = function(x) {
+    
+    ymin <- ylims[1]
+    ymax <- ylims[2]
+    
+    p <- p +
+      coord_cartesian(ylim = c(ymin, ymax)) +
+      scale_y_continuous(breaks = scales::breaks_pretty(n = 5), labels = function(x) {
       ifelse(x < 0, sprintf("%6.2f", x), sprintf(" %6.2f", x))
     }
     )
@@ -119,15 +121,15 @@ plot_outcome <- function(data, ylims=NULL, ylabel=NULL, x_breaks = seq(0, 70, 10
   
   # Plot according to split_facet == TRUE or FALSE
   if (split_facets == FALSE) {
-    return(base_plot(data) + facet_formula+
-             force_panelsizes(rows=1, cols=c(1,1)))
+    return(base_plot(data) + facet_formula +
+             force_panelsizes(rows=1, cols=rep(1,length(facet_order))))
   } else if (split_facets == TRUE) {
     
     split_plots <- lapply(facet_order, # apply to each unique facet of the facet_var to split by
                           function(facet) { # function of facet
                             data_sub <- data[which(data[ , facet_var] == facet), ] # subset data according to facet
                             p <- base_plot(data_sub)
-                            p <- p + ggtitle(paste0("Occasions drawn: ", facet))
+                            p <- p + ggtitle(paste0(facet_var, ": ", facet))
                             return(p)
                           })
     return(split_plots)
