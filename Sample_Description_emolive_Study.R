@@ -219,7 +219,7 @@ for (item in desc_stats$item) {
   sd_between <- as.data.frame(lme4::VarCorr(null.mod))[1, "sdcor"] # L2 ("SERIAL" intercept)
   sd_within <- as.data.frame(lme4::VarCorr(null.mod))[2, "sdcor"] # L1 ("residual")
   
-  icc <- performance::icc(null.mod)$ICC_unadjusted
+  icc <- performance::icc(null.mod)$ICC_adjusted
   
   range <- paste0(range(samp_70[ , item])[1], " - ", range(samp_70[ , item])[2])
   
