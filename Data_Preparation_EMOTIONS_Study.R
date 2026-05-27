@@ -721,6 +721,11 @@ bench <- bench[ , c("id", "occ_running",
                     "angry", "excluded", "envious", "resentful", "ashamed", "insecure", # negative emotions
                     "anxious", "sad", "lonely")]
 
+# save IDs for sociodemographic variables request
+ids <- unique(bench$id)
+ids_df <- data.frame(id_for_merging = ids)
+writexl::write_xlsx(ids_df, "../EMOTIONS Project/IDs_EMOTIONS_data_set.xlsx")
+
 # save benchmark data set
 save(bench, file = "internal use/prepared data/EMOTIONS_benchmark_data.rda") # for internal use (just for consistency)
 save(bench, file = "prepared data/EMOTIONS_benchmark_data.rda") # for sharing
