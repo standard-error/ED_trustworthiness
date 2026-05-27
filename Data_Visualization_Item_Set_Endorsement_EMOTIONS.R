@@ -56,9 +56,11 @@ itemsets3_neg_means <- sapply(itemsets3_neg, function(itemset) {
 highest_itemset3_neg <- names(which.max(itemsets3_neg_means))
 highest_itemset3_neg
 max(itemsets3_neg_means)
+itemsets3_neg_means[which.max(itemsets3_neg_means)]
 lowest_itemset3_neg <- names(which.min(itemsets3_neg_means))
 lowest_itemset3_neg
 min(itemsets3_neg_means)
+itemsets3_neg_means[which.min(itemsets3_neg_means)]
 # means are quite close to each other
 
 itemsets6_neg <- generate_all_item_sets(all_items = c("angry", "excluded", "envious",
@@ -84,9 +86,11 @@ itemsets6_neg_means <- sapply(itemsets6_neg, function(itemset) {
 highest_itemset6_neg <- names(which.max(itemsets6_neg_means))
 highest_itemset6_neg
 max(itemsets6_neg_means)
+itemsets6_neg_means[which.max(itemsets6_neg_means)]
 lowest_itemset6_neg <- names(which.min(itemsets6_neg_means))
 lowest_itemset6_neg
 min(itemsets6_neg_means)
+itemsets6_neg_means[which.min(itemsets6_neg_means)]
 # again, means are close to each other
 
 
@@ -114,9 +118,11 @@ itemsets8_neg_means <- sapply(itemsets8_neg, function(itemset) {
 highest_itemset8_neg <- names(which.max(itemsets8_neg_means))
 highest_itemset8_neg
 max(itemsets8_neg_means)
+itemsets8_neg_means[which.max(itemsets8_neg_means)]
 lowest_itemset8_neg <- names(which.min(itemsets8_neg_means))
 lowest_itemset8_neg
 min(itemsets8_neg_means)
+itemsets8_neg_means[which.min(itemsets8_neg_means)]
 # again, means are close to each other
 
 
@@ -142,9 +148,11 @@ itemsets3_pos_means <- sapply(itemsets3_pos, function(itemset) {
 highest_itemset3_pos <- names(which.max(itemsets3_pos_means))
 highest_itemset3_pos
 max(itemsets3_pos_means)
+itemsets3_pos_means[which.max(itemsets3_pos_means)]
 lowest_itemset3_pos <- names(which.min(itemsets3_pos_means))
 lowest_itemset3_pos
 min(itemsets3_pos_means)
+itemsets3_pos_means[which.min(itemsets3_pos_means)]
 
 
 
@@ -173,9 +181,11 @@ itemsets4_pos_means <- sapply(itemsets4_pos, function(itemset) {
 highest_itemset4_pos <- names(which.max(itemsets4_pos_means))
 highest_itemset4_pos
 max(itemsets4_pos_means)
+itemsets4_pos_means[which.max(itemsets4_pos_means)]
 lowest_itemset4_pos <- names(which.min(itemsets4_pos_means))
 lowest_itemset4_pos
 min(itemsets4_pos_means)
+itemsets4_pos_means[which.min(itemsets4_pos_means)]
 
 
 
@@ -226,6 +236,9 @@ NED_sub$itemset_type[NED_sub$items == highest_itemset6_neg] <- "6 items: high en
 NED_sub$itemset_type[NED_sub$items == lowest_itemset8_neg]  <- "8 items: low endorsement"
 NED_sub$itemset_type[NED_sub$items == highest_itemset8_neg] <- "8 items: high endorsement"
 
+
+# Determine the number of replications for each item set in each condition
+table(NED_sub$itemset_type, NED_sub$n_occasions)
 
 
 # aggregate results
@@ -676,6 +689,9 @@ PED_sub$itemset_type[PED_sub$items == highest_itemset3_pos] <- "3 items: high en
 PED_sub$itemset_type[PED_sub$items == lowest_itemset4_pos]  <- "4 items: low endorsement"
 PED_sub$itemset_type[PED_sub$items == highest_itemset4_pos] <- "4 items: high endorsement"
 
+
+# Determine the number of replications for each item set in each condition
+table(PED_sub$itemset_type, PED_sub$n_occasions)
 
 
 
