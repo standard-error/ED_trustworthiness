@@ -148,8 +148,8 @@ L2 <- dplyr::distinct(samp, SERIAL, gender, age, education, education_other,
 table(L2$gender, useNA="always")
 prop.table(table(L2$gender, useNA="always"))
 
-table(L2$education)
-prop.table(table(L2$education))
+table(L2$education, useNA="always")
+prop.table(table(L2$education, useNA="always"))
 
 table(L2$education_other) # Bachelor = university degree
 # Fachhochschul-/Hochschulabschluss = 53
