@@ -101,195 +101,6 @@ table(d$flag, useNA="always")
 d2 <- d[d$flag == 0, ]
 
 
-# Check Demographic Variables ---------------------------------------------
-# multiple variables for demographic variables:
-# e.g., household, household_t3
-names(d2)[startsWith(names(d2), "household")]
-
-# some participants completed both waves
-# do they have demographic variables twice?
-# are there mismatches?
-demo_vars <- c("household", "educational_status", "occupational_status", "higher_ed", "higher_ed_type", "sidejob")
-demo_vars_t3 <- paste0(demo_vars, "_t3")
-
-has_w1 <- rowSums(!is.na(d2[demo_vars])) > 0     # values on demo_vars TRUE/FALSE
-has_w2 <- rowSums(!is.na(d2[demo_vars_t3])) > 0  # values on demo_vars_t3 TRUE/FALSE
-
-w1_only <- has_w1 & !has_w2 # only values on wave 1
-w2_only <- !has_w1 & has_w2 # only values on wave 2
-both <- has_w1 & has_w2 # values on both waves
-
-
-# Check W1-only
-all(
-  rowSums(!is.na(d2[w1_only, demo_vars_t3])) == 0
-)
-# TRUE -> all who only have values on wave 1, do not have values on demo_vars_t3
-
-# Check W2-only
-all(
-  rowSums(!is.na(d2[w2_only, demo_vars])) == 0
-)
-# TRUE -> all who only have values on wave 2, do not have values on demo_vars
-
-
-# # sanity check with internal variable:
-# all(
-#   rowSums(!is.na(d2[d2$wave == "S2W1-only", demo_vars_t3])) == 0
-# )
-# # TRUE, all who have W1 only, do not have values on demo_vars_t3 (wave 2)
-# all(
-#   rowSums(!is.na(d2[d2$wave == "S2W2-only", demo_vars])) == 0
-# )
-# # TRUE, all who have W3 only, do not have values on demo_vars (wave 1)
-
-
-# now check those who have both waves
-all(
-  rowSums(!is.na(d2[d2$wave == "both", demo_vars])) > 0 & rowSums(!is.na(d2[both, demo_vars_t3])) > 0
-)
-# all who have completed both waves, have values on both demographic variable sets
-
-
-# check match between those variables
-matches <- sapply(seq_along(demo_vars), function(i) {
-  v1 <- demo_vars[i]
-  v2 <- demo_vars_t3[i]
-  
-  d2[both, v1] == d2[both, v2]
-})
-
-# demographic variables do not match in all cases
-all(matches, na.rm = TRUE) 
-
-# inspect cases
-mismatch_cases <- sapply(seq_along(demo_vars), function(i) {
-  v1 <- demo_vars[i]
-  v2 <- demo_vars_t3[i]
-  
-  sum(d2[both, v1] != d2[both, v2], na.rm = TRUE)
-})
-
-names(mismatch_cases) <- demo_vars
-mismatch_cases
-
-
-mismatch_rows <- rep(FALSE, nrow(d2))
-
-for (i in seq_along(demo_vars)) {
-  v1 <- demo_vars[i]
-  v2 <- demo_vars_t3[i]
-  
-  mismatch <- d2[ ,v1] != d2[, v2] &
-    !is.na(d2[ ,v1]) &
-    !is.na(d2[ ,v2])
-  
-  mismatch_rows <- mismatch_rows | mismatch
-}
-
-d2_mismatch <- d2[mismatch_rows, ]
-length(unique(d2_mismatch$id_for_merging)) # 89 participants
-
-# subset distinct rows for each participant
-d2_mismatch_L2 <- dplyr::distinct(d2_mismatch, id_for_merging, household, educational_status,
-                                  occupational_status, higher_ed, higher_ed_type, sidejob, household_t3,
-                                  educational_status_t3, occupational_status_t3, higher_ed_t3,
-                                  higher_ed_type_t3, sidejob_t3)
-# inspect
-View(d2_mismatch_L2)
-
-
-for (var in demo_vars) {
-  d2_mismatch_L2[ , paste0(var, "_flag")] <- ifelse(
-    !is.na(d2_mismatch_L2[ , var]) & !is.na(d2_mismatch_L2[ , paste0(var, "_t3")]) &
-    d2_mismatch_L2[ , var] != d2_mismatch_L2[ , paste0(var, "_t3")],
-    # if both variables are NOT missing, and they're not identical ...
-    1, # flag with 1
-    0 # else (identical or both missing), do not flag (= 0)
-  )
-}
-
-table(d2_mismatch_L2$household_flag, useNA="always")
-# 30 differ in household size -> plausible, can change over time
-
-table(d2_mismatch_L2$educational_status_flag, useNA="always")
-# 27 differ in educational status
-# look at this data
-View(d2_mismatch_L2[d2_mismatch_L2$educational_status_flag == 1,
-                    c("id_for_merging", "educational_status", "educational_status_t3")])
-# for some, it seems plausible that educational status is now higher
-# (e.g., Abitur but no vocational training to Abitur plus vocational training
-# or Abitur to university degree)
-# for some, it does not seem plausible 
-# (e.g., mittlere Reife to Hauptschulabschluss)
-
-table(d2_mismatch_L2$occupational_status_flag, useNA="always")
-# 36 mismatches in occupational status
-View(d2_mismatch_L2[d2_mismatch_L2$occupational_status_flag == 1,
-                    c("id_for_merging", "occupational_status", "occupational_status_t3")])
-# changes in occupational status can be plausible (e.g., at university to full-time employment)
-
-table(d2_mismatch_L2$higher_ed_flag, useNA="always") # 6 mismatches
-View(d2_mismatch_L2[d2_mismatch_L2$higher_ed_flag == 1,
-                    c("id_for_merging", "higher_ed", "higher_ed_t3")])
-# may be plausible (not studying to studying or vice versa)
-
-
-table(d2_mismatch_L2$higher_ed_type_flag, useNA="always") # 4 mismatches
-View(d2_mismatch_L2[d2_mismatch_L2$higher_ed_type_flag == 1,
-                    c("id_for_merging", "higher_ed_type", "higher_ed_type_t3")])
-# apparently confusion with teacher education and bachelor/master --> teacher education is
-# also in bachelor/master system
-
-table(d2_mismatch_L2$sidejob_flag, useNA="always") # 5 mismatches
-View(d2_mismatch_L2[d2_mismatch_L2$sidejob_flag == 1,
-                    c("id_for_merging", "sidejob", "sidejob_t3")])
-# seems plausible
-
-
-# -> some changes appear plausible (or are, probably, due to the response categories [teacher education])
-# -> educational status does not always seem plausible
-
-# -> to be consistent, use the first data that everyone provided
-# i.e., for wave1-only: use wave1 variables, for wave2-only: use wave2 variables,
-# for both: use wave1 variables
-
-# create variables:
-d2$household_fin <- ifelse(
-  d2$wave == "S2W1-only" | d2$wave == "both", # if wave is either W1-only or both
-  d2$household, # use wave 1 variables
-  d2$household_t3) # else, use wave 2 variables
-
-d2$educational_status_fin <- ifelse(
-  d2$wave == "S2W1-only" | d2$wave == "both", # if wave is either W1-only or both
-  d2$educational_status, # use wave 1 variables
-  d2$educational_status_t3) # else, use wave 2 variables
-
-d2$occupational_status_fin <- ifelse(
-  d2$wave == "S2W1-only" | d2$wave == "both", # if wave is either W1-only or both
-  d2$occupational_status, # use wave 1 variables
-  d2$occupational_status_t3)
-
-d2$higher_ed_fin <- ifelse(
-  d2$wave == "S2W1-only" | d2$wave == "both", # if wave is either W1-only or both
-  d2$higher_ed, # use wave 1 variables
-  d2$higher_ed_t3)
-
-d2$higher_ed_type_fin <- ifelse(
-  d2$wave == "S2W1-only" | d2$wave == "both", # if wave is either W1-only or both
-  d2$higher_ed_type, # use wave 1 variables
-  d2$higher_ed_type_t3)
-
-d2$sidejob_fin <- ifelse(
-  d2$wave == "S2W1-only" | d2$wave == "both", # if wave is either W1-only or both
-  d2$sidejob, # use wave 1 variables
-  d2$sidejob_t3)
-
-rm(d2_mismatch, d2_mismatch_L2, matches, demo_vars, demo_vars_t3, both, has_w1, has_w2, mismatch,
-   v1, v2, var, w1_only, w2_only, i, mismatch_cases, mismatch_rows)
-
-
-
 # Check Filtering ---------------------------------------------------------
 
 # create emotion variable name vector
@@ -308,7 +119,7 @@ occup_vars <- occup_vars[1:14] # remove pleasure and activity (no emotion variab
 # codebook: interaction = 1 (yes), interaction = 2 (no)
 table(d2$interaction)
 
-# Hilfsvariablen: hat Werte (mind. ein nicht-NA)
+# at least one value on any of these variables (at least 1 non-missing)
 d2$int_filled   <- rowSums(!is.na(d2[, int_vars])) > 0
 d2$occup_filled <- rowSums(!is.na(d2[, occup_vars])) > 0
 
@@ -395,8 +206,6 @@ d3 <- d3[order(d3$id_for_merging, d3$created_esm), ] # order
 # Create Subset with Relevant Variables -----------------------------------
 
 d4 <- d3[ , c("id_for_merging", "wave", "dataset", "consent",
-              "household_fin", "educational_status_fin", "occupational_status_fin",
-              "higher_ed_fin", "higher_ed_type_fin", "sidejob_fin",
               "created_esm", "ended_esm", "occ_total", "interaction",
               emotion_vars)]
 
@@ -418,21 +227,6 @@ table(L2_both$n_occ >= 70)
 
 # Rename Variables and Order Final Data Set -------------------------------
 
-# rename demographic variables
-# rename demographic variables (remove _clean)
-vars_demo_fin <- c("household_fin", "educational_status_fin",
-                   "occupational_status_fin", "higher_ed_fin",
-                   "higher_ed_type_fin", "sidejob_fin")
-
-vars_demo_final <- sub("_fin$", "", vars_demo_fin)
-
-d4 <- gdata::rename.vars(
-  d4,
-  from = vars_demo_fin,
-  to   = vars_demo_final
-)
-
-
 d4 <- gdata::rename.vars(
   d4,
   from = "id_for_merging",
@@ -443,7 +237,6 @@ d4 <- gdata::rename.vars(
 
 # now order data set -> negative emotions en bloc
 d5 <- d4[ , c("id", "wave", "dataset", "consent",
-              "household", "educational_status", "occupational_status", "higher_ed", "higher_ed_type", "sidejob",
               "n_occ",
               "created_esm", "ended_esm", "occ_total",
               "interaction",
@@ -731,6 +524,325 @@ save(bench, file = "internal use/prepared data/EMOTIONS_benchmark_data.rda") # f
 save(bench, file = "prepared data/EMOTIONS_benchmark_data.rda") # for sharing
 
 
+
+rm(list=ls())
+
+
+
+# Add Sociodemographic Information for Description ------------------------
+# data set was specifically requested (OSF version does not contain
+# all sociodemographic variables due to data privacy reasons)
+
+d_demo <- readr::read_csv("../EMOTIONS Project/mit Soziodemographie/Study2_BothWaves_ESM_and_Traitdata_inclWave1[2]-only.csv")
+d_demo <- as.data.frame(d_demo)
+
+names(d_demo)
+"gender" %in% names(d_demo) # TRUE
+"age" %in% names(d_demo) # TRUE
+
+# there were two time points at which sociodemographic variables were assessed
+# for wave 1 only: T1
+# for wave 3 only: T2 (labeled t3 in the data set)
+# for both waves: T1 and T2 (labeled t3)
+
+# check demographic variables and use the first ones that were provided for each participant
+
+# '' Check Demographic Variables ------------------------------------------
+# multiple variables for demographic variables:
+# e.g., household, household_t3
+names(d_demo)[startsWith(names(d_demo), "household")]
+
+# some participants completed both waves
+# do they have demographic variables twice?
+# are there mismatches?
+demo_vars <- c("gender", "gender_specification", "age", "household", "educational_status", "occupational_status", "higher_ed", "higher_ed_type", "sidejob")
+demo_vars_t3 <- paste0(demo_vars, "_t3")
+
+has_w1 <- rowSums(!is.na(d_demo[demo_vars])) > 0     # values on demo_vars TRUE/FALSE
+has_w2 <- rowSums(!is.na(d_demo[demo_vars_t3])) > 0  # values on demo_vars_t3 TRUE/FALSE
+
+w1_only <- has_w1 & !has_w2 # only values on wave 1
+w2_only <- !has_w1 & has_w2 # only values on wave 2
+both <- has_w1 & has_w2 # values on both waves
+
+
+# Check W1-only
+all(
+  rowSums(!is.na(d_demo[w1_only, demo_vars_t3])) == 0
+)
+# TRUE -> all who only have values on wave 1, do not have values on demo_vars_t3
+
+# Check W2-only
+all(
+  rowSums(!is.na(d_demo[w2_only, demo_vars])) == 0
+)
+# TRUE -> all who only have values on wave 2, do not have values on demo_vars
+
+
+# # sanity check with internal variable:
+# all(
+#   rowSums(!is.na(d_demo[d_demo$wave == "S2W1-only", demo_vars_t3])) == 0
+# )
+# # TRUE, all who have W1 only, do not have values on demo_vars_t3 (wave 2)
+# all(
+#   rowSums(!is.na(d_demo[d_demo$wave == "S2W2-only", demo_vars])) == 0
+# )
+# # TRUE, all who have W3 only, do not have values on demo_vars (wave 1)
+
+
+# now check those who have both waves
+all(
+  rowSums(!is.na(d_demo[d_demo$wave == "both", demo_vars])) > 0 & rowSums(!is.na(d_demo[both, demo_vars_t3])) > 0
+)
+# all who have completed both waves, have values on both demographic variable sets
+
+
+# check match between those variables
+matches <- sapply(seq_along(demo_vars), function(i) {
+  v1 <- demo_vars[i]
+  v2 <- demo_vars_t3[i]
+  
+  d_demo[both, v1] == d_demo[both, v2]
+})
+
+# demographic variables do not match in all cases
+all(matches, na.rm = TRUE) 
+
+# inspect cases
+mismatch_cases <- sapply(seq_along(demo_vars), function(i) {
+  v1 <- demo_vars[i]
+  v2 <- demo_vars_t3[i]
+  
+  sum(d_demo[both, v1] != d_demo[both, v2], na.rm = TRUE)
+})
+
+names(mismatch_cases) <- demo_vars
+mismatch_cases
+
+
+mismatch_rows <- rep(FALSE, nrow(d_demo))
+
+for (i in seq_along(demo_vars)) {
+  v1 <- demo_vars[i]
+  v2 <- demo_vars_t3[i]
+  
+  mismatch <- d_demo[ ,v1] != d_demo[, v2] &
+    !is.na(d_demo[ ,v1]) &
+    !is.na(d_demo[ ,v2])
+  
+  mismatch_rows <- mismatch_rows | mismatch
+}
+
+d_demo_mismatch <- d_demo[mismatch_rows, ]
+length(unique(d_demo_mismatch$id_for_merging)) # 127 participants
+
+# subset distinct rows for each participant
+d_demo_mismatch_L2 <- dplyr::distinct(d_demo_mismatch, id_for_merging, gender, gender_specification, age, household, educational_status,
+                                  occupational_status, higher_ed, higher_ed_type, sidejob,
+                                  gender_t3, gender_specification_t3, age_t3, household_t3,
+                                  educational_status_t3, occupational_status_t3, higher_ed_t3,
+                                  higher_ed_type_t3, sidejob_t3)
+# inspect
+View(d_demo_mismatch_L2)
+
+
+for (var in demo_vars) {
+  d_demo_mismatch_L2[ , paste0(var, "_flag")] <- ifelse(
+    !is.na(d_demo_mismatch_L2[ , var]) & !is.na(d_demo_mismatch_L2[ , paste0(var, "_t3")]) &
+      d_demo_mismatch_L2[ , var] != d_demo_mismatch_L2[ , paste0(var, "_t3")],
+    # if both variables are NOT missing, and they're not identical ...
+    1, # flag with 1
+    0 # else (identical or both missing), do not flag (= 0)
+  )
+}
+
+# for gender_specification (open text format), we need extra code to handle strings
+# and NAs:
+d_demo_mismatch_L2$gender_specification_flag <- 0 # default: not flagged
+
+d_demo_mismatch_L2$gender_specification_flag[
+  is.na(d_demo_mismatch_L2$gender_specification) & # if gender specification at t1 = missing
+    !is.na(d_demo_mismatch_L2$gender_specification_t3) # but gender specification at t2 not 
+] <- 1  # mismatch
+
+d_demo_mismatch_L2$gender_specification_flag[
+  !is.na(d_demo_mismatch_L2$gender_specification) & # if gender specification at t1 not missing
+    is.na(d_demo_mismatch_L2$gender_specification_t3) # but gender specification at t2 missing 
+] <- 1  # mismatch
+
+
+d_demo_mismatch_L2$gender_specification_flag[
+  !is.na(d_demo_mismatch_L2$gender_specification) & # if gender specification at t1 and t2 NOT missing
+    !is.na(d_demo_mismatch_L2$gender_specification_t3) &
+    (d_demo_mismatch_L2$gender_specification != d_demo_mismatch_L2$gender_specification_t3) # but both have different value
+] <- 1  # mismatch
+
+
+table(d_demo_mismatch_L2$gender_specification_flag, useNA = "always")
+# 1 mismatch
+
+table(d_demo_mismatch_L2$gender_flag, useNA="always")
+# 1 participant differs on gender
+
+View(d_demo_mismatch_L2[d_demo_mismatch_L2$gender_flag == 1,
+                        c("id_for_merging", "gender", "gender_t3", "gender_specification", "gender_specification_t3")])
+# from female to non-binary
+
+table(d_demo_mismatch_L2$age_flag, useNA = "always")
+# 56 differ on age
+View(d_demo_mismatch_L2[d_demo_mismatch_L2$age_flag == 1,
+                        c("id_for_merging", "age", "age_t3")])
+# calculate difference
+# T2 - T1
+# if T2 - T1 == 1 -> people had birthday in between
+d_demo_mismatch_L2$age_diff <- d_demo_mismatch_L2$age_t3 - d_demo_mismatch_L2$age
+table(d_demo_mismatch_L2$age_diff)
+# most people were either of the same age or 1 year older
+# however, some people differ more
+# -9, -3, -2, -1, 1, 12, 21
+# -> careless responding? privacy concerns?
+table(d_demo_mismatch_L2$age_diff != 0 & d_demo_mismatch_L2$age_diff != 1)
+# 11 people have invalid changes in age
+
+View(d_demo_mismatch_L2[d_demo_mismatch_L2$age_diff != 0 &
+                          d_demo_mismatch_L2$age_diff != 1, 
+                        c("id_for_merging", "age", "age_t3")])
+# e.g., 69 to 60 -> typo?
+# use first measurement of age that is available
+
+
+table(d_demo_mismatch_L2$household_flag, useNA="always")
+# 30 differ in household size -> plausible, can change over time
+
+table(d_demo_mismatch_L2$educational_status_flag, useNA="always")
+# 27 differ in educational status
+# look at this data
+View(d_demo_mismatch_L2[d_demo_mismatch_L2$educational_status_flag == 1,
+                    c("id_for_merging", "educational_status", "educational_status_t3")])
+# for some, it seems plausible that educational status is now higher
+# (e.g., Abitur but no vocational training to Abitur plus vocational training
+# or Abitur to university degree)
+# for some, it does not seem plausible 
+# (e.g., mittlere Reife to Hauptschulabschluss)
+
+table(d_demo_mismatch_L2$occupational_status_flag, useNA="always")
+# 36 mismatches in occupational status
+View(d_demo_mismatch_L2[d_demo_mismatch_L2$occupational_status_flag == 1,
+                    c("id_for_merging", "occupational_status", "occupational_status_t3")])
+# changes in occupational status can be plausible (e.g., at university to full-time employment)
+
+table(d_demo_mismatch_L2$higher_ed_flag, useNA="always") # 6 mismatches
+View(d_demo_mismatch_L2[d_demo_mismatch_L2$higher_ed_flag == 1,
+                    c("id_for_merging", "higher_ed", "higher_ed_t3")])
+# may be plausible (not studying to studying or vice versa)
+
+
+table(d_demo_mismatch_L2$higher_ed_type_flag, useNA="always") # 4 mismatches
+View(d_demo_mismatch_L2[d_demo_mismatch_L2$higher_ed_type_flag == 1,
+                    c("id_for_merging", "higher_ed_type", "higher_ed_type_t3")])
+# apparently confusion with teacher education and bachelor/master --> teacher education is
+# also in bachelor/master system
+
+table(d_demo_mismatch_L2$sidejob_flag, useNA="always") # 5 mismatches
+View(d_demo_mismatch_L2[d_demo_mismatch_L2$sidejob_flag == 1,
+                    c("id_for_merging", "sidejob", "sidejob_t3")])
+# seems plausible
+
+
+# -> some changes appear plausible (or are, probably, due to the response categories [teacher education])
+# -> educational status does not always seem plausible
+
+# -> to be consistent, use the first data that everyone provided
+# i.e., for wave1-only: use wave1 variables, for wave2-only: use wave2 variables,
+# for both: use wave1 variables
+
+# create variables:
+d_demo$gender_fin <- ifelse(
+  d_demo$wave == "S2W1-only" | d_demo$wave == "Both", # if wave is either W1-only or both
+  d_demo$gender, # use wave 1 variables
+  d_demo$gender_t3) # else, use wave 2 variables
+
+d_demo$gender_specification_fin <- ifelse(
+  d_demo$wave == "S2W1-only" | d_demo$wave == "Both", # if wave is either W1-only or both
+  d_demo$gender_specification, # use wave 1 variables
+  d_demo$gender_specification_t3) # else, use wave 2 variables
+
+d_demo$age_fin <- ifelse(
+  d_demo$wave == "S2W1-only" | d_demo$wave == "Both", # if wave is either W1-only or both
+  d_demo$age, # use wave 1 variables
+  d_demo$age_t3) # else, use wave 2 variables
+
+d_demo$household_fin <- ifelse(
+  d_demo$wave == "S2W1-only" | d_demo$wave == "Both", # if wave is either W1-only or Both
+  d_demo$household, # use wave 1 variables
+  d_demo$household_t3) # else, use wave 2 variables
+
+d_demo$educational_status_fin <- ifelse(
+  d_demo$wave == "S2W1-only" | d_demo$wave == "Both", # if wave is either W1-only or Both
+  d_demo$educational_status, # use wave 1 variables
+  d_demo$educational_status_t3) # else, use wave 2 variables
+
+d_demo$occupational_status_fin <- ifelse(
+  d_demo$wave == "S2W1-only" | d_demo$wave == "Both", # if wave is either W1-only or Both
+  d_demo$occupational_status, # use wave 1 variables
+  d_demo$occupational_status_t3)
+
+d_demo$higher_ed_fin <- ifelse(
+  d_demo$wave == "S2W1-only" | d_demo$wave == "Both", # if wave is either W1-only or Both
+  d_demo$higher_ed, # use wave 1 variables
+  d_demo$higher_ed_t3)
+
+d_demo$higher_ed_type_fin <- ifelse(
+  d_demo$wave == "S2W1-only" | d_demo$wave == "Both", # if wave is either W1-only or Both
+  d_demo$higher_ed_type, # use wave 1 variables
+  d_demo$higher_ed_type_t3)
+
+d_demo$sidejob_fin <- ifelse(
+  d_demo$wave == "S2W1-only" | d_demo$wave == "Both", # if wave is either W1-only or Both
+  d_demo$sidejob, # use wave 1 variables
+  d_demo$sidejob_t3)
+
+rm(d_demo_mismatch, d_demo_mismatch_L2, matches, demo_vars, demo_vars_t3, both, has_w1, has_w2, mismatch,
+   v1, v2, var, w1_only, w2_only, i, mismatch_cases, mismatch_rows)
+
+
+
+# '' Extract Sociodemographic Variables -----------------------------------
+L2_all <- dplyr::distinct(d_demo,
+                          id_for_merging,
+                          gender_fin,
+                          gender_specification_fin,
+                          age_fin,
+                          household_fin,
+                          educational_status_fin,
+                          occupational_status_fin,
+                          higher_ed_fin,
+                          higher_ed_type_fin,
+                          sidejob_fin)
+
+length(unique(L2_all$id_for_merging)) == nrow(L2_all) # one row per participant
+
+
+# '' Match With Benchmark Data  -------------------------------------------
+load("prepared data/EMOTIONS_benchmark_data.rda")
+
+ids_bench <- unique(bench$id)
+
+L2_bench <- L2_all[L2_all$id_for_merging %in% ids_bench, ]
+nrow(L2_bench) == length(unique(bench$id)) # number of participants is correct
+
+# save L2_bench data set for sample descriptions
+# but for internal use only!
+save(L2_bench, file="internal use/prepared data/EMOTIONS_benchmark_L2_description.rda")
+
+# merge the two
+L2_bench$id <- L2_bench$id_for_merging
+L2_bench$id_for_merging <- NULL
+
+bench_with_demo <- merge(bench, L2_bench, by="id")
+save(bench_with_demo, file="internal use/prepared data/EMOTIONS_benchmark_with_sociodemographic_var.rda")
+
+
 # Session Info ------------------------------------------------------------
 
 rm(list=ls())
@@ -758,14 +870,14 @@ sessionInfo()
 #  [7] tidyr_1.3.1     tibble_3.3.0    ggplot2_4.0.2   tidyverse_2.0.0
 # 
 # loaded via a namespace (and not attached):
-#  [1] rappdirs_0.3.4     generics_0.1.4     gtools_3.9.5       stringi_1.8.7      lattice_0.22-9    
-#  [6] lme4_2.0-1         hms_1.1.4          magrittr_2.0.3     openesm_0.1.2      timechange_0.3.0  
-# [11] RColorBrewer_1.1-3 grid_4.5.3         Matrix_1.7-4       scales_1.4.0       httr2_1.2.2       
-# [16] mnormt_2.1.2       reformulas_0.4.4   Rdpack_2.6.6       cli_3.6.5          rlang_1.2.0       
-# [21] crayon_1.5.3       rbibutils_2.4.1    performance_0.16.0 bit64_4.6.0-1      splines_4.5.3     
-# [26] withr_3.0.2        otel_0.2.0         tools_4.5.3        parallel_4.5.3     tzdb_0.5.0        
-# [31] nloptr_2.2.1       minqa_1.2.8        boot_1.3-32        vctrs_0.6.5        R6_2.6.1          
-# [36] lifecycle_1.0.5    fs_2.0.1           bit_4.6.0          vroom_1.6.5        MASS_7.3-65       
-# [41] psych_2.6.3        insight_1.4.6      pkgconfig_2.0.3    archive_1.1.12.1   gtable_0.3.6      
-# [46] pillar_1.11.1      glue_1.8.0         Rcpp_1.1.1-1       tidyselect_1.2.1   rstudioapi_0.18.0 
-# [51] farver_2.1.2       nlme_3.1-168       gdata_3.0.1        compiler_4.5.3     S7_0.2.0  
+#  [1] utf8_1.2.6         generics_0.1.4     gtools_3.9.5       stringi_1.8.7      lattice_0.22-9    
+#  [6] lme4_2.0-1         hms_1.1.4          magrittr_2.0.3     timechange_0.3.0   grid_4.5.3        
+# [11] RColorBrewer_1.1-3 Matrix_1.7-4       writexl_1.5.4      scales_1.4.0       mnormt_2.1.2      
+# [16] reformulas_0.4.4   Rdpack_2.6.6       cli_3.6.5          crayon_1.5.3       rlang_1.2.0       
+# [21] rbibutils_2.4.1    performance_0.16.0 bit64_4.6.0-1      splines_4.5.3      withr_3.0.2       
+# [26] tools_4.5.3        parallel_4.5.3     tzdb_0.5.0         nloptr_2.2.1       minqa_1.2.8       
+# [31] boot_1.3-32        vctrs_0.6.5        R6_2.6.1           lifecycle_1.0.5    bit_4.6.0         
+# [36] vroom_1.6.5        MASS_7.3-65        psych_2.6.5        insight_1.4.6      archive_1.1.12.1  
+# [41] pkgconfig_2.0.3    pillar_1.11.1      gtable_0.3.6       glue_1.8.0         Rcpp_1.1.1-1      
+# [46] tidyselect_1.2.1   rstudioapi_0.18.0  farver_2.1.2       nlme_3.1-168       gdata_3.0.1       
+# [51] compiler_4.5.3     S7_0.2.0  
