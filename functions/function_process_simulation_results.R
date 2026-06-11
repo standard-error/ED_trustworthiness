@@ -803,7 +803,24 @@ process_simulation_results <- function(input_file,
   
   names(MCSE6) <- c("n_occasions", "n_items", "percnegICC_raw_MCSE")
   
+  ## for estimProbNeg
+  # performance measure: mean of generic statistic G
   
+  MCSE7 <- do.call(data.frame,
+                   aggregate(estimationProbNeg_raw ~ n_occasions + n_items, data = rd,
+                             FUN = mcse_generic))
+  
+  names(MCSE7) <- c("n_occasions", "n_items", "estimationProbNeg_raw_MCSE")
+  
+  
+  ## for estimProbPos
+  # performance measure: mean of generic statistic G
+  
+  MCSE8 <- do.call(data.frame,
+                   aggregate(estimationProbPos_raw ~ n_occasions + n_items, data = rd,
+                             FUN = mcse_generic))
+  
+  names(MCSE8) <- c("n_occasions", "n_items", "estimationProbPos_raw_MCSE")
   
   
   
@@ -813,6 +830,8 @@ process_simulation_results <- function(input_file,
   MCSE <- merge(MCSE, MCSE4, by = c("n_occasions", "n_items"))
   MCSE <- merge(MCSE, MCSE5, by = c("n_occasions", "n_items"))
   MCSE <- merge(MCSE, MCSE6, by = c("n_occasions", "n_items"))
+  MCSE <- merge(MCSE, MCSE7, by = c("n_occasions", "n_items"))
+  MCSE <- merge(MCSE, MCSE8, by = c("n_occasions", "n_items"))
   
   MCSE
   names(MCSE)
