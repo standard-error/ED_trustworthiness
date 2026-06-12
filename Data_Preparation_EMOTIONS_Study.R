@@ -51,6 +51,12 @@ library(tidyverse)
 d <- readr::read_csv("../EMOTIONS Project/Study2_BothWaves_ESM_and_Traitdata_inclWave1[2]-only.csv")
 d <- as.data.frame(d)
 
+# quick overview:
+d %>%
+  group_by(id_for_merging) %>%
+  summarise(n_occ = n()) %>%
+  summarise(mean = mean(n_occ), sd = sd(n_occ), min=min(n_occ), max = max(n_occ))
+
 # Check Data Quality ------------------------------------------------------
 # to be consistent with emolive data set -> use completion times of occasions
 # as quality indicator
