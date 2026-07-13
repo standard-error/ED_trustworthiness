@@ -32,6 +32,21 @@ source("functions/function_plot_outcomes.R")
 load("prepared data/EMOTIONS_benchmark_data.rda")
 
 
+# for reporting: mean of full item sets
+# NED:
+# calculate mean for each emotion across time (column means) and then calculate overall mean
+round(mean(colMeans(bench[ , c("angry", "excluded", "envious",
+                               "resentful", "ashamed", "insecure",
+                               "anxious", "sad", "lonely")])),
+      2)
+
+# PED:
+# calculate mean for each emotion across time (column means) and then calculate overall mean
+round(mean(colMeans(bench[ , c("proud", "success", "superior",
+                               "enthusiastic", "relaxed")])),
+      2)
+
+
 
 itemsets3_neg <- generate_all_item_sets(all_items = c("angry", "excluded", "envious",
                                                       "resentful", "ashamed", "insecure",

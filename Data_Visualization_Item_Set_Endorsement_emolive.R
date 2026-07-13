@@ -28,6 +28,28 @@ source("functions/function_plot_outcomes.R")
 load("prepared data/emolive_benchmark_data.rda")
 
 
+# for reporting: mean of full item sets
+# NED:
+# calculate mean for each emotion across time (column means) and then calculate overall mean
+round(mean(colMeans(bench[ , c('aerger1', 'aerger2', 'aerger3',
+                               'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
+                               'angst1', 'angst2', 'angst3',
+                               'scham1', 'scham2', 'scham3',
+                               'schuld1', 'schuld2', 'schuld3')])),
+      2)
+
+# PED:
+# calculate mean for each emotion across time (column means) and then calculate overall mean
+round(mean(colMeans(bench[ , c('freude1', 'freude2', 'freude3',
+                               'interesse1', 'interesse2', 'interesse3',
+                               'liebe1', 'liebe2', 'liebe3',
+                               'stolz1', 'stolz2', 'stolz3')])),
+      2)
+
+
+
+### now subsets:
+
 
 itemsets5_neg <- generate_all_item_sets(all_items = c('aerger1', 'aerger2', 'aerger3',
                                                   'traurigkeit1', 'traurigkeit2', 'traurigkeit3',
