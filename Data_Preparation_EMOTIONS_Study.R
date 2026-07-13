@@ -57,6 +57,13 @@ d %>%
   summarise(n_occ = n()) %>%
   summarise(mean = mean(n_occ), sd = sd(n_occ), min=min(n_occ), max = max(n_occ))
 
+
+# check for sample description:
+L2 <- dplyr::distinct(d, id_for_merging, wave)
+table(L2$wave)
+
+
+
 # Check Data Quality ------------------------------------------------------
 # to be consistent with emolive data set -> use completion times of occasions
 # as quality indicator
@@ -229,6 +236,25 @@ table(L2_both$n_occ >= 70)
 # 251 participants
 
 
+# for sample description:
+L2.tmp <- dplyr::distinct(d4, id_for_merging, wave, n_occ)
+table(L2.tmp$n_occ)
+table(L2.tmp$n_occ >= 70)
+# 251 participants
+table(L2.tmp$wave, L2.tmp$n_occ >= 70)
+# 150 participated in both waves,
+# 70 participated in wave 1 only,
+# 31 participated in wave 2 only
+
+tmp <- d4[d4$n_occ >= 70, ]
+length(unique(tmp$id_for_merging)) # 251 participants, correct
+nrow(tmp)
+
+nrow(tmp[tmp$wave == "Both", ])
+nrow(tmp[tmp$wave == "S2W1-only", ])
+nrow(tmp[tmp$wave == "S2W2-only", ])
+rm(tmp, L2.tmp)
+
 
 
 # Rename Variables and Order Final Data Set -------------------------------
@@ -282,7 +308,8 @@ bench <- bench %>%
 # select only 70 occasions for each participant
 # by order!
 bench <- bench[which(bench$occ_running <= 70), ]
-
+nrow(bench)
+length(unique(bench$id))
 
 # check whether all participants have variance in their emotion ratings across the 70 occasions
 # check overall (total item set) and for all item sets
@@ -602,6 +629,28 @@ all(
 )
 # all who have completed both waves, have values on both demographic variable sets
 
+# # sanity check:
+# # check how many participants have w1 only, w2 only and both
+# # should be the same number of participants as indicated by wave variable
+# # -> but now calculated with demographic variables
+# tmp1 <- d_demo
+# tmp1$w1_only <- w1_only
+# tmp1$w2_only <- w2_only
+# tmp1$both <- both
+# 
+# tmp2 <- dplyr::distinct(tmp1, id_for_merging, w1_only, w2_only, both)
+# length(unique(tmp2$id_for_merging)) # 2272 unique persons = correct
+# nrow(tmp2) # 2272 rows
+# # -> w1_only, w2_only and both are constant within participant
+# # -> else, we would have 2272 unique participants, but multiple rows per unique participant (nrow > n unique participants)
+# 
+# table(tmp2$w1_only)
+# table(tmp2$w2_only)
+# table(tmp2$both)
+# 
+# # correct
+# rm(tmp1, tmp2)
+
 
 # check match between those variables
 matches <- sapply(seq_along(demo_vars), function(i) {
@@ -816,6 +865,7 @@ rm(d_demo_mismatch, d_demo_mismatch_L2, matches, demo_vars, demo_vars_t3, both, 
 # '' Extract Sociodemographic Variables -----------------------------------
 L2_all <- dplyr::distinct(d_demo,
                           id_for_merging,
+                          wave,
                           gender_fin,
                           gender_specification_fin,
                           age_fin,

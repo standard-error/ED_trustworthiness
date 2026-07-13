@@ -163,12 +163,15 @@ bench_with_demo$higher_ed_type.f <- factor(bench_with_demo$higher_ed_type_fin,
                                                  "teacher education"))
 
 # select distinct rows with L2 variables
-L2 <- dplyr::distinct(bench_with_demo, id, gender.f, gender_specification_fin,
+L2 <- dplyr::distinct(bench_with_demo, id, wave, gender.f, gender_specification_fin,
                       age_fin, educational_status.f, occupational_status.f,
                       higher_ed.f, higher_ed_type.f,
                       neg_ICC, neg_ICC.z, pos_ICC, pos_ICC.z)
 
 # describe sample
+table(L2$wave, useNA="always")
+prop.table(table(L2$wave, useNA="always"))
+
 table(L2$gender.f, useNA="always")
 prop.table(table(L2$gender.f, useNA="always"))
 
