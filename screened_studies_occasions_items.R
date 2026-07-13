@@ -50,6 +50,29 @@ quantile(screened$nr_pemo_items, na.rm=T)
 which.max(table(screened$nr_pemo_items))
 table(screened$nr_pemo_items)
 
+# Extract Frequency of Shame and Guilt ------------------------------------
+# to address reviewer comment
+library(dplyr)
+library(stringr)
+
+screened <- screened %>% 
+  mutate(shame_yn = str_detect(nemo_items, "shame|ashamed"),
+         guilt_yn = str_detect(nemo_items, "guilt|guilty"))
+
+sum(screened$shame_yn, na.rm=T)
+sum(screened$shame_yn, na.rm=T) / nrow(screened[!is.na(screened$nemo_items), ])
+sum(screened$guilt_yn, na.rm=T)
+sum(screened$guilt_yn, na.rm=T) / nrow(screened[!is.na(screened$nemo_items), ])
+
+
+# number of studies that assessed both
+
+screened <- screened %>% 
+  mutate(both_yn = str_detect(nemo_items, "shame|ashamed") &
+           str_detect(nemo_items, "guilt|guilty"))
+sum(screened$both_yn, na.rm=T)
+sum(screened$both_yn, na.rm=T) / nrow(screened[!is.na(screened$nemo_items), ])
+
 
 
 # Plot --------------------------------------------------------------------
@@ -58,7 +81,7 @@ plot(screened$nr_occasions_total, screened$nr_nemo_items)
 library(ggplot2)
 
 median_occ <- median(screened$nr_occasions_total)
-median_item <- median(screened$nr_nemo_items)
+median_item <- median(screened$nr_nemo_items, na.rm=T)
 
 ggplot(data=screened, aes(x=nr_occasions_total, y=nr_nemo_items)) +
   geom_point(col="#507189", size=2.5) +
@@ -74,5 +97,6 @@ ggplot(data=screened, aes(x=nr_occasions_total, y=nr_nemo_items)) +
            x = median_occ, y = median_item,
            label=" Average study:\n35.5 occasions, 6 items",
            hjust= -0.05, vjust=-0.2, color="red")
+
 
 
