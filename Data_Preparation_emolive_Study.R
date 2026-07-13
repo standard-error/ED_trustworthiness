@@ -58,6 +58,12 @@ rm(list=ls())
 
 load("internal use/prepared data/emolive_clean_all_participants.rda")
 
+# determine completion time of the surveys:
+nullmod <- lme4::lmer(duration_occ_sec ~ 1 + (1 | SERIAL), data=AA.c)
+summary(nullmod)
+# 118.52 sec
+# -> approximately 2 mins
+
 L2 <- dplyr::distinct(AA.c, SERIAL, n_occ) 
 
 table(L2$n_occ >= 70) 
