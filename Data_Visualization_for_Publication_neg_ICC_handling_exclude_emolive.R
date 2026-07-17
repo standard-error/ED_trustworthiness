@@ -692,3 +692,39 @@ dev.off()
 rm(list=ls())
 
 
+# Session Info ------------------------------------------------------------
+# R version 4.5.3 (2026-03-11 ucrt)
+# Platform: x86_64-w64-mingw32/x64
+# Running under: Windows 11 x64 (build 26200)
+# 
+# Matrix products: default
+#   LAPACK version 3.12.1
+# 
+# locale:
+# [1] LC_COLLATE=German_Germany.utf8  LC_CTYPE=German_Germany.utf8   
+# [3] LC_MONETARY=German_Germany.utf8 LC_NUMERIC=C                   
+# [5] LC_TIME=German_Germany.utf8    
+# 
+# time zone: Europe/Berlin
+# tzcode source: internal
+# 
+# attached base packages:
+# [1] stats     graphics  grDevices utils     datasets  methods   base     
+# 
+# other attached packages:
+#  [1] lubridate_1.9.4   forcats_1.0.1     stringr_1.6.0     dplyr_1.1.4      
+#  [5] purrr_1.1.0       readr_2.1.5       tidyr_1.3.1       tibble_3.3.0     
+#  [9] tidyverse_2.0.0   ggpubr_0.6.3      ggh4x_0.3.1       scales_1.4.0     
+# [13] viridis_0.6.5     viridisLite_0.4.3 ggplot2_4.0.2    
+# 
+# loaded via a namespace (and not attached):
+#  [1] gtable_0.3.6       compiler_4.5.3     ggsignif_0.6.4     tidyselect_1.2.1  
+#  [5] gridExtra_2.3      R6_2.6.1           generics_0.1.4     Formula_1.2-5     
+#  [9] backports_1.5.1    car_3.1-5          tzdb_0.5.0         pillar_1.11.1     
+# [13] RColorBrewer_1.1-3 rlang_1.2.0        stringi_1.8.7      broom_1.0.12      
+# [17] S7_0.2.0           timechange_0.3.0   cli_3.6.5          withr_3.0.2       
+# [21] magrittr_2.0.3     grid_4.5.3         rstudioapi_0.18.0  hms_1.1.4         
+# [25] cowplot_1.2.0      lifecycle_1.0.5    vctrs_0.6.5        rstatix_0.7.3     
+# [29] glue_1.8.0         farver_2.1.2       abind_1.4-8        carData_3.0-6     
+# [33] tools_4.5.3        pkgconfig_2.0.3  
+

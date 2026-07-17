@@ -1545,8 +1545,8 @@ h_neg_3 <- plot_list_neg_3[["estimProbPos"]] + theme(axis.title.y = element_blan
 combined_neg_3 <- ggpubr::ggarrange(a_neg_3,b_neg_3,c_neg_3,d_neg_3,e_neg_3,f_neg_3,g_neg_3,h_neg_3 , ncol=3, nrow=3, common.legend = TRUE, legend="top",
                                 align = "hv", widths = c(1,1,1), heights = c(1,1,1)) # equal panel sizes
 
-combined_neg_3 <- annotate_figure(combined_neg_3,
-                              bottom = text_grob("Number of Measurement Occasions", size = 12))
+combined_neg_3 <- ggpubr::annotate_figure(combined_neg_3,
+                              bottom = ggpubr::text_grob("Number of Measurement Occasions", size = 12))
 
 
 combined_neg_3
@@ -1658,8 +1658,8 @@ h_neg_6 <- plot_list_neg_6[["estimProbPos"]] + theme(axis.title.y = element_blan
 combined_neg_6 <- ggpubr::ggarrange(a_neg_6,b_neg_6,c_neg_6,d_neg_6,e_neg_6,f_neg_6,g_neg_6,h_neg_6 , ncol=3, nrow=3, common.legend = TRUE, legend="top",
                                     align = "hv", widths = c(1,1,1), heights = c(1,1,1)) # equal panel sizes
 
-combined_neg_6 <- annotate_figure(combined_neg_6,
-                                  bottom = text_grob("Number of Measurement Occasions", size = 12))
+combined_neg_6 <- ggpubr::annotate_figure(combined_neg_6,
+                                  bottom = ggpubr::text_grob("Number of Measurement Occasions", size = 12))
 
 
 combined_neg_6
@@ -1772,8 +1772,8 @@ h_neg_8 <- plot_list_neg_8[["estimProbPos"]] + theme(axis.title.y = element_blan
 combined_neg_8 <- ggpubr::ggarrange(a_neg_8,b_neg_8,c_neg_8,d_neg_8,e_neg_8,f_neg_8,g_neg_8,h_neg_8 , ncol=3, nrow=3, common.legend = TRUE, legend="top",
                                     align = "hv", widths = c(1,1,1), heights = c(1,1,1)) # equal panel sizes
 
-combined_neg_8 <- annotate_figure(combined_neg_8,
-                                  bottom = text_grob("Number of Measurement Occasions", size = 12))
+combined_neg_8 <- ggpubr::annotate_figure(combined_neg_8,
+                                  bottom = ggpubr::text_grob("Number of Measurement Occasions", size = 12))
 
 
 combined_neg_8
@@ -1885,8 +1885,8 @@ h_pos_3 <- plot_list_pos_3[["estimProbPos"]] + theme(axis.title.y = element_blan
 combined_pos_3 <- ggpubr::ggarrange(a_pos_3,b_pos_3,c_pos_3,d_pos_3,e_pos_3,f_pos_3,g_pos_3,h_pos_3 , ncol=3, nrow=3, common.legend = TRUE, legend="top",
                                     align = "hv", widths = c(1,1,1), heights = c(1,1,1)) # equal panel sizes
 
-combined_pos_3 <- annotate_figure(combined_pos_3,
-                                  bottom = text_grob("Number of Measurement Occasions", size = 12))
+combined_pos_3 <- ggpubr::annotate_figure(combined_pos_3,
+                                  bottom = ggpubr::text_grob("Number of Measurement Occasions", size = 12))
 
 
 combined_pos_3
@@ -1998,8 +1998,8 @@ h_pos_4 <- plot_list_pos_4[["estimProbPos"]] + theme(axis.title.y = element_blan
 combined_pos_4 <- ggpubr::ggarrange(a_pos_4,b_pos_4,c_pos_4,d_pos_4,e_pos_4,f_pos_4,g_pos_4,h_pos_4 , ncol=3, nrow=3, common.legend = TRUE, legend="top",
                                     align = "hv", widths = c(1,1,1), heights = c(1,1,1)) # equal panel sizes
 
-combined_pos_4 <- annotate_figure(combined_pos_4,
-                                  bottom = text_grob("Number of Measurement Occasions", size = 12))
+combined_pos_4 <- ggpubr::annotate_figure(combined_pos_4,
+                                  bottom = ggpubr::text_grob("Number of Measurement Occasions", size = 12))
 
 
 combined_pos_4
@@ -2130,3 +2130,43 @@ results_PED[ , 4:30] <- round(results_PED[ , 4:30], 3)
 write.csv(results_PED,  
           "results/02_revision_1/EMOTIONS study/PED/main/processed/extreme_item_sets_results_table_PED_EMOTIONS.csv",
           row.names = FALSE)
+
+
+
+
+# Session Info ------------------------------------------------------------
+# R version 4.5.3 (2026-03-11 ucrt)
+# Platform: x86_64-w64-mingw32/x64
+# Running under: Windows 11 x64 (build 26200)
+# 
+# Matrix products: default
+#   LAPACK version 3.12.1
+# 
+# locale:
+# [1] LC_COLLATE=German_Germany.utf8  LC_CTYPE=German_Germany.utf8   
+# [3] LC_MONETARY=German_Germany.utf8 LC_NUMERIC=C                   
+# [5] LC_TIME=German_Germany.utf8    
+# 
+# time zone: Europe/Berlin
+# tzcode source: internal
+# 
+# attached base packages:
+# [1] stats     graphics  grDevices utils     datasets  methods   base     
+# 
+# other attached packages:
+#  [1] ggh4x_0.3.1       scales_1.4.0      viridis_0.6.5     viridisLite_0.4.3
+#  [5] ggpubr_0.6.3      lubridate_1.9.4   forcats_1.0.1     stringr_1.6.0    
+#  [9] dplyr_1.1.4       purrr_1.1.0       readr_2.1.5       tidyr_1.3.1      
+# [13] tibble_3.3.0      ggplot2_4.0.2     tidyverse_2.0.0  
+# 
+# loaded via a namespace (and not attached):
+#  [1] gtable_0.3.6       compiler_4.5.3     ggsignif_0.6.4     tidyselect_1.2.1  
+#  [5] gridExtra_2.3      R6_2.6.1           generics_0.1.4     Formula_1.2-5     
+#  [9] backports_1.5.1    car_3.1-5          pillar_1.11.1      RColorBrewer_1.1-3
+# [13] tzdb_0.5.0         rlang_1.2.0        broom_1.0.12       stringi_1.8.7     
+# [17] S7_0.2.0           timechange_0.3.0   cli_3.6.5          withr_3.0.2       
+# [21] magrittr_2.0.3     grid_4.5.3         rstudioapi_0.18.0  hms_1.1.4         
+# [25] cowplot_1.2.0      lifecycle_1.0.5    vctrs_0.6.5        rstatix_0.7.3     
+# [29] glue_1.8.0         farver_2.1.2       abind_1.4-8        carData_3.0-6     
+# [33] tools_4.5.3        pkgconfig_2.0.3 
+

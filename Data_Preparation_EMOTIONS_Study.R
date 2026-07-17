@@ -15,39 +15,7 @@ library(tidyverse)
 
 
 
-# Compare OpenESM and OSF Data --------------------------------------------
-# https://openesmdata.org/datasets/0057_ryvkina/
-# DOI: 10.5281/zenodo.17361657 
-# install.packages("openesm")
-# library(tidyverse)
-# 
-# d1 <- openesm::get_dataset("0057_ryvkina")[["data"]]
-# 
-# 
-# head(d1)
-# names(d1)
-# length(unique(d1$id)) # 2272
-# # nrow(dplyr::distinct(d1, id, wave, day, beep))
-# str(d1)
-# table(d1$wave)
-# sub <- dplyr::distinct(d1, id, dataset)
-# table(sub$dataset, useNA="always")
-# 
-# 
-# d2 <- readr::read_csv("../EMOTIONS Project/Study2_BothWaves_ESM_and_Traitdata_inclWave1[2]-only.csv")
-# 
-# all(unique(d1$id) == unique(d2$id_for_merging))
-# # same IDs, same number of rows
-# # but in the OSF data set, we have the data quality indicators
-# names(d2)
-# sub2 <- dplyr::distinct(d2, id_for_merging, dataset)
-# table(sub2$dataset, useNA="always")
-# # same number of participants per wave
-# 
-# # -> use OSF data set due to data quality indicators
-# 
-# rm(d1, d2, sub, sub2)
-
+# Read Data ---------------------------------------------------------------
 d <- readr::read_csv("../EMOTIONS Project/Study2_BothWaves_ESM_and_Traitdata_inclWave1[2]-only.csv")
 d <- as.data.frame(d)
 

@@ -1,7 +1,7 @@
 ###################################################################
-#####    Estimating trait negative emotion differentiation:   #####
-#####        How many measurement occasions and               #####
-#####              emotion items are needed?                  #####
+#####       Estimating trait emotion differentiation:         #####
+#####          How many measurement occasions and             #####
+#####               emotion items are needed?                 #####
 ###################################################################
 
 ###################################################################
@@ -113,46 +113,3 @@ ordered_occasion_draw <- function(data, id.var, occ.running.var, nr.of.occasions
 
 
 
-# # test function:
-# 
-# test_data <- data.frame(
-#   id = rep(1:3, each = 10),
-#   occ_running = rep(1:10, times = 3),
-#   item1 = c(1:10, rep(1, 10), c(rep(1, 5), 6:10)),
-#   item2 = c(10:1, rep(1, 10), c(rep(1, 5), 6:10))
-# )
-# test_data
-# # person 2 has no variance!
-# # person 3 has variance, but not neccessarily - depending on number of occasions (1-5 no variance)
-# 
-# test_ordered_5 <- ordered_occasion_draw(
-#   data = test_data,
-#   id.var = "id",
-#   occ.running.var = "occ_running",
-#   nr.of.occasions = 5,
-#   items = c("item1", "item2")
-# )
-# 
-# test_ordered_5$draw_log # draw log for each participant, 2 and 3 skipped due to no variance in occ 1:5
-# test_ordered_5$n_total_persons # 3 persons in total
-# test_ordered_5$n_valid_persons # only 1 valid person
-# test_ordered_5$n_skipped_persons # 2 skipped persons
-# unique(test_ordered_5$drawn_data$id) # three persons in drawn data, but two will have NA on items
-# test_ordered_5$drawn_data
-# # correct
-# 
-# test_ordered_10 <- ordered_occasion_draw(
-#   data = test_data,
-#   id.var = "id",
-#   occ.running.var = "occ_running",
-#   nr.of.occasions = 10,
-#   items = c("item1", "item2")
-# )
-# # now person 3 should be selected (variance in occasions 5:10)
-# 
-# test_ordered_10$draw_log # only participant 2 is skipped
-# test_ordered_10$n_total_persons # 3 persons in total
-# test_ordered_10$n_valid_persons # 2 valid persons
-# test_ordered_10$n_skipped_persons # 1 skipped person
-# unique(test_ordered_10$drawn_data$id) # 3 unique IDs, but one participants should have NAs
-# test_ordered_10$drawn_data # correct

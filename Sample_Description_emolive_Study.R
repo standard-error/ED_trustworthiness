@@ -259,16 +259,16 @@ sessionInfo()
 # [1] stats     graphics  grDevices utils     datasets  methods   base     
 # 
 # other attached packages:
-#  [1] lubridate_1.9.4 forcats_1.0.1   stringr_1.6.0   dplyr_1.1.4     purrr_1.1.0     readr_2.1.5     tidyr_1.3.1    
-#  [8] tibble_3.3.0    ggplot2_4.0.2   tidyverse_2.0.0
+#  [1] lubridate_1.9.4 forcats_1.0.1   stringr_1.6.0   dplyr_1.1.4     purrr_1.1.0     readr_2.1.5    
+#  [7] tidyr_1.3.1     tibble_3.3.0    ggplot2_4.0.2   tidyverse_2.0.0
 # 
 # loaded via a namespace (and not attached):
 #  [1] generics_0.1.4     lpSolve_5.6.23     stringi_1.8.7      lattice_0.22-9     lme4_2.0-1        
 #  [6] hms_1.1.4          magrittr_2.0.3     grid_4.5.3         timechange_0.3.0   RColorBrewer_1.1-3
 # [11] Matrix_1.7-4       scales_1.4.0       mnormt_2.1.2       reformulas_0.4.4   Rdpack_2.6.6      
-# [16] cli_3.6.5          rlang_1.2.0        rbibutils_2.4.1    performance_0.16.0 irr_0.84.1        
+# [16] cli_3.6.5          rlang_1.2.0        rbibutils_2.4.1    irr_0.84.1         performance_0.16.0
 # [21] splines_4.5.3      withr_3.0.2        tools_4.5.3        parallel_4.5.3     tzdb_0.5.0        
 # [26] nloptr_2.2.1       minqa_1.2.8        boot_1.3-32        vctrs_0.6.5        R6_2.6.1          
-# [31] lifecycle_1.0.5    MASS_7.3-65        psych_2.6.3        insight_1.4.6      pkgconfig_2.0.3   
+# [31] lifecycle_1.0.5    MASS_7.3-65        psych_2.6.5        insight_1.4.6      pkgconfig_2.0.3   
 # [36] pillar_1.11.1      gtable_0.3.6       glue_1.8.0         Rcpp_1.1.1-1       tidyselect_1.2.1  
-# [41] rstudioapi_0.18.0  farver_2.1.2       nlme_3.1-168       compiler_4.5.3     S7_0.2.0    
+# [41] rstudioapi_0.18.0  farver_2.1.2       nlme_3.1-168       compiler_4.5.3     S7_0.2.0 

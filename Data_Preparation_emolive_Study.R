@@ -1,6 +1,6 @@
 ###################################################################
-#####    Estimating trait negative emotion differentiation:   #####
-#####        How many measurement occasions and               #####
+#####        Estimating trait emotion differentiation:        #####
+#####            How many measurement occasions and           #####
 #####              emotion items are needed?                  #####
 ###################################################################
 
@@ -287,7 +287,6 @@ problems <- itemset_info_by_person_pos %>%
 rm(list=ls())
 sessionInfo()
 
-# Time Stamp: 10.04.2026, 14:53
 # R version 4.5.3 (2026-03-11 ucrt)
 # Platform: x86_64-w64-mingw32/x64
 # Running under: Windows 11 x64 (build 26200)

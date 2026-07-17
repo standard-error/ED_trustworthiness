@@ -1,7 +1,7 @@
 ###################################################################
-#####    Estimating trait negative emotion differentiation:   #####
-#####        How many measurement occasions and               #####
-#####              emotion items are needed?                  #####
+#####      Estimating trait emotion differentiation:          #####
+#####          How many measurement occasions and             #####
+#####               emotion items are needed?                 #####
 ###################################################################
 
 ###################################################################

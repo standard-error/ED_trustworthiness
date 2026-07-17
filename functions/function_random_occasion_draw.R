@@ -1,7 +1,7 @@
 ###################################################################
-#####    Estimating trait negative emotion differentiation:   #####
-#####        How many measurement occasions and               #####
-#####              emotion items are needed?                  #####
+#####       Estimating trait emotion differentiation:         #####
+#####          How many measurement occasions and             #####
+#####               emotion items are needed?                 #####
 ###################################################################
 
 ###################################################################
@@ -75,13 +75,6 @@ draw_for_participant <- function(data, id.var, id.part, nr.of.occasions, items) 
 }
 
 
-
-# # Test function
-# sim <- data.frame(SERIAL = rep(1, times=6),
-#                   aerger1 = rep(c(0,1), each=3),
-#                   aerger2 = rep(c(1,0), each=3))
-# 
-# test <- draw_for_participant(data=sim, id.var="SERIAL", id.part = 1,nr.of.occasions = 2, items = c("aerger1", "aerger2"))
 
 
 
@@ -158,86 +151,3 @@ random_occasion_draw <- function(data, id.var, occ.running.var, nr.of.occasions,
 
 }
 
-
-
-
-
-# # test function:
-# set.seed(123)
-# 
-# test_data <- data.frame(
-#   id = rep(1:3, each = 10),
-#   occ_running = rep(1:10, times = 3),
-# 
-#   # Person 1 -> variance,
-#   # Person 2 -> no variance
-#   # Person 3 -> variance
-#   item1 = c(rnorm(10), rep(1,10), rnorm(10)),
-#   item2 = c(rnorm(10), rep(1,10), rnorm(10))
-# )
-# 
-# 
-# ## test inner function:
-# # person 1
-# res1 <- draw_for_participant(
-#   data = test_data,
-#   id.var = "id",
-#   id.part = 1,
-#   nr.of.occasions = 5,
-#   items = c("item1", "item2")
-# )
-# 
-# # person 2
-# res2 <- draw_for_participant(
-#   data = test_data,
-#   id.var = "id",
-#   id.part = 2,
-#   nr.of.occasions = 5,
-#   items = c("item1", "item2")
-# )
-# 
-# # person 3
-# res3 <- draw_for_participant(
-#   data = test_data,
-#   id.var = "id",
-#   id.part = 3,
-#   nr.of.occasions = 5,
-#   items = c("item1", "item2")
-# )
-# 
-# res1
-# res1$drawn_data_sub # data
-# res1$redraws # zero redraws
-# res1$skipped # not skipped (overall variance)
-# res1$skip_reason # no skip reason
-# 
-# res2
-# res2$drawn_data_sub # no data (only NAs)
-# res2$redraws # NA redraws
-# res2$skipped # skipped (no overall variance)
-# res2$skip_reason # skip reason = no variance
-# 
-# res3
-# res3$drawn_data_sub # data
-# res3$redraws # zero redraws
-# res3$skipped # not skipped (overall variance)
-# res3$skip_reason # no skip reason
-# 
-# 
-# 
-# ## test outer function:
-# res_all <- random_occasion_draw(
-#   data = test_data,
-#   id.var = "id",
-#   occ.running.var = "occ_running",
-#   nr.of.occasions = 5,
-#   items = c("item1", "item2")
-# )
-# 
-# res_all
-# res_all$drawn_data # only valid data from participant 1 and 3; NAs for participant 2
-# res_all$total_redraws # zero total redraws
-# res_all$n_total_persons # total number of persons = 3
-# res_all$n_valid_persons # 2 valid persons
-# res_all$n_skipped_persons # 1 skipped person
-# res_all$draw_log # draw log with information on each participant

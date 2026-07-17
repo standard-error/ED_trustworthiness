@@ -9,6 +9,15 @@
 ###################################################################
 
 
+# This script generates separate plots for each individual
+# evaluation criterion. These plots were used for visual inspection
+# of the simulation results and are not the figures reported in the
+# manuscript.
+# The publication figures are generated in the files
+# "Data_Visualization_for_Publication[...].R" and
+# "Data_Visualization_Item_Set_Endorsement[...].R".
+
+
 
 # Source Processing Function ----------------------------------------------
 source("functions/function_process_data_visualization.R")
@@ -172,4 +181,4 @@ sessionInfo()
 # [26] lifecycle_1.0.5    bit_4.6.0          tictoc_1.2.1       car_3.1-5          vroom_1.6.5       
 # [31] ragg_1.5.2         archive_1.1.12.1   pkgconfig_2.0.3    pillar_1.11.1      gtable_0.3.6      
 # [36] glue_1.8.0         systemfonts_1.3.2  tidyselect_1.2.1   rstudioapi_0.18.0  farver_2.1.2      
-# [41] labeling_0.4.3     svglite_2.2.2      carData_3.0-6      compiler_4.5.3     S7_0.2.0          
+# [41] labeling_0.4.3     svglite_2.2.2      carData_3.0-6      compiler_4.5.3     S7_0.2.0

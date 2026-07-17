@@ -1,0 +1,24 @@
+R packages and versions
+=======================
+
+        Package Version
+1         dplyr   1.1.4
+2        future  1.70.0
+3  future.apply  1.20.2
+4         gdata   3.0.1
+5         ggh4x   0.3.1
+6       ggplot2   4.0.2
+7        ggpubr   0.6.3
+8           irr  0.84.1
+9          lme4   2.0.1
+10      metaSEM   1.5.0
+11  performance  0.16.0
+12        psych   2.6.5
+13        purrr   1.1.0
+14        readr   2.1.5
+15       scales   1.4.0
+16      svglite   2.2.2
+17       tictoc   1.2.1
+18    tidyverse   2.0.0
+19      viridis   0.6.5
+20      writexl   1.5.4

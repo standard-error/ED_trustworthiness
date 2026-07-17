@@ -1,7 +1,7 @@
 ###################################################################
-#####    Estimating trait negative emotion differentiation:   #####
-#####        How many measurement occasions and               #####
-#####              emotion items are needed?                  #####
+#####      Estimating trait emotion differentiation:          #####
+#####           How many measurement occasions and            #####
+#####               emotion items are needed?                 #####
 ###################################################################
 
 ###################################################################
@@ -79,71 +79,3 @@ generate_all_item_sets <- function(all_items, categories, n_items) {
   
 }
 
-
-
-
-# # generate_all_item_sets(all_items=all_items, categories=categories, n_items=15)
-# # generate_all_item_sets(all_items=all_items, categories=categories, n_items=5)
-# # # if we do not have categories: 15 over 5 = 3003 combination
-# # choose(15, 5)
-# # # test function without categories:
-# # generate_all_item_sets(all_items=all_items, categories=NULL, n_items=5)
-# # length(generate_all_item_sets(all_items=all_items, categories=NULL, n_items=5))
-# # # correct
-# # generate_all_item_sets(all_items=all_items, categories=NULL, n_items=15)
-# # generate_all_item_sets(all_items=all_items, categories=categories, n_items=15)
-# 
-# generate_all_item_sets(all_items=c("freude1", "freude2", "freude3",                   # positive emotion items
-#                                    "interesse1", "interesse2", "interesse3",
-#                                    "liebe1", "liebe2", "liebe3",
-#                                    "stolz1", "stolz2", "stolz3"),
-#                        categories=c("freude", "freude", "freude",                   # positive emotion categories
-#                                     "interesse", "interesse", "interesse",
-#                                     "liebe", "liebe", "liebe",
-#                                     "stolz", "stolz", "stolz"), n_items=4)
-# # if we want a total of 4 items (for a total of 4 categories) -> 1 item per category
-# # options per category: 3
-# # 3 * 3 * 3 * 3 = 3^4 
-# 3^4 # 81
-# length(generate_all_item_sets(all_items=c("freude1", "freude2", "freude3",                   # positive emotion items
-#                                           "interesse1", "interesse2", "interesse3",
-#                                           "liebe1", "liebe2", "liebe3",
-#                                           "stolz1", "stolz2", "stolz3"),
-#                               categories=c("freude", "freude", "freude",                   # positive emotion categories
-#                                            "interesse", "interesse", "interesse",
-#                                            "liebe", "liebe", "liebe",
-#                                            "stolz", "stolz", "stolz"), n_items=4))
-# # correct
-# 
-# # if we want a total of 8 items (for a total of 4 categories) -> 2 items per category
-# # options per category: choose(3, 2) = 3 (3 options on choosing 2 items per category)
-# # 3 * 3 * 3 * 3 = 3^4 # for a total of 4 categories (all crossed)
-# 3^4 # 81
-# choose(3, 2)*choose(3, 2)*choose(3, 2)*choose(3, 2)
-# length(generate_all_item_sets(all_items=c("freude1", "freude2", "freude3",                   # positive emotion items
-#                                           "interesse1", "interesse2", "interesse3",
-#                                           "liebe1", "liebe2", "liebe3",
-#                                           "stolz1", "stolz2", "stolz3"),
-#                               categories=c("freude", "freude", "freude",                   # positive emotion categories
-#                                            "interesse", "interesse", "interesse",
-#                                            "liebe", "liebe", "liebe",
-#                                            "stolz", "stolz", "stolz"), n_items=8))
-# # correct
-# generate_all_item_sets(all_items=c("freude1", "freude2", "freude3",                   # positive emotion items
-#                                    "interesse1", "interesse2", "interesse3",
-#                                    "liebe1", "liebe2", "liebe3",
-#                                    "stolz1", "stolz2", "stolz3"),
-#                        categories=c("freude", "freude", "freude",                   # positive emotion categories
-#                                     "interesse", "interesse", "interesse",
-#                                     "liebe", "liebe", "liebe",
-#                                     "stolz", "stolz", "stolz"), n_items=8)
-# 
-# 
-# # without categories:
-# choose(12, 8) # 495 options for choosing 8 out of 12 items
-# length(generate_all_item_sets(all_items=c("freude1", "freude2", "freude3",                   # positive emotion items
-#                                           "interesse1", "interesse2", "interesse3",
-#                                           "liebe1", "liebe2", "liebe3",
-#                                           "stolz1", "stolz2", "stolz3"),
-#                               categories=NULL, n_items=8))
-# # correct
