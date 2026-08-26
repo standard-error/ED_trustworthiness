@@ -1,14 +1,15 @@
 ###################################################################
-#####    Estimating trait negative emotion differentiation:   #####
-#####        How many measurement occasions and               #####
-#####              emotion items are needed?                  #####
+#####      Estimating trait emotion differentiation:          #####
+#####          How many measurement occasions and             #####
+#####               emotion items are needed?                 #####
 ###################################################################
 
 ###################################################################
 #####            Function to Calculate ICC                    #####
 ###################################################################
 
-
+# two functions:
+# function to calculate ICC and function to handle negative ICCs
 
 
 # Create Function to Calculate ICC ----------------------------------------
@@ -68,7 +69,16 @@ calculate_icc <- function(data,
           # relevant emotion items (indicated by items)
           iccsubdat <- data[which(data[ ,id.var] == id), items]
           
-          # calculate ICC using the participant's data and ICC(3, 1) measuring consistency
+          
+          # If person had zero variance in emotion ratings,
+          # their ratings are set to NA (in ordered_occasion_draw and random_occasion_draw function)
+          # -> do not calculate ICC for these participants (would not work anyway)
+          if (all(is.na(iccsubdat))) {
+            return(cbind(id, NA_real_, NA_real_))
+          }
+          
+          # In all other cases,
+          # calculate ICC using the participant's data and ICC(3, 1) measuring consistency (default)
           ICC <- irr::icc(iccsubdat, model="twoway", type=type,
                           unit = unit)$value 
           
@@ -84,7 +94,8 @@ calculate_icc <- function(data,
           # -> calculate from length of item vector 
           K_i <- length(items)
           
-          ICC.z <- 0.5 * log( (1 + (K_i - 1)*ICC) / (1 - ICC) )
+          ICC.z <- suppressWarnings(0.5 * log( (1 + (K_i - 1)*ICC) / (1 - ICC) ))
+          # suppress warnings here -> NaN will be handled in one_simulation function!
           
           cbind(id, ICC, ICC.z) # return ID, ICC and ICC.z for each participant
           # t() transposes output from apply() to a two-dimensional matrix (3 cols, N rows)
@@ -93,5 +104,62 @@ calculate_icc <- function(data,
   return(ICCdata) # return ICCdata matrix
 }
 
+
+
+
+# Create Function to Handle Negative ICCs ---------------------------------
+handle_negative_iccs <- function(ICCdata,
+                                 icc_col,
+                                 icc.z_col,
+                                 negative_icc_handling = c("keep", "set to zero", "exclude")) {
+  # helper function to handle negative ICCs after calculation
+  # ICCdata: matrix of person IDs, ICCs and transformed ICCs (ICC.z)
+  # icc_col: character of the variable name of the ICC variable
+  # icc.z_col: character of the variable name of the ICC.z variable
+  # negative_icc_handling: argument specifying whether to keep negative ICCs, set them to 0 or to exclude them
+  
+  negative_icc_handling <- match.arg(negative_icc_handling, several.ok = FALSE)
+  
+  # sanity check:
+  if (!all(c(icc_col, icc.z_col) %in% colnames(ICCdata))) {
+    stop("icc_col or icc.z_col not found in ICCdata")
+  }
+  
+  # create index of negative ICCs (rows in ICCdata)
+  neg_icc_idx <- ICCdata[ , icc_col] < 0 & !is.na(ICCdata[ , icc_col])
+  # if ICC < 0 and is not missing -> TRUE
+  # neg_icc_idx with TRUE will be chosen to be manipulated
+  
+  
+  if (negative_icc_handling == "exclude") { # if negative ICCs shall be excluded, set them to NA
+    ICCdata[neg_icc_idx, icc_col] <- NA
+    ICCdata[neg_icc_idx, icc.z_col] <- NA # also set transformed values to NA
+    return(ICCdata) # return handled ICCdata set
+    
+  } else if (negative_icc_handling == "set to zero") {
+    # else, if the negative ICCs shall be set to zero:
+
+    # now set raw ICCs to 0 and determine Fisher's Z-transformed ICCs
+    ICCdata[neg_icc_idx, icc_col] <- 0 # set the negative ICCs to 0 (by their index)
+    ICCdata[neg_icc_idx, icc.z_col] <- 0
+    # Fisher's Z-transformed values are as well zero:
+    # formula for transformation: 0.5 * log( (1 + (K_i - 1)*ICC_i) / (1 - ICC_i) )
+    # use 0 for ICC_i:
+    # 0.5 * log( (1 + (K_i - 1)*0) / (1 - 0) ) # --> (K_i - 1)*0 = 0 
+    # = 0.5 * log( (1 + 0) / (1 - 0) )
+    # = 0.5 * log( 1 / 1 )
+    # = 0.5 * log(1)
+    # = 0.5 * 0 
+    # = 0
+    # regardless of K_i, the formula will result in zero if ICC_i = 0
+    
+    return(ICCdata) # return handled data set
+    
+  } else if (negative_icc_handling == "keep") {
+    # if negative ICCs shall be kept, just return ICCdata
+    return(ICCdata)
+  }
+  
+}
 
 

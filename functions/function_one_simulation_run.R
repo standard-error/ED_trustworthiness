@@ -1,7 +1,7 @@
 ###################################################################
-#####    Estimating trait negative emotion differentiation:   #####
-#####        How many measurement occasions and               #####
-#####              emotion items are needed?                  #####
+#####      Estimating trait emotion differentiation:          #####
+#####          How many measurement occasions and             #####
+#####               emotion items are needed?                 #####
 ###################################################################
 
 ###################################################################
@@ -47,7 +47,6 @@ one_sim_data_manipulation <- function(data, nr.of.occasions, occasions.drawn,
   # nr.of.items: number of items that shall be used for ICC calculation
         # also determines the type of items
   # items: items that shall be used for ICC calculation
-        # used in random draws
   # id.var: character that indicates name of participant ID variable
   # occ.running.var: character that indicates the name of the occasion running variable
 
@@ -65,24 +64,35 @@ one_sim_data_manipulation <- function(data, nr.of.occasions, occasions.drawn,
                                        nr.of.occasions = nr.of.occasions,  # pass nr.of.occasions
                                        items = items) # pass items 
     
-    drawn_data <- drawn_all$drawn_data
-    total_redraws <- drawn_all$total_redraws
-    
-    
+
   } else if (occasions.drawn == "by order") {
     # for ordered draws, we do not have cases with zero variance -> no re-draws
     # -> was checked before running the simulation as a whole
-    drawn_data <- ordered_occasion_draw(data = data, # insert start data (full data set provided in argument)
+    drawn_all <- ordered_occasion_draw(data = data, # insert start data (full data set provided in argument)
                                         id.var = id.var, # pass id.var 
                                         occ.running.var = occ.running.var, # pass occ.running.var
-                                        nr.of.occasions = nr.of.occasions) # pass.nr.of.occasions
-    total_redraws <- 0
+                                        nr.of.occasions = nr.of.occasions,# pass nr.of.occasions
+                                        items = items) # pass items
   }
   
-  # return list with drawn_data and total redraws
+  
+  # Extract information from drawings (e.g., number of skipped persons, redraws, ...)
+  # -> diagnostic features
+  drawn_data <- drawn_all$drawn_data
+  total_redraws <- drawn_all$total_redraws
+  n_total_persons <- drawn_all$n_total_persons
+  n_valid_persons <- drawn_all$n_valid_persons
+  n_skipped_persons <- drawn_all$n_skipped_persons
+  draw_log <- drawn_all$draw_log # also save person overview of draw_log
+  
+  # return list with drawn_data, total_redraws and other information
   return(list(
     drawn_data = drawn_data,
-    total_redraws = total_redraws
+    total_redraws = total_redraws,
+    n_total_persons = n_total_persons,
+    n_valid_persons = n_valid_persons,
+    n_skipped_persons = n_skipped_persons,
+    draw_log = draw_log
   ))
 
 }
@@ -91,19 +101,50 @@ one_sim_data_manipulation <- function(data, nr.of.occasions, occasions.drawn,
 
 ### PART 2: CALCULATE OUTCOMES MEASURES
 
-one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
+one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata_handled,
+                                     sim_ICCdata_raw, id.var,
                                      nr.of.items, nr.of.occasions) {
   # benchmark_ICCdata: data frame of the ICC data estimated with benchmark data
       # variable names need to be: id.var, bench_ICC, bench_ICC.z
-  # sim_ICCdata: data frame of the ICC data estimated with simulated data (data adjusted
-                # according to simulation design features)
+  # sim_ICCdata_handled: data frame of the ICC data estimated with simulated data (data adjusted
+                # according to simulation design features) AND  with negative ICCs handled accordingly
+  # sim_ICCdata_raw: data frame of the ICC data estimated with simulated data BEFORE HANDLING of negative ICCs
+      # BUT BEFORE HANDLING --> needed to determine estimation problems and negative ICCs
   # id.var: character indicating name of ID variable
   # nr.of.items: number of items (as in simulation design)
   # nr.of.occasions: number of occasions per participant (as in simulation design)
   
-  # merge benchmark ICC data and simulated ICC data by id.var
-  merged <- merge(benchmark_ICCdata, sim_ICCdata, by = id.var)
+  # merge benchmark ICC data and simulated ICC data (with negative ICCs HANDLED) by id.var
+  merged <- merge(benchmark_ICCdata, sim_ICCdata_handled, by = id.var, all.x = TRUE)
   
+  # restore benchmark person order after merge (fixed order across all simulation runs):
+  merged <- merged[match(benchmark_ICCdata[ , id.var], merged[ , id.var]), ]
+  rownames(merged) <- NULL # reset row numbers
+  
+  # also use the raw simulated ICC data (WITHOUT handling of negative ICCs)
+  # to determine number of negative ICCs, number of estimation problems
+  merged_raw <- merge(benchmark_ICCdata, sim_ICCdata_raw, by = id.var, all.x = TRUE)
+  merged_raw <- merged_raw[match(benchmark_ICCdata[ , id.var], merged_raw[ , id.var]), ]
+  rownames(merged_raw) <- NULL # reset row numbers
+  
+
+  # Store number of participants for whom ICC was calculated in simulation:
+  # not nrow(merged) -> contains ALL participants
+  # -> use only those that were not skipped in data manipulation
+  # -> i.e., those whose comp_ICC is not NA
+  # compare later with n_valid_persons
+  # use raw data BEFORE handling of negative ICCs here (merged_raw)
+  # how many ICCs were - in principle - calculated before we handled them
+  N_merged_ICC_raw <- sum(!is.na(merged_raw$comp_ICC))
+  
+  # also store total number
+  N_merged_total_raw <- nrow(merged_raw)
+  
+  # Now determine how many ICCs are there after handling of negative ICCs
+  # in case of exclusion, this + number of negative ICCs should add up to N_merged_ICC
+  N_merged_ICC_handled <- sum(!is.na(merged$comp_ICC))
+  N_merged_total_handled <- nrow(merged)
+
   
   # Some participants may have an ICC.z of +/- infinite or NaN
   # -> estimation problems
@@ -142,17 +183,28 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
   # R returns infinite values, as the function
   # tends towards -inf / inf at the boundaries of its domain.
   
-  # exclude participants with invalid ICC.z:
-  # if ICC.z = +/- inf, remove participant
-  merged.c <- merged[!is.infinite(merged[ , "comp_ICC.z"]), ]
-  # if ICC.z = NaN, remove participant from reliability analyses
-  merged.c <- merged.c[!is.nan(merged.c[ , "comp_ICC.z"]), ]
+  
+  # clean invalid ICC.z from merged (will be used to store participant-specific values)
+  merged[ , "comp_ICC.z"][
+    is.nan(merged[ , "comp_ICC.z"]) |
+      is.infinite(merged[ , "comp_ICC.z"])
+  ] <- NA # set NaN and infinite to NA
+  
+  
+  
+  # exclude participants with invalid ICC.z
+  # (i.e., create clean data set for ICC.z analyses)
+  # if ICC.z = NA (if ICC = NA), remove participant from analyses
+  # (NA -> stems from ICC = NA or ICC.z is NaN or ICC.z is infinite)
+  merged.c <- merged[!is.na(merged[ , "comp_ICC.z"]), ]
+  
   # if all participants have valid ICC.z, then merged.c = merged
   
   
-  N_valid_ICC.z <- nrow(merged.c)
+  N_valid_ICC.z_handled <- nrow(merged.c)
   #### FOR ICC.Z OUTCOMES, MERGED.C IS USED 
-
+  # except for when we want to store ICCs and ICC.z of ALL participants
+  
   
   
   ## ABSOLUTE OUTCOMES ##
@@ -161,7 +213,10 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
   # rows in the merged data frame)
   
   # ESTIMATION PROBLEMS
-  # only relevant for raw ICCs
+  # only relevant for raw ICCs (not transformed)
+  # USE ICCS BEFORE HANDLING OF NEGATIVE ICCS HERE (merged_raw)
+  
+  # ESTIMATION PROBLEMS REFER TO THE RAW ICCS BEFORE ANY HANDLING
   
   # define estimation problems:
   # Fisher's Z-transformationuses the natural logarithm,
@@ -187,18 +242,40 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
   # K_i will be defined below (for reliability)
   # plug in nr.of.items here for K_i
   
-  estimationProbNeg <- nrow(merged[merged[ , "comp_ICC"] <= ( (-1) / (nr.of.items - 1) ), ])
   # number of ICCs <= -1/(K_i -1)
+  estimationProbNeg_raw <- sum(
+    merged_raw[ , "comp_ICC"] <= ( (-1) / (nr.of.items - 1) ),
+    na.rm = TRUE
+  )
   
-  estimationProbPos <- nrow(merged[merged[ , "comp_ICC"] >= 1, ]) # number of ICCs >= 1
   
-  negICC <- nrow(merged[merged[ , "comp_ICC"] < 0, ]) # number of negative ICCs
+  # number of ICCs >= 1
+  estimationProbPos_raw <- sum(
+    merged_raw[ , "comp_ICC"] >= 1,
+    na.rm = TRUE
+  )
+  
+  
+  # number of negative ICCs
   # (theoretically impossible)
+  negICC_raw <- sum(
+    merged_raw[ , "comp_ICC"] < 0,
+    na.rm=TRUE
+  )
   
+  # sanity check: number of negative ICCs after handling
+  negICC_handled <- sum(
+    merged[ , "comp_ICC"] < 0,
+    na.rm=TRUE
+  )
+  
+  
+  # now use the handled ICCs (merged)
+  # -> ICCs after handling of negative ICCs
   
   # STANDARD DEVIATION OF ICCs
-  sd_ICC <- sd(merged[ , "comp_ICC"]) # raw ICCs
-  sd_ICC.z <- sd(merged.c[ , "comp_ICC.z"]) # transformed ICCs
+  sd_ICC <- sd(merged[ , "comp_ICC"], na.rm=TRUE) # raw ICCs (remove NAs -> for participants who had zero variance, we have NA)
+  sd_ICC.z <- sd(merged.c[ , "comp_ICC.z"], na.rm=TRUE) # transformed ICCs
   
   
   # RELIABILITY
@@ -213,22 +290,29 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
   # -> only use participants with valid values (merged.c) and store number of 
   # participants used for reliability analysis
 
-  
-  # calculate sampling variance (the same for all participants -> all have the same
-  # number of items and occasions)
-  K_i <- nr.of.items
-  T_i <- nr.of.occasions
-  merged.c[ , "sampvar"] <- K_i / (2*(T_i - 2)*(K_i - 1))
-  
-  # calculate I² as reliability measure
-  meta <- metaSEM::meta(data = merged.c, # use data set with participants with valid ICC.z only
-                        y = comp_ICC.z, # use Fisher's Z-transformed values
-                        v = sampvar,
-                        I2 = "I2am",
-                        intervals.type = "LB")
-  
-  rel <- summary(meta)$I2.values$Estimate # extract reliability estimate
-  N_rel <- summary(meta)$no.studies # extract number of participants used for reliability estimation
+
+  if (N_valid_ICC.z_handled  < 2 ) { # if there are NO or only ONE valid ICC.z (for reliability analysis)
+    rel <- NA_real_ # return NA for reliability and the number of N_valid_ICC.z_valid for N_rel
+    N_rel <- N_valid_ICC.z_handled # should be 0 or 1
+  } else { # else calculate reliability with ICC.z
+    
+    # calculate sampling variance (the same for all participants -> all have the same
+    # number of items and occasions)
+    K_i <- nr.of.items
+    T_i <- nr.of.occasions
+    merged.c[ , "sampvar"] <- K_i / (2*(T_i - 2)*(K_i - 1))
+    
+    # calculate I² as reliability measure
+    meta <- metaSEM::meta(data = merged.c, # use data set with participants with valid ICC.z only
+                          y = comp_ICC.z, # use Fisher's Z-transformed values
+                          v = sampvar,
+                          I2 = "I2am",
+                          intervals.type = "LB")
+    
+    rel <- summary(meta)$I2.values$Estimate # extract reliability estimate
+    N_rel <- summary(meta)$no.studies # extract number of participants used for reliability estimation
+    
+  }
   
   
   
@@ -236,18 +320,27 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
   
   # PERSON-LEVEL DIFFERENCE OF ICCs FROM BENCHMARK ICCs ("bias")
   # for both raw ICCs and transformed ICCs
+  # here, we do not use merged.c for ICC.z since we want vectors with ALL participants that we can store
   
   merged[ , "difference_ICC"] <- merged[ , "comp_ICC"] - merged[ , "bench_ICC"] # difference between raw ICCs
-  merged.c[ , "difference_ICC.z"] <- merged.c[ , "comp_ICC.z"] - merged.c[ , "bench_ICC.z"] # difference between transformed ICCs
+  merged[ , "difference_ICC.z"] <- merged[ , "comp_ICC.z"] - merged[ , "bench_ICC.z"] # difference between transformed ICCs
   
   
   # store differences
   person_diff_ICC <- merged[ , "difference_ICC"] 
-  person_diff_ICC.z <- merged.c[ , "difference_ICC.z"]
+  names(person_diff_ICC) <- merged[ , id.var] # use ID variable as names of the vector -> each element (ICC) linked with person ID
+  person_diff_ICC.z <- merged[ , "difference_ICC.z"]
+  names(person_diff_ICC.z) <- merged[ , id.var] # use ID variable as names of the vector -> each element (ICC) linked with person ID
   
   # also store estimate per person -> needed for MCSE of "bias" (i.e., person-level difference)
-  person_estimates_ICC <- merged[ , "comp_ICC"]
-  person_estimates_ICC.z <- merged.c[ , "comp_ICC.z"]
+  person_estimates_ICC <- merged[ , "comp_ICC"] # use FULL person vector here! (invalid values will be NA)
+  names(person_estimates_ICC) <- merged[ , id.var] # use ID variable as names of the vector -> each element (ICC) linked with person ID
+  person_estimates_ICC.z <- merged[ , "comp_ICC.z"] # use FULL person vector here! (invalid values will be NA)
+  names(person_estimates_ICC.z) <- merged[ , id.var] # use ID variable as names of the vector -> each element (ICC) linked with person ID
+  
+  # here, we do not use merged.c for ICC.z because we want to store values for ALL participants
+  # so that we can later on calculate person-specific outcomes across all replications
+  
   
   
   
@@ -270,24 +363,49 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
   
   # CORRELATION WITH BENCHMARK
   # for both raw ICCs and transformed ICCs
+  # determine number of participants used for correlation calculation
+  N_cor_ICC <- sum(complete.cases(merged[ , c("comp_ICC", "bench_ICC")]))
+  N_cor_ICC.z <- sum(complete.cases(merged.c[ , c("comp_ICC.z", "bench_ICC.z")]))
   
-  cor_ICC <- psych::corr.test(merged[ , c("comp_ICC", "bench_ICC")])$r[2, 1]
-  cor_ICC.z <- psych::corr.test(merged.c[ , c("comp_ICC.z", "bench_ICC.z")])$r[2, 1]
   
+  # calculate correlations
+  # if there are less than 2 participants with valid values, correlation cannot be calculated
+  if (N_cor_ICC < 2) {
+    cor_ICC <- NA_real_
+  } else {
+    cor_ICC <- psych::corr.test(merged[ , c("comp_ICC", "bench_ICC")], use="complete")$r[2, 1]
+  }
+  
+  if (N_cor_ICC.z < 2) {
+    cor_ICC.z <- NA_real_
+  } else {
+    cor_ICC.z <- psych::corr.test(merged.c[ , c("comp_ICC.z", "bench_ICC.z")], use="complete")$r[2, 1]
+  }
+
+
   
   # RETURN ALL OUTCOMES
   return(data.frame(
+    N_merged_total_raw, # store information on number of participants
+    N_merged_ICC_raw,
+    N_merged_total_handled,
+    N_merged_ICC_handled,
+    N_valid_ICC.z_handled,
+    N_cor_ICC,
+    N_cor_ICC.z,
+    N_rel,
     # relative outcome measures
-    N_valid_ICC.z,
     cor_ICC, cor_ICC.z,
     person_estimates_ICC = I(list(person_estimates_ICC)),
     person_estimates_ICC.z = I(list(person_estimates_ICC.z)),
     person_diff_ICC = I(list(person_diff_ICC)),
     person_diff_ICC.z = I(list(person_diff_ICC.z)), # store list of differences (with according name, else it will be changed to list.person_diff_ICC.)
     # absolute outcome measures
-    rel, N_rel,
+    rel,
     sd_ICC, sd_ICC.z,
-    negICC, estimationProbNeg, estimationProbPos
+    negICC_raw,
+    negICC_handled,
+    estimationProbNeg_raw, estimationProbPos_raw
   ))
   
 }
@@ -298,7 +416,8 @@ one_sim_outcome_measures <- function(benchmark_ICCdata, sim_ICCdata, id.var,
 one_simulation <- function(data, nr.of.occasions, occasions.drawn,
                            nr.of.items, items, id.var, occ.running.var,
                            type, unit,
-                           benchmark_ICCdata) {
+                           benchmark_ICCdata,
+                           negative_icc_handling = c("keep", "set to zero", "exclude")) {
   # data: takes the data frame with all participants
           # and their occasions as input (long format) = benchmark data
   # nr.of.occasions: number of occasions to draw per participant (for ICC calculation)
@@ -313,7 +432,10 @@ one_simulation <- function(data, nr.of.occasions, occasions.drawn,
   # unit: unit for ICC calculation
           # here: default is single measurements (but could be varied in principle in simulation)
   # benchmark_ICCdata: data on ICCs (raw ICC and ICC.z) using benchmark data
+  # negative_icc_handling: specifies whether negative ICCs shall be kept, set to zero or excluded (in simulated data)
   
+  
+  negative_icc_handling <- match.arg(negative_icc_handling, several.ok = FALSE)
   
   
   # CHECK: is length(items) == nr.of.items?
@@ -336,28 +458,65 @@ one_simulation <- function(data, nr.of.occasions, occasions.drawn,
                                           items = items,
                                           id.var = id.var, occ.running.var = occ.running.var) # pass arguments from outer function
 
-  # extract drawn_data and total_redraws
+  # extract drawn_data
   drawn_data <- drawn_all$drawn_data
+  
+  # extract diagnostic information:
   total_redraws <- drawn_all$total_redraws
+  n_total_persons <- drawn_all$n_total_persons
+  n_valid_persons <- drawn_all$n_valid_persons
+  n_skipped_persons <- drawn_all$n_skipped_persons
+ 
+  
   
   # Step 2: Calculate ICCs with drawn data
-  sim_ICCdata <- calculate_icc(data  = drawn_data, # insert drawn data: calculate ICCs on data subset (corresponding to design choice)
+  sim_ICCdata_raw <- calculate_icc(data  = drawn_data, # insert drawn data: calculate ICCs on data subset (corresponding to design choice)
                                id.var = id.var, # pass id.var
                                items = items, # pass items
                                type = type, # pass type, default here: consistency; could be varied in principle in simulation
-                             unit = unit) # pass unit, default here: single; could be varied in principle in simulation
+                               unit = unit) # pass unit, default here: single; could be varied in principle in simulation
   
-  colnames(sim_ICCdata) <- c(id.var, "comp_ICC", "comp_ICC.z") # rename for comparison with benchmark 
+  colnames(sim_ICCdata_raw) <- c(id.var, "comp_ICC", "comp_ICC.z") # rename for comparison with benchmark 
+
+  # now handle negative ICCs according to argument:
+  sim_ICCdata_handled <- handle_negative_iccs(
+    ICCdata = sim_ICCdata_raw, # raw simulation ICC data
+    icc_col = "comp_ICC",  # column name
+    icc.z_col = "comp_ICC.z", # column name
+    negative_icc_handling = negative_icc_handling # pass negative_icc_handling_argument
+  )
   
   # this is the ICC data that we want to calculate outcomes measures for
   # e.g., mean, SD, ...
   
+  # however, using the raw ICC data (sim_ICCdata_raw), we want to calculate
+  # negative ICCs, estimation problems
+
+  # check if the number of rows is consistent with the number of participants that were used (i.e., not skipped)
+  if (nrow(sim_ICCdata_raw) != drawn_all$n_total_persons) {
+    stop("Mismatch between n_total_persons from data manipulation and sim_ICCdata rows")
+  }
+    
 
   # Step 3: Calculate outcome measures based on the manipulated data (step 2) and benchmark data (passed to outer function)
-  outcomes <- one_sim_outcome_measures(benchmark_ICCdata = benchmark_ICCdata, sim_ICCdata, id.var, nr.of.items, nr.of.occasions)
+  outcomes <- one_sim_outcome_measures(benchmark_ICCdata = benchmark_ICCdata,
+                                       sim_ICCdata_handled,
+                                       sim_ICCdata_raw,
+                                       id.var,
+                                       nr.of.items,
+                                       nr.of.occasions)
   
-  # add total number of re-draws to the outcomes
+  # Sanity check: merged N should match total persons
+  if (outcomes$N_merged_total_raw != n_total_persons) {
+    stop("Mismatch: N_merged_total_raw does not equal n_total_persons.")
+  }
+  
+  
+  # add total number of re-draws and ohter diagnostics to the outcomes
   outcomes$total_redraws <- total_redraws
+  outcomes$n_total_persons <- n_total_persons
+  outcomes$n_valid_persons_var <- n_valid_persons
+  outcomes$n_skipped_persons_var <- n_skipped_persons
   
   return(outcomes)
 }

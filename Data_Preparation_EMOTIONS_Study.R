@@ -1,0 +1,907 @@
+###################################################################
+#####       Estimating trait emotion differentiation:         #####
+#####          How many measurement occasions and             #####
+#####              emotion items are needed?                  #####
+###################################################################
+
+###################################################################
+#####           Data Preparation Script - Study 2             #####
+###################################################################
+
+
+
+# Packages ----------------------------------------------------------------
+library(tidyverse)
+
+
+
+# Read Data ---------------------------------------------------------------
+d <- readr::read_csv("../EMOTIONS Project/Study2_BothWaves_ESM_and_Traitdata_inclWave1[2]-only.csv")
+d <- as.data.frame(d)
+
+# quick overview:
+d %>%
+  group_by(id_for_merging) %>%
+  summarise(n_occ = n()) %>%
+  summarise(mean = mean(n_occ), sd = sd(n_occ), min=min(n_occ), max = max(n_occ))
+
+
+# check for sample description:
+L2 <- dplyr::distinct(d, id_for_merging, wave)
+table(L2$wave)
+
+
+
+# Check Data Quality ------------------------------------------------------
+# to be consistent with emolive data set -> use completion times of occasions
+# as quality indicator
+
+table(d$outlier_completion_time_esm_perReport_s2w1, useNA="always") # 33 occasions in wave 1
+table(d$outlier_completion_time_esm_perReport_s2w2, useNA="always") # 23 occasions in wave 2
+table(d$outlier_completion_time_esm_perReport_s2w1,
+      d$outlier_completion_time_esm_perReport_s2w2,
+      useNA="always")
+
+# exclude outliers due to completion time
+
+# check data structure
+# View(d[48:53, c("wave", "dataset", "outlier_completion_time_esm_perReport_s2w1", "outlier_completion_time_esm_perReport_s2w2")])
+# if both waves were completed, flags from w1 are also in w2 and vice versa
+# -> but exclusion must be wave-wise
+# -> e.g., if wave 1, then the flag variable for wave 1 is the relevant one
+# 
+# View(d[d$wave == "S2W1-only", c("id_not_for_merging", "outlier_completion_time_esm_perReport_s2w1", "outlier_completion_time_esm_perReport_s2w2")])
+# # if only one wave -> missings for other wave
+
+# create own flag variable
+d$flagW1 <- NA
+d$flagW1[d$dataset == "S2W1" & d$outlier_completion_time_esm_perReport_s2w1 == 1] <- 1
+d$flagW1[d$dataset == "S2W1" & d$outlier_completion_time_esm_perReport_s2w1 == 0] <- 0
+d$flagW1[d$dataset == "S2W2"] <- NA
+table(d$flagW1, useNA="always")
+
+
+d$flagW2 <- NA
+d$flagW2[d$dataset == "S2W2" & d$outlier_completion_time_esm_perReport_s2w2 == 1] <- 1
+d$flagW2[d$dataset == "S2W2" & d$outlier_completion_time_esm_perReport_s2w2 == 0] <- 0
+d$flagW2[d$dataset == "S2W1"] <- NA
+table(d$flagW2, useNA="always")
+
+# the same as original variables, correct
+# now combine into one variable
+d$flag <- 0
+d$flag[d$flagW1 == 1 | d$flagW2 == 1 ] <-  1
+
+table(d$flag, useNA="always")
+# 56
+# 23 + 33 = 56
+# correct
+
+
+# remove outliers due to completion time:
+d2 <- d[d$flag == 0, ]
+
+
+# Check Filtering ---------------------------------------------------------
+
+# create emotion variable name vector
+int_vars <- grep("^int_", names(d2), value = TRUE) # get all int_vars
+int_vars
+int_vars <- int_vars[1:14] # remove pleasure and activity (no emotion variables)
+
+occup_vars <- grep("^occup_", names(d2), value = TRUE) # get all occup_vars
+occup_vars
+occup_vars <- occup_vars[1:14] # remove pleasure and activity (no emotion variables)
+
+
+# check:
+# if interaction = yes, all int_ variables !is.na()
+# if interaction = no, all occup_ variables !is.na() (and vice versa)
+# codebook: interaction = 1 (yes), interaction = 2 (no)
+table(d2$interaction)
+
+# at least one value on any of these variables (at least 1 non-missing)
+d2$int_filled   <- rowSums(!is.na(d2[, int_vars])) > 0
+d2$occup_filled <- rowSums(!is.na(d2[, occup_vars])) > 0
+
+# Check cases
+# case 1: interaction = 1, but occup not NA
+error_int <- d2$interaction == 1 & d2$occup_filled
+
+# case 2: interaction = 2, but int not NA
+error_occup <- d2$interaction == 2 & d2$int_filled
+
+# all errors
+errors <- d2[error_int | error_occup, ]
+
+# number of errors
+nrow(errors)
+# no errors
+
+rm(errors)
+
+
+all(is.na(d2[d2$interaction == 1, 
+                  occup_vars]))
+# all activity emotions mising if interaction = yes
+all(!is.na(d2[d2$interaction == 2, 
+                   occup_vars]))
+# all activity emotions NOT missing if interaction = no
+
+all(!is.na(d2[d2$interaction == 1, 
+                   int_vars]))
+# all interaction emotions NOT missing if interaction = yes
+all(is.na(d2[d2$interaction == 2, 
+                  int_vars]))
+# all interaction emotions  missing if interaction = no
+
+
+
+# Create Final Emotion Variables ------------------------------------------
+
+# merge emotions from interaction and activity to single emotion items
+
+# prepare emotion data
+emotion_vars <- sub("^int_", "", int_vars)
+# check <- sub("^occup_", "", occup_vars)
+# emotion_vars == check # TRUE
+# rm(check)
+
+for (item in emotion_vars) {
+  d2[ , item] <- rowMeans(d2[ , c(paste0("int_", item), paste0("occup_", item))], na.rm=T)
+}
+
+# View(d2[ , emotion_vars])
+
+# # sanity check:
+# for (item in emotion_vars) {
+#   d2[ , paste0(item, "2")] <- ifelse(d2$interaction == 1, d2[ , paste0("int_", item)], d2[ , paste0("occup_", item)])
+# }
+# 
+# 
+# d2[ , "proud"] == d2[ , "proud2"]
+# all(d2[ , "proud"] == d2[ , "proud2"])
+# 
+# for (item in emotion_vars) {
+#   print(paste0(item, ": ", all(d2[ , item] == d2[ , paste0(item, "2")])))
+# }
+
+
+
+# Order Data Set by Participant and Beep Number ---------------------------
+# check whether time variable is recognized as such
+str(d2$created_esm)
+# correct
+
+d3 <- d2[order(d2$id_for_merging, d2$created_esm), ]
+
+# create running number for beep
+d3 %>% 
+  group_by(id_for_merging) %>% 
+  mutate(occ_total = row_number()) %>% 
+  ungroup() -> d3
+
+d3 <- d3[order(d3$id_for_merging, d3$created_esm), ] # order
+
+
+# Create Subset with Relevant Variables -----------------------------------
+
+d4 <- d3[ , c("id_for_merging", "wave", "dataset", "consent",
+              "created_esm", "ended_esm", "occ_total", "interaction",
+              emotion_vars)]
+
+
+# Calculate Occasions per Participant -------------------------------------
+# combine both waves and calculate how many occasions each participant has
+d4 %>% 
+  group_by(id_for_merging) %>% 
+  mutate(n_occ = n()) -> d4
+
+L2_both <- dplyr::distinct(d4, id_for_merging, n_occ)
+table(L2_both$n_occ)
+
+table(L2_both$n_occ >= 70)
+# 251 participants
+
+
+# for sample description:
+L2.tmp <- dplyr::distinct(d4, id_for_merging, wave, n_occ)
+table(L2.tmp$n_occ)
+table(L2.tmp$n_occ >= 70)
+# 251 participants
+table(L2.tmp$wave, L2.tmp$n_occ >= 70)
+# 150 participated in both waves,
+# 70 participated in wave 1 only,
+# 31 participated in wave 2 only
+
+tmp <- d4[d4$n_occ >= 70, ]
+length(unique(tmp$id_for_merging)) # 251 participants, correct
+nrow(tmp)
+
+nrow(tmp[tmp$wave == "Both", ])
+nrow(tmp[tmp$wave == "S2W1-only", ])
+nrow(tmp[tmp$wave == "S2W2-only", ])
+rm(tmp, L2.tmp)
+
+
+
+# Rename Variables and Order Final Data Set -------------------------------
+
+d4 <- gdata::rename.vars(
+  d4,
+  from = "id_for_merging",
+  to = "id"
+)
+
+
+
+# now order data set -> negative emotions en bloc
+d5 <- d4[ , c("id", "wave", "dataset", "consent",
+              "n_occ",
+              "created_esm", "ended_esm", "occ_total",
+              "interaction",
+              "proud", "success", "superior", "enthusiastic", "relaxed",
+              "angry", "excluded", "envious", "resentful", "ashamed", "insecure",
+              "anxious", "sad", "lonely")]
+
+
+# Save Data Set -----------------------------------------------------------
+dat <- d5
+save(dat, file="internal use/prepared data/EMOTIONS_clean_all_participants.rda")
+
+
+
+# Create Benchmark Data Set -----------------------------------------------
+# select all participants with >= 70 occasions
+
+L2 <- dplyr::distinct(dat, id, n_occ) 
+
+table(L2$n_occ >= 70) 
+# 251 participants with at least 70 occasions
+# use these as benchmark
+
+
+# select participants with at least 70 occasions
+bench <- dat[which(dat$n_occ >= 70), ]
+
+# order occasions
+bench <- bench[order(bench$id, bench$occ_total), ]
+# re-number the measurement occasions (only valid occasions)
+bench <- bench %>% 
+  group_by(id) %>% 
+  mutate(occ_running = 1:n()) %>%  # new running number
+  as.data.frame()
+
+
+# select only 70 occasions for each participant
+# by order!
+bench <- bench[which(bench$occ_running <= 70), ]
+nrow(bench)
+length(unique(bench$id))
+
+# check whether all participants have variance in their emotion ratings across the 70 occasions
+# check overall (total item set) and for all item sets
+
+
+neg_emo <- c("angry", "excluded", "envious", "resentful", "ashamed", "insecure", # negative emotions
+             "anxious", "sad", "lonely")
+pos_emo <- c("proud", "success", "superior", "enthusiastic", "relaxed")
+
+
+matrix_variance_check_neg <- bench %>% 
+  group_by(id) %>% 
+  summarise(
+    var_zero = all(var(as.matrix(across(all_of(neg_emo))),
+                       na.rm=TRUE) == 0),
+    .groups = "drop"
+  )
+
+matrix_variance_check_neg
+
+no_var_neg <- matrix_variance_check_neg %>% filter(var_zero == TRUE)
+# person id = 225
+
+sub <- bench[bench$id == 225, neg_emo]
+all(var(sub[ ,neg_emo]) == 0) # actually no variance
+
+# remove this participant --> no ICCs can be calculated (for negative emotions)
+
+
+matrix_variance_check_pos <- bench %>% 
+  group_by(id) %>% 
+  summarise(
+    var_zero = all(var(as.matrix(across(all_of(pos_emo))),
+                       na.rm=TRUE) == 0),
+    .groups = "drop"
+  )
+
+matrix_variance_check_pos
+
+no_var_pos <- matrix_variance_check_pos %>% filter(var_zero == TRUE)
+no_var_pos # no participants
+
+
+# Now check for all possible item sets across the 70 occasions -> if subsets of occasions are drawn,
+# the simulation will continue forever (while var == 0, repeat drawing of occasions...), as there will
+# never be variance in subsets of occasions if there is no variance in all occasions
+
+# negative emotions:
+itemsets_neg <- unlist(
+  lapply(3:9, function(k) combn(neg_emo, k, simplify = FALSE)),
+  recursive = FALSE
+) # 466 item sets in total -> correct
+
+
+itemset_info_neg <- tibble(
+  itemset_id = seq_along(itemsets_neg),
+  itemset_size = lengths(itemsets_neg),
+  itemset = map_chr(itemsets_neg, paste, collapse = ", ")
+)
+
+itemset_info_neg
+# check if number is correct
+nrow(itemset_info_neg[itemset_info_neg$itemset_size == 3, ]) == choose(9, 3)
+nrow(itemset_info_neg[itemset_info_neg$itemset_size == 4, ]) == choose(9, 4)
+nrow(itemset_info_neg[itemset_info_neg$itemset_size == 5, ]) == choose(9, 5)
+nrow(itemset_info_neg[itemset_info_neg$itemset_size == 6, ]) == choose(9, 6)
+nrow(itemset_info_neg[itemset_info_neg$itemset_size == 7, ]) == choose(9, 7)
+nrow(itemset_info_neg[itemset_info_neg$itemset_size == 8, ]) == choose(9, 8)
+nrow(itemset_info_neg[itemset_info_neg$itemset_size == 9, ]) == choose(9, 9)
+nrow(itemset_info_neg) == sum(choose(9,3), choose(9,4), choose(9,5), choose(9,6),
+                              choose(9,7), choose(9,8), choose(9,9))
+
+# all possible item sets
+
+
+
+dat_split <- split(bench, bench$id)
+
+check_person_item_sets <- function(df_person, person_id) {
+  itemset_info_neg %>% 
+    mutate(id = person_id,
+           has_variance = map_lgl(itemset_id, function(i) {
+             
+             set <- itemsets_neg[[i]]
+             
+             v <- var(as.matrix(df_person[ , set]), na.rm=TRUE)
+             
+             !all(v == 0, na.rm=TRUE)
+             
+           }))
+}
+
+itemset_info_by_person_neg <- map2_dfr(
+  dat_split,
+  names(dat_split),
+  check_person_item_sets
+)
+
+itemset_info_by_person_neg
+all(itemset_info_by_person_neg$has_variance == TRUE)
+
+
+problems_neg <- itemset_info_by_person_neg %>%
+  filter(has_variance == FALSE)
+
+unique(problems_neg$id)
+length(unique(problems_neg$id))
+# 75 participants are affected
+unique(problems_neg$itemset_size)
+table(problems_neg$itemset_size)
+
+length(unique(problems_neg$itemset)) # 466 item sets affects
+length(unique(itemset_info_by_person_neg$itemset)) # of a total of 466 possible item sets
+
+table(problems_neg$id)
+
+# -> implement check in simulation study and mark such cases as no variance across ALL occasions and remove from analysis
+# -> or remove globally beforehand
+
+# to report in manuscript:
+# possible numbers of item sets
+choose(9,3)
+choose(9,4)
+choose(9,5)
+choose(9,6)
+choose(9,7)
+choose(9,8)
+choose(9,9)
+
+# number of affected item set per condition
+itemset_summary <- problems_neg %>% 
+  group_by(itemset_size) %>% 
+  summarise(n_affected_itemsets = n_distinct(itemset_id))
+
+itemset_summary
+
+# number of affected participants
+affected_persons <- problems_neg %>%
+  distinct(itemset_size, id) %>%
+  count(itemset_size, name = "n_affected_persons")
+
+affected_persons
+# total number of persons in data set:
+length(unique(itemset_info_by_person_neg$id)) # 251
+affected_persons$perc_affected_persons <- affected_persons$n_affected_persons / 251 * 100
+
+affected_persons
+round(affected_persons)
+
+# affected item sets per participant (and condition)
+person_problem_counts <- problems_neg %>% 
+  distinct(id, itemset_size, itemset_id) %>% 
+  count(id, itemset_size, name="n_problematic_itemsets")
+person_problem_counts
+# number of problematic item sets for each person in each condition
+
+# summarize on condition level (itemset_size)
+person_problem_counts %>%
+  group_by(itemset_size) %>%
+  summarise(
+    min_problematic = min(n_problematic_itemsets),
+    median_problematic = median(n_problematic_itemsets),
+    mean_problematic = mean(n_problematic_itemsets),
+    max_problematic = max(n_problematic_itemsets)
+  )
+# extract IDs of participants who show zero variance in at least one item set
+ids_var_prob_neg <- unique(problems_neg$id)
+                           
+
+
+
+# positive emotions
+itemsets_pos <- unlist(
+  lapply(3:5, function(k) combn(pos_emo, k, simplify = FALSE)),
+  recursive = FALSE
+) # 16 item sets in total -> correct
+
+
+itemset_info_pos <- tibble(
+  itemset_id = seq_along(itemsets_pos),
+  itemset_size = lengths(itemsets_pos),
+  itemset = map_chr(itemsets_pos, paste, collapse = ", ")
+)
+
+itemset_info_pos
+
+dat_split <- split(bench, bench$id)
+
+check_person_item_sets <- function(df_person, person_id) {
+  itemset_info_pos %>% 
+    mutate(id = person_id,
+           has_variance = map_lgl(itemset_id, function(i) {
+             
+             set <- itemsets_pos[[i]]
+             
+             v <- var(as.matrix(df_person[ , set]), na.rm=TRUE)
+             
+             !all(v == 0, na.rm=TRUE)
+             
+           }))
+}
+
+itemset_info_by_person_pos <- map2_dfr(
+  dat_split,
+  names(dat_split),
+  check_person_item_sets
+)
+
+itemset_info_by_person_pos
+all(itemset_info_by_person_pos$has_variance == TRUE)
+
+
+problems_pos <- itemset_info_by_person_pos %>%
+  filter(has_variance == FALSE)
+# zero problems with missing variance in positive emotion terms
+
+
+
+
+# Remove participants who have zero variance at least once
+# -> all conditions comparable with regard to the number and the exact participants
+# included in the simulation and analyses
+bench <- bench[!bench$id %in% ids_var_prob_neg, ]
+
+# check whether number of participants is correct
+251 - 75 # = 176
+length(unique(bench$id)) # 176
+# correct
+
+
+# select variables relevant for analyses (i.e. ID,
+# occasion running, emotion terms)
+bench <- bench[ , c("id", "occ_running",
+                    "proud", "success", "superior", "enthusiastic", "relaxed", # positive emotions
+                    "angry", "excluded", "envious", "resentful", "ashamed", "insecure", # negative emotions
+                    "anxious", "sad", "lonely")]
+
+# save IDs for sociodemographic variables request
+ids <- unique(bench$id)
+ids_df <- data.frame(id_for_merging = ids)
+writexl::write_xlsx(ids_df, "../EMOTIONS Project/IDs_EMOTIONS_data_set.xlsx")
+
+# save benchmark data set
+save(bench, file = "internal use/prepared data/EMOTIONS_benchmark_data.rda") # for internal use (just for consistency)
+save(bench, file = "prepared data/EMOTIONS_benchmark_data.rda") # for sharing
+
+
+
+rm(list=ls())
+
+
+
+# Add Sociodemographic Information for Description ------------------------
+# data set was specifically requested (OSF version does not contain
+# all sociodemographic variables due to data privacy reasons)
+
+d_demo <- readr::read_csv("../EMOTIONS Project/mit Soziodemographie/Study2_BothWaves_ESM_and_Traitdata_inclWave1[2]-only.csv")
+d_demo <- as.data.frame(d_demo)
+
+names(d_demo)
+"gender" %in% names(d_demo) # TRUE
+"age" %in% names(d_demo) # TRUE
+
+# there were two time points at which sociodemographic variables were assessed
+# for wave 1 only: T1
+# for wave 3 only: T2 (labeled t3 in the data set)
+# for both waves: T1 and T2 (labeled t3)
+
+# check demographic variables and use the first ones that were provided for each participant
+
+# '' Check Demographic Variables ------------------------------------------
+# multiple variables for demographic variables:
+# e.g., household, household_t3
+names(d_demo)[startsWith(names(d_demo), "household")]
+
+# some participants completed both waves
+# do they have demographic variables twice?
+# are there mismatches?
+demo_vars <- c("gender", "gender_specification", "age", "household", "educational_status", "occupational_status", "higher_ed", "higher_ed_type", "sidejob")
+demo_vars_t3 <- paste0(demo_vars, "_t3")
+
+has_w1 <- rowSums(!is.na(d_demo[demo_vars])) > 0     # values on demo_vars TRUE/FALSE
+has_w2 <- rowSums(!is.na(d_demo[demo_vars_t3])) > 0  # values on demo_vars_t3 TRUE/FALSE
+
+w1_only <- has_w1 & !has_w2 # only values on wave 1
+w2_only <- !has_w1 & has_w2 # only values on wave 2
+both <- has_w1 & has_w2 # values on both waves
+
+
+# Check W1-only
+all(
+  rowSums(!is.na(d_demo[w1_only, demo_vars_t3])) == 0
+)
+# TRUE -> all who only have values on wave 1, do not have values on demo_vars_t3
+
+# Check W2-only
+all(
+  rowSums(!is.na(d_demo[w2_only, demo_vars])) == 0
+)
+# TRUE -> all who only have values on wave 2, do not have values on demo_vars
+
+
+# # sanity check with internal variable:
+# all(
+#   rowSums(!is.na(d_demo[d_demo$wave == "S2W1-only", demo_vars_t3])) == 0
+# )
+# # TRUE, all who have W1 only, do not have values on demo_vars_t3 (wave 2)
+# all(
+#   rowSums(!is.na(d_demo[d_demo$wave == "S2W2-only", demo_vars])) == 0
+# )
+# # TRUE, all who have W3 only, do not have values on demo_vars (wave 1)
+
+
+# now check those who have both waves
+all(
+  rowSums(!is.na(d_demo[d_demo$wave == "both", demo_vars])) > 0 & rowSums(!is.na(d_demo[both, demo_vars_t3])) > 0
+)
+# all who have completed both waves, have values on both demographic variable sets
+
+# # sanity check:
+# # check how many participants have w1 only, w2 only and both
+# # should be the same number of participants as indicated by wave variable
+# # -> but now calculated with demographic variables
+# tmp1 <- d_demo
+# tmp1$w1_only <- w1_only
+# tmp1$w2_only <- w2_only
+# tmp1$both <- both
+# 
+# tmp2 <- dplyr::distinct(tmp1, id_for_merging, w1_only, w2_only, both)
+# length(unique(tmp2$id_for_merging)) # 2272 unique persons = correct
+# nrow(tmp2) # 2272 rows
+# # -> w1_only, w2_only and both are constant within participant
+# # -> else, we would have 2272 unique participants, but multiple rows per unique participant (nrow > n unique participants)
+# 
+# table(tmp2$w1_only)
+# table(tmp2$w2_only)
+# table(tmp2$both)
+# 
+# # correct
+# rm(tmp1, tmp2)
+
+
+# check match between those variables
+matches <- sapply(seq_along(demo_vars), function(i) {
+  v1 <- demo_vars[i]
+  v2 <- demo_vars_t3[i]
+  
+  d_demo[both, v1] == d_demo[both, v2]
+})
+
+# demographic variables do not match in all cases
+all(matches, na.rm = TRUE) 
+
+# inspect cases
+mismatch_cases <- sapply(seq_along(demo_vars), function(i) {
+  v1 <- demo_vars[i]
+  v2 <- demo_vars_t3[i]
+  
+  sum(d_demo[both, v1] != d_demo[both, v2], na.rm = TRUE)
+})
+
+names(mismatch_cases) <- demo_vars
+mismatch_cases
+
+
+mismatch_rows <- rep(FALSE, nrow(d_demo))
+
+for (i in seq_along(demo_vars)) {
+  v1 <- demo_vars[i]
+  v2 <- demo_vars_t3[i]
+  
+  mismatch <- d_demo[ ,v1] != d_demo[, v2] &
+    !is.na(d_demo[ ,v1]) &
+    !is.na(d_demo[ ,v2])
+  
+  mismatch_rows <- mismatch_rows | mismatch
+}
+
+d_demo_mismatch <- d_demo[mismatch_rows, ]
+length(unique(d_demo_mismatch$id_for_merging)) # 127 participants
+
+# subset distinct rows for each participant
+d_demo_mismatch_L2 <- dplyr::distinct(d_demo_mismatch, id_for_merging, gender, gender_specification, age, household, educational_status,
+                                  occupational_status, higher_ed, higher_ed_type, sidejob,
+                                  gender_t3, gender_specification_t3, age_t3, household_t3,
+                                  educational_status_t3, occupational_status_t3, higher_ed_t3,
+                                  higher_ed_type_t3, sidejob_t3)
+# inspect
+View(d_demo_mismatch_L2)
+
+
+for (var in demo_vars) {
+  d_demo_mismatch_L2[ , paste0(var, "_flag")] <- ifelse(
+    !is.na(d_demo_mismatch_L2[ , var]) & !is.na(d_demo_mismatch_L2[ , paste0(var, "_t3")]) &
+      d_demo_mismatch_L2[ , var] != d_demo_mismatch_L2[ , paste0(var, "_t3")],
+    # if both variables are NOT missing, and they're not identical ...
+    1, # flag with 1
+    0 # else (identical or both missing), do not flag (= 0)
+  )
+}
+
+# for gender_specification (open text format), we need extra code to handle strings
+# and NAs:
+d_demo_mismatch_L2$gender_specification_flag <- 0 # default: not flagged
+
+d_demo_mismatch_L2$gender_specification_flag[
+  is.na(d_demo_mismatch_L2$gender_specification) & # if gender specification at t1 = missing
+    !is.na(d_demo_mismatch_L2$gender_specification_t3) # but gender specification at t2 not 
+] <- 1  # mismatch
+
+d_demo_mismatch_L2$gender_specification_flag[
+  !is.na(d_demo_mismatch_L2$gender_specification) & # if gender specification at t1 not missing
+    is.na(d_demo_mismatch_L2$gender_specification_t3) # but gender specification at t2 missing 
+] <- 1  # mismatch
+
+
+d_demo_mismatch_L2$gender_specification_flag[
+  !is.na(d_demo_mismatch_L2$gender_specification) & # if gender specification at t1 and t2 NOT missing
+    !is.na(d_demo_mismatch_L2$gender_specification_t3) &
+    (d_demo_mismatch_L2$gender_specification != d_demo_mismatch_L2$gender_specification_t3) # but both have different value
+] <- 1  # mismatch
+
+
+table(d_demo_mismatch_L2$gender_specification_flag, useNA = "always")
+# 1 mismatch
+
+table(d_demo_mismatch_L2$gender_flag, useNA="always")
+# 1 participant differs on gender
+
+View(d_demo_mismatch_L2[d_demo_mismatch_L2$gender_flag == 1,
+                        c("id_for_merging", "gender", "gender_t3", "gender_specification", "gender_specification_t3")])
+# from female to non-binary
+
+table(d_demo_mismatch_L2$age_flag, useNA = "always")
+# 56 differ on age
+View(d_demo_mismatch_L2[d_demo_mismatch_L2$age_flag == 1,
+                        c("id_for_merging", "age", "age_t3")])
+# calculate difference
+# T2 - T1
+# if T2 - T1 == 1 -> people had birthday in between
+d_demo_mismatch_L2$age_diff <- d_demo_mismatch_L2$age_t3 - d_demo_mismatch_L2$age
+table(d_demo_mismatch_L2$age_diff)
+# most people were either of the same age or 1 year older
+# however, some people differ more
+# -9, -3, -2, -1, 1, 12, 21
+# -> careless responding? privacy concerns?
+table(d_demo_mismatch_L2$age_diff != 0 & d_demo_mismatch_L2$age_diff != 1)
+# 11 people have invalid changes in age
+
+View(d_demo_mismatch_L2[d_demo_mismatch_L2$age_diff != 0 &
+                          d_demo_mismatch_L2$age_diff != 1, 
+                        c("id_for_merging", "age", "age_t3")])
+# e.g., 69 to 60 -> typo?
+# use first measurement of age that is available
+
+
+table(d_demo_mismatch_L2$household_flag, useNA="always")
+# 30 differ in household size -> plausible, can change over time
+
+table(d_demo_mismatch_L2$educational_status_flag, useNA="always")
+# 27 differ in educational status
+# look at this data
+View(d_demo_mismatch_L2[d_demo_mismatch_L2$educational_status_flag == 1,
+                    c("id_for_merging", "educational_status", "educational_status_t3")])
+# for some, it seems plausible that educational status is now higher
+# (e.g., Abitur but no vocational training to Abitur plus vocational training
+# or Abitur to university degree)
+# for some, it does not seem plausible 
+# (e.g., mittlere Reife to Hauptschulabschluss)
+
+table(d_demo_mismatch_L2$occupational_status_flag, useNA="always")
+# 36 mismatches in occupational status
+View(d_demo_mismatch_L2[d_demo_mismatch_L2$occupational_status_flag == 1,
+                    c("id_for_merging", "occupational_status", "occupational_status_t3")])
+# changes in occupational status can be plausible (e.g., at university to full-time employment)
+
+table(d_demo_mismatch_L2$higher_ed_flag, useNA="always") # 6 mismatches
+View(d_demo_mismatch_L2[d_demo_mismatch_L2$higher_ed_flag == 1,
+                    c("id_for_merging", "higher_ed", "higher_ed_t3")])
+# may be plausible (not studying to studying or vice versa)
+
+
+table(d_demo_mismatch_L2$higher_ed_type_flag, useNA="always") # 4 mismatches
+View(d_demo_mismatch_L2[d_demo_mismatch_L2$higher_ed_type_flag == 1,
+                    c("id_for_merging", "higher_ed_type", "higher_ed_type_t3")])
+# apparently confusion with teacher education and bachelor/master --> teacher education is
+# also in bachelor/master system
+
+table(d_demo_mismatch_L2$sidejob_flag, useNA="always") # 5 mismatches
+View(d_demo_mismatch_L2[d_demo_mismatch_L2$sidejob_flag == 1,
+                    c("id_for_merging", "sidejob", "sidejob_t3")])
+# seems plausible
+
+
+# -> some changes appear plausible (or are, probably, due to the response categories [teacher education])
+# -> educational status does not always seem plausible
+
+# -> to be consistent, use the first data that everyone provided
+# i.e., for wave1-only: use wave1 variables, for wave2-only: use wave2 variables,
+# for both: use wave1 variables
+
+# create variables:
+d_demo$gender_fin <- ifelse(
+  d_demo$wave == "S2W1-only" | d_demo$wave == "Both", # if wave is either W1-only or both
+  d_demo$gender, # use wave 1 variables
+  d_demo$gender_t3) # else, use wave 2 variables
+
+d_demo$gender_specification_fin <- ifelse(
+  d_demo$wave == "S2W1-only" | d_demo$wave == "Both", # if wave is either W1-only or both
+  d_demo$gender_specification, # use wave 1 variables
+  d_demo$gender_specification_t3) # else, use wave 2 variables
+
+d_demo$age_fin <- ifelse(
+  d_demo$wave == "S2W1-only" | d_demo$wave == "Both", # if wave is either W1-only or both
+  d_demo$age, # use wave 1 variables
+  d_demo$age_t3) # else, use wave 2 variables
+
+d_demo$household_fin <- ifelse(
+  d_demo$wave == "S2W1-only" | d_demo$wave == "Both", # if wave is either W1-only or Both
+  d_demo$household, # use wave 1 variables
+  d_demo$household_t3) # else, use wave 2 variables
+
+d_demo$educational_status_fin <- ifelse(
+  d_demo$wave == "S2W1-only" | d_demo$wave == "Both", # if wave is either W1-only or Both
+  d_demo$educational_status, # use wave 1 variables
+  d_demo$educational_status_t3) # else, use wave 2 variables
+
+d_demo$occupational_status_fin <- ifelse(
+  d_demo$wave == "S2W1-only" | d_demo$wave == "Both", # if wave is either W1-only or Both
+  d_demo$occupational_status, # use wave 1 variables
+  d_demo$occupational_status_t3)
+
+d_demo$higher_ed_fin <- ifelse(
+  d_demo$wave == "S2W1-only" | d_demo$wave == "Both", # if wave is either W1-only or Both
+  d_demo$higher_ed, # use wave 1 variables
+  d_demo$higher_ed_t3)
+
+d_demo$higher_ed_type_fin <- ifelse(
+  d_demo$wave == "S2W1-only" | d_demo$wave == "Both", # if wave is either W1-only or Both
+  d_demo$higher_ed_type, # use wave 1 variables
+  d_demo$higher_ed_type_t3)
+
+d_demo$sidejob_fin <- ifelse(
+  d_demo$wave == "S2W1-only" | d_demo$wave == "Both", # if wave is either W1-only or Both
+  d_demo$sidejob, # use wave 1 variables
+  d_demo$sidejob_t3)
+
+rm(d_demo_mismatch, d_demo_mismatch_L2, matches, demo_vars, demo_vars_t3, both, has_w1, has_w2, mismatch,
+   v1, v2, var, w1_only, w2_only, i, mismatch_cases, mismatch_rows)
+
+
+
+# '' Extract Sociodemographic Variables -----------------------------------
+L2_all <- dplyr::distinct(d_demo,
+                          id_for_merging,
+                          wave,
+                          gender_fin,
+                          gender_specification_fin,
+                          age_fin,
+                          household_fin,
+                          educational_status_fin,
+                          occupational_status_fin,
+                          higher_ed_fin,
+                          higher_ed_type_fin,
+                          sidejob_fin)
+
+length(unique(L2_all$id_for_merging)) == nrow(L2_all) # one row per participant
+
+
+# '' Match With Benchmark Data  -------------------------------------------
+load("prepared data/EMOTIONS_benchmark_data.rda")
+
+ids_bench <- unique(bench$id)
+
+L2_bench <- L2_all[L2_all$id_for_merging %in% ids_bench, ]
+nrow(L2_bench) == length(unique(bench$id)) # number of participants is correct
+
+# save L2_bench data set for sample descriptions
+# but for internal use only!
+save(L2_bench, file="internal use/prepared data/EMOTIONS_benchmark_L2_description.rda")
+
+# merge the two
+L2_bench$id <- L2_bench$id_for_merging
+L2_bench$id_for_merging <- NULL
+
+bench_with_demo <- merge(bench, L2_bench, by="id")
+save(bench_with_demo, file="internal use/prepared data/EMOTIONS_benchmark_with_sociodemographic_var.rda")
+
+
+# Session Info ------------------------------------------------------------
+
+rm(list=ls())
+sessionInfo()
+
+# R version 4.5.3 (2026-03-11 ucrt)
+# Platform: x86_64-w64-mingw32/x64
+# Running under: Windows 11 x64 (build 26200)
+# 
+# Matrix products: default
+#   LAPACK version 3.12.1
+# 
+# locale:
+# [1] LC_COLLATE=German_Germany.utf8  LC_CTYPE=German_Germany.utf8    LC_MONETARY=German_Germany.utf8
+# [4] LC_NUMERIC=C                    LC_TIME=German_Germany.utf8    
+# 
+# time zone: Europe/Berlin
+# tzcode source: internal
+# 
+# attached base packages:
+# [1] stats     graphics  grDevices utils     datasets  methods   base     
+# 
+# other attached packages:
+#  [1] lubridate_1.9.4 forcats_1.0.1   stringr_1.6.0   dplyr_1.1.4     purrr_1.1.0     readr_2.1.5    
+#  [7] tidyr_1.3.1     tibble_3.3.0    ggplot2_4.0.2   tidyverse_2.0.0
+# 
+# loaded via a namespace (and not attached):
+#  [1] utf8_1.2.6         generics_0.1.4     gtools_3.9.5       stringi_1.8.7      lattice_0.22-9    
+#  [6] lme4_2.0-1         hms_1.1.4          magrittr_2.0.3     timechange_0.3.0   grid_4.5.3        
+# [11] RColorBrewer_1.1-3 Matrix_1.7-4       writexl_1.5.4      scales_1.4.0       mnormt_2.1.2      
+# [16] reformulas_0.4.4   Rdpack_2.6.6       cli_3.6.5          crayon_1.5.3       rlang_1.2.0       
+# [21] rbibutils_2.4.1    performance_0.16.0 bit64_4.6.0-1      splines_4.5.3      withr_3.0.2       
+# [26] tools_4.5.3        parallel_4.5.3     tzdb_0.5.0         nloptr_2.2.1       minqa_1.2.8       
+# [31] boot_1.3-32        vctrs_0.6.5        R6_2.6.1           lifecycle_1.0.5    bit_4.6.0         
+# [36] vroom_1.6.5        MASS_7.3-65        psych_2.6.5        insight_1.4.6      archive_1.1.12.1  
+# [41] pkgconfig_2.0.3    pillar_1.11.1      gtable_0.3.6       glue_1.8.0         Rcpp_1.1.1-1      
+# [46] tidyselect_1.2.1   rstudioapi_0.18.0  farver_2.1.2       nlme_3.1-168       gdata_3.0.1       
+# [51] compiler_4.5.3     S7_0.2.0  

@@ -1,7 +1,7 @@
 ###################################################################
-#####    Estimating trait negative emotion differentiation:   #####
-#####        How many measurement occasions and               #####
-#####              emotion items are needed?                  #####
+#####       Estimating trait emotion differentiation:         #####
+#####             How many measurement occasions and          #####
+#####                 emotion items are needed?               #####
 ###################################################################
 
 ###################################################################
@@ -97,10 +97,12 @@ draw_items <- function(all_items, n_items, categories = NULL) {
                              
                              # checked for every nr.items (i.e., all elements in n_items)
                 
-                             
-                             # bind the number of items and the drawn items
-                             cbind(nr.items, paste(drawn, collapse = ", "))
+
+                             # bind the number of items and the drawn items (sorted alphabetically and by number)
+                             # trimws = trim white space
+                             cbind(nr.items, paste(sort(trimws(drawn)), collapse = ", "))
                            }))
   return(items_drawn)
 }
+
 

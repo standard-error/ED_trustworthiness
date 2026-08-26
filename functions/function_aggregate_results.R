@@ -1,17 +1,12 @@
 ###################################################################
-#####    Estimating trait negative emotion differentiation:   #####
-#####        How many measurement occasions and               #####
-#####              emotion items are needed?                  #####
+#####      Estimating trait emotion differentiation:          #####
+#####          How many measurement occasions and             #####
+#####               emotion items are needed?                 #####
 ###################################################################
 
 ###################################################################
 #####             Results Aggregation Function                #####
 ###################################################################
-
-
-# Note: Function could, in principle, handle if simulation study was run
-# for separate groups (e.g., high, medium, and low NED) -> groupwise argument.
-# However, this was not done here.
 
 
 
@@ -52,24 +47,17 @@ inverse_fisher_z <- function(z) {
 # Plot the outcomes for raw ICCs and Fisher's Z-transformed ICC.z.
 
 # Aggregate across n_items, n_occasions and occasions_drawn.
-# If occasions_drawn does not play a role, the results could be
-# aggregated across occasions_drawn.
 
 
-# For group-wise analysis, the results also need to be aggregated
-# per group -> aggregate(outcome ~ n_items + n_occasions + occasions_drawn + group).
 
 
-aggregate_results <- function(data, outcomes, rel_outcomes, abs_outcomes,
-                              groupwise = FALSE, group_var = NULL) {
+aggregate_results <- function(data, outcomes, rel_outcomes, abs_outcomes) {
   # data: simulation data frame with results across all conditions and iterations
   # outcomes: chr vector with names of the outcome variables in the simulation data frame (data)
   # rel_outcomes: chr vector indicating names of relative outcomes (-> do not use benchmark, as it
           # already is relative)
   # abs_outcomes: chr vector indicating names of absolute outcomes (-> also use benchmark)
-  # groupwise: logical indicating whether or not to apply the function to the overall simulation
-        # or to a groupwise simulation; default = FALSE
-  # group_var = chr indicating name of the grouping variable in the data frame, default = NULL
+
   
   # results with benchmark
   all <- data
@@ -93,18 +81,8 @@ aggregate_results <- function(data, outcomes, rel_outcomes, abs_outcomes,
     
     # Choose factors to aggregate across
     # always use occasions_drawn, n_occasions, and n_items
-    # if the simulation was groupwise, also use group as factor
     factors <- c("occasions_drawn", "n_occasions", "n_items")
-    
-    if (groupwise == TRUE) { 
-      # CHECK: is group_var provided and a variable in the data frame?
-      if (is.null(group_var) || !(group_var %in% names(use_data))) {
-        stop(sprintf("When groupwise == TRUE, a valid group_var must be provided."))
-      } else {
-        factors <- c(factors, group_var) # add group_var to the factors
-      }
-    }
-    
+
     
     # create formula to use in aggregate function
     formula <- as.formula(
@@ -119,14 +97,21 @@ aggregate_results <- function(data, outcomes, rel_outcomes, abs_outcomes,
     tmp <- do.call(
       data.frame,
       aggregate(formula, data = use_data, FUN = function(x) {
-        if (outcome == "cor_ICC" | outcome == "cor_ICC.z") { # if outcome is correlation
-        c(min(x),
-          inverse_fisher_z(mean(fisher_z(x))), # apply Fisher's Z-transformation, average, backtransform
-          max(x))          
-        } else { # else just calculate mean
-        c(min(x), mean(x), max(x))
+        
+        # include check -> results may be NA if there was no valid ICC data at all
+        if (all(is.na(x))) {
+          return(c(NA_real_, NA_real_, NA_real_))
         }
-      })
+        
+        if (outcome == "cor_ICC" | outcome == "cor_ICC.z") { # if outcome is correlation
+        c(min(x, na.rm=TRUE),
+          inverse_fisher_z(mean(fisher_z(x), na.rm=TRUE)), # apply Fisher's Z-transformation, average, backtransform
+          max(x, na.rm=TRUE))          
+        } else { # else just calculate mean
+        c(min(x, na.rm=TRUE), mean(x, na.rm=TRUE), max(x, na.rm=TRUE))
+        }
+      },
+      na.action = na.pass),
     )
     
     
